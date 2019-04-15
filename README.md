@@ -52,3 +52,16 @@ This is the backend API repository for Study Portal intended to be used by Study
    python manage.py makemigrations
    python manage.py migrate
    ```
+
+6. Create Django admin user
+
+   ```bash
+   python manage.py makemigrations
+   python manage.py migrate
+   ```
+
+7. Run production server
+
+   ```bash
+   python manage.py runserver
+   ```
