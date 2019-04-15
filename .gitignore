@@ -1,0 +1,4 @@
+.idea
+.vscode
+studyportal/config/postgresql.yml
+**/__pycache__
