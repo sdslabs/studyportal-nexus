@@ -1,0 +1,5 @@
+NAME: studyportal
+USER: dbuser
+PASSWORD: dbpass
+HOST: localhost
+PORT:

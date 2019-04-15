@@ -17,6 +17,14 @@ import yaml
 CUR_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_DIR = os.path.dirname(CUR_DIR)
 
+# Load Database config using yaml conf file
+yamlFilePath = CUR_DIR + "/config/postgresql.yml"
+try:
+    confFile = open(yamlFilePath, "r")
+except FileNotFoundError:
+    print("The required config file " + yamlFilePath + " does not exist")
+    exit(1)
+DB_PARAMS = yaml.safe_load(confFile)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
@@ -77,8 +85,12 @@ WSGI_APPLICATION = 'studyportal.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': DB_PARAMS['NAME'],
+        'USER': DB_PARAMS['USER'],
+        'PASSWORD': DB_PARAMS['PASSWORD'],
+        'HOST': DB_PARAMS['HOST'],
+        'PORT': DB_PARAMS['PORT'],
     }
 }
 
