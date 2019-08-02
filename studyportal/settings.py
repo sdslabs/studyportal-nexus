@@ -35,7 +35,11 @@ SECRET_KEY = 's-0n5h@4*e((tj3ll%8v=)9t$*24t*mdx6tyt&4+5k-l3x)pl='
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+        'localhost',
+        'studyportal.sdslabs.local'
+]
+
 
 
 # Application definition
