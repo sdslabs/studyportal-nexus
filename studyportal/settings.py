@@ -37,7 +37,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
         'localhost',
-        'studyportal.sdslabs.local'
+        'nexus.sdslabs.local'
 ]
 
 
