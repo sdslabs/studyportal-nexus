@@ -37,7 +37,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
         'localhost',
-        'nexus.sdslabs.local'
+        'nexus.sdslabs.local',
+        '127.0.0.1'
 ]
 
 
@@ -52,7 +53,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_api',
-    'rest_framework'
+    'rest_framework',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -63,9 +65,14 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'studyportal.urls'
+
+CORS_ORIGIN_WHITELIST = (
+    'studyportal.sdslabs.local',
+)
 
 TEMPLATES = [
     {
