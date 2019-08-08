@@ -4,4 +4,4 @@ from rest_framework import serializers
 class DepartmentSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Department
-        fields = ('title', 'abbreviation')
+        fields = ('title', 'abbreviation', 'url')
