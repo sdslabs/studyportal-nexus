@@ -24,17 +24,27 @@ class CourseViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = Course.objects.all()
         department = self.request.query_params.get('department')
-        queryset = Course.objects.filter(department = department)
-        return queryset
+        if department != None:
+            queryset = Course.objects.filter(department = department)
+            return queryset
+        else:
+            queryset = Course.objects.all()
+            return queryset
 
     def post(self, request):
         course = request.data.get('course')
-        department = Department.objects.get(department = request.data.get('department'))
+        department = Department.objects.get(department_id = request.data.get('department'))
         course.department = DepartmentSerializer(data=department)
         serializer = CourseSerializer(data=course)
         if serializer.is_valid(raise_exception=True):
             course_saved = serializer.save(department=department)
         return Response(course_saved)
+
+    def delete(self, request):
+        course = Course.objects.get(id = request.data.get('course'))
+        serializer = CourseSerializer(data=course)
+        serializer.delete()
+        return Response()
 
 class FileViewSet(viewsets.ModelViewSet):
     serializer_class = FileSerializer
@@ -42,8 +52,12 @@ class FileViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = File.objects.all()
         course = self.request.query_params.get('course')
-        queryset = File.objects.filter(course = course)
-        return queryset
+        if course != None:
+            queryset = File.objects.filter(course = course)
+            return queryset
+        else:
+            queryset = File.objects.all()
+            return queryset
 
     def post(self, request):
         files = request.data.get('file')
@@ -53,3 +67,9 @@ class FileViewSet(viewsets.ModelViewSet):
         if serializer.is_valid(raise_exception=True):
             file_saved = serializer.save(file=files)
         return Response(file_saved)
+
+    def delete(self, request):
+        file = File.objects.get(id = request.data.get('file'))
+        serializer = FileSerializer(data=file)
+        serializer.delete()
+        return Response()

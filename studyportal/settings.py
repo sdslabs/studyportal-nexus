@@ -70,9 +70,10 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'studyportal.urls'
 
-# CORS_ORIGIN_WHITELIST = (
-#    'studyportal.sdslabs.local',
-# )
+CORS_ORIGIN_WHITELIST = (
+   'http://studyportal.sdslabs.local',
+   'http://nexus.sdslabs.local'
+)
 
 TEMPLATES = [
     {
