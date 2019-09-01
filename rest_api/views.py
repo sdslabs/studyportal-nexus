@@ -43,8 +43,12 @@ class CourseViewSet(viewsets.ModelViewSet):
     def delete(self, request):
         course = Course.objects.get(id = request.data.get('course'))
         serializer = CourseSerializer(data=course)
-        serializer.delete()
-        return Response()
+        if serializer.is_valid():
+            instance = serializer.save()
+            instance.delete()
+            return Response()
+        else:
+            return Response()
 
 class FileViewSet(viewsets.ModelViewSet):
     serializer_class = FileSerializer
