@@ -8,8 +8,16 @@ def sample(request):
     return HttpResponse("Test endpoint")
 
 class DepartmentViewSet(viewsets.ModelViewSet):
-    queryset = Department.objects.all()
     serializer_class = DepartmentSerializer
+
+    def get_queryset(self):
+        queryset = Department.objects.all()
+        department = self.request.query_params.get('department')
+        if department != None:
+            queryset = Department.objects.filter(abbreviation = department)
+            return queryset
+        else:
+            return queryset
 
     def post(self, request):
         department = request.data.get('department')
@@ -24,11 +32,14 @@ class CourseViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = Course.objects.all()
         department = self.request.query_params.get('department')
-        if department != None:
+        course = self.request.query_params.get('course')
+        if department != None and course == 'null':
             queryset = Course.objects.filter(department = department)
             return queryset
+        elif department != None and course != None:
+            queryset = Course.objects.filter(department = department).filter(code = course)
+            return queryset
         else:
-            queryset = Course.objects.all()
             return queryset
 
     def post(self, request):
