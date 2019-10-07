@@ -67,11 +67,14 @@ class FileViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = File.objects.all()
         course = self.request.query_params.get('course')
-        if course != None:
+        filetype = self.request.query_params.get('filetype')
+        if course != None and filetype == 'null':
             queryset = File.objects.filter(course = course)
             return queryset
+        elif course != None and filetype != None:
+            queryset = File.objects.filter(course = course).filter(filetype = filetype)
+            return queryset
         else:
-            queryset = File.objects.all()
             return queryset
 
     def post(self, request):
@@ -88,3 +91,10 @@ class FileViewSet(viewsets.ModelViewSet):
         serializer = FileSerializer(data=file)
         serializer.delete()
         return Response()
+
+    def download(self, *args, **kwargs):
+        file_path = file_url
+        FilePointer = open(file_path,"r")
+        response = HttpResponse(FilePointer,content_type='application/msword')
+        response['Content-Disposition'] = 'attachment; filename=NameOfFile'
+        return response

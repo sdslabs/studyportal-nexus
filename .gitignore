@@ -2,3 +2,4 @@
 .vscode
 studyportal/config/postgresql.yml
 **/__pycache__
+/files/*
