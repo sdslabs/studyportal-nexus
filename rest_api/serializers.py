@@ -4,20 +4,20 @@ from rest_framework import serializers
 class DepartmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Department
-        fields = ('id', 'title', 'abbreviation', 'url')
+        fields = ('id', 'title', 'abbreviation', 'imageurl')
 
         def create(self, validated_data):
             return Department.objects.create(**validated_data)
 
 class CourseSerializer(serializers.ModelSerializer):
-    department = DepartmentSerializer(read_only=True)
-
+    department = DepartmentSerializer()
     class Meta:
         model = Course
         fields = ('id', 'title', 'department', 'code')
 
-        def create(self, validated_data):
-            return Course.objects.create(**validated_data)
+    def create(self, validated_data):
+        department_data = validated_data.pop('department')
+        return Course.objects.create(department=department_data, **validated_data)
 
 def fileName(file):
     filename = file.split('/')[-1]
