@@ -5,7 +5,7 @@ class Department(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
     title = models.CharField(max_length=100)
     abbreviation = models.CharField(max_length=3)
-    url = models.CharField(max_length=100, default='')
+    imageurl = models.CharField(max_length=100, default='')
 
     def __str__(self):
         return self.title
@@ -37,7 +37,7 @@ class File(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
     file = models.FileField(default='', upload_to=fileLocation)
     path = models.FilePathField(path=None)
-    downloads = models.IntegerField()
+    downloads = models.IntegerField(editable=False, default=0)
     date_modified = models.DateField(auto_now=True)
     filetype = models.CharField(max_length=20, choices=FILE_TYPE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)

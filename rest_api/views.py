@@ -43,23 +43,14 @@ class CourseViewSet(viewsets.ModelViewSet):
             return queryset
 
     def post(self, request):
-        course = request.data.get('course')
-        department = Department.objects.get(department_id = request.data.get('department'))
-        course.department = DepartmentSerializer(data=department)
-        serializer = CourseSerializer(data=course)
-        if serializer.is_valid(raise_exception=True):
-            course_saved = serializer.save(department=department)
+        course = request.data
+        department = Department.objects.get(id = request.data.get('department'))
+        course_saved = CourseSerializer.create(title=course.get('title'),department=department,code=course.get('code'))
         return Response(course_saved)
 
     def delete(self, request):
-        course = Course.objects.get(id = request.data.get('course'))
-        serializer = CourseSerializer(data=course)
-        if serializer.is_valid():
-            instance = serializer.save()
-            instance.delete()
-            return Response()
-        else:
-            return Response()
+        course = Course.objects.get(id = request.data.get('course')).delete()
+        return Response(course)
 
 class FileViewSet(viewsets.ModelViewSet):
     serializer_class = FileSerializer
@@ -87,10 +78,8 @@ class FileViewSet(viewsets.ModelViewSet):
         return Response(file_saved)
 
     def delete(self, request):
-        file = File.objects.get(id = request.data.get('file'))
-        serializer = FileSerializer(data=file)
-        serializer.delete()
-        return Response()
+        file = File.objects.get(id = request.data.get('file')).delete()
+        return Response(file)
 
     def download(self, *args, **kwargs):
         file_path = file_url
