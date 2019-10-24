@@ -20,6 +20,7 @@ class DepartmentViewSet(viewsets.ModelViewSet):
             return queryset
 
     def post(self, request):
+        print("here")
         department = request.data.get('department')
         serializer = DepartmentSerializer(data=department)
         if serializer.is_valid(raise_exception=True):
@@ -44,13 +45,23 @@ class CourseViewSet(viewsets.ModelViewSet):
 
     def post(self, request):
         course = request.data
-        department = Department.objects.get(id = request.data.get('department'))
-        course_saved = CourseSerializer.create(title=course.get('title'),department=department,code=course.get('code'))
-        return Response(course_saved)
+        print(course)
 
     def delete(self, request):
         course = Course.objects.get(id = request.data.get('course')).delete()
         return Response(course)
+
+class CourseViewTest(viewsets.ModelViewSet):
+    print("here 1")
+    serializer_class = CourseSerializer
+    print("last")
+
+    def post(self, request):
+        print(request.get)
+        if request.method == 'POST':
+            print(request.get)
+            print('hello')
+
 
 class FileViewSet(viewsets.ModelViewSet):
     serializer_class = FileSerializer

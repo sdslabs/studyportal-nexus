@@ -13,7 +13,7 @@ class Department(models.Model):
 class Course(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
     title = models.CharField(max_length=200)
-    department = models.ForeignKey(Department, on_delete=models.CASCADE)
+    department = models.ForeignKey(Department, on_delete=models.CASCADE, blank=True, null=True)
     code = models.CharField(max_length=10, default='')
 
     def __str__(self):
