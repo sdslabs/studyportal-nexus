@@ -36,7 +36,7 @@ def fileName(file):
 class File(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
     title = models.CharField(max_length=100, default='')
-    driveid = models.URLField(default='')
+    driveid = models.CharField(max_length=50, default='')
     downloads = models.IntegerField(default=0)
     size = models.CharField(max_length=10, default='')
     date_modified = models.DateField(auto_now=True)

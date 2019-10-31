@@ -66,7 +66,7 @@ class CourseViewSet(APIView):
         return []
 
 class FileViewSet(APIView):
-    def get(self):
+    def get(self, request):
         queryset = File.objects.all()
         course = self.request.query_params.get('course')
         filetype = self.request.query_params.get('filetype')
