@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 from rest_api.models import Department, Course, File
-from rest_framework  import viewsets
+from rest_framework  import viewsets, status
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_api.serializers import DepartmentSerializer, CourseSerializer, FileSerializer
 
@@ -27,41 +28,43 @@ class DepartmentViewSet(viewsets.ModelViewSet):
             department_saved = serializer.save()
         return Response(department_saved)
 
-class CourseViewSet(viewsets.ModelViewSet):
-    serializer_class = CourseSerializer
+class CourseViewSet(APIView):
 
-    def get_queryset(self):
+    def get(self, request):
         queryset = Course.objects.all()
         department = self.request.query_params.get('department')
         course = self.request.query_params.get('course')
         if department != None and course == 'null':
             queryset = Course.objects.filter(department = department)
-            return queryset
+            serializer = CourseSerializer(queryset, many=True)
+            return Response(serializer.data)
         elif department != None and course != None:
             queryset = Course.objects.filter(department = department).filter(code = course)
-            return queryset
+            serializer = CourseSerializer(queryset, many=True)
+            return Response(serializer.data)
         else:
-            return queryset
+            serializer = CourseSerializer(queryset, many=True)
+            return Response(serializer.data)
 
     def post(self, request):
-        course = request.data
-        print(course)
+        data = request.data.copy()
+        queryset = Department.objects.get(id = request.data['department'])
+        query = Course.objects.filter(code = data['code'])
+        if not query:
+            course = Course(title = data['title'], department = queryset, code = data['code'])
+            course.save()
+            return Response(course.save(), status = status.HTTP_201_CREATED)
+
+        else:
+            return Response("Course already exists")
 
     def delete(self, request):
         course = Course.objects.get(id = request.data.get('course')).delete()
         return Response(course)
 
-class CourseViewTest(viewsets.ModelViewSet):
-    print("here 1")
-    serializer_class = CourseSerializer
-    print("last")
-
-    def post(self, request):
-        print(request.get)
-        if request.method == 'POST':
-            print(request.get)
-            print('hello')
-
+    @classmethod
+    def get_extra_actions(cls):
+        return []
 
 class FileViewSet(viewsets.ModelViewSet):
     serializer_class = FileSerializer
@@ -80,13 +83,16 @@ class FileViewSet(viewsets.ModelViewSet):
             return queryset
 
     def post(self, request):
-        files = request.data.get('file')
-        course = Course.objects.get(course = request.data.get('course'))
-        files.course = CourseSerializer(data=course)
-        serializer = FileSerializer(data=files)
-        if serializer.is_valid(raise_exception=True):
-            file_saved = serializer.save(file=files)
-        return Response(file_saved)
+        data = request.data.copy()
+        queryset = Course.objects.get(id = request.data['department'])
+        query = File.objects.filter(code = data['code'])
+        if not query:
+            course = Course(title = data['title'], department = queryset, code = data['code'])
+            course.save()
+            return Response(course.save(), status = status.HTTP_201_CREATED)
+
+        else:
+            return Response("Course already exists")
 
     def delete(self, request):
         file = File.objects.get(id = request.data.get('file')).delete()

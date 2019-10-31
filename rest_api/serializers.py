@@ -10,7 +10,7 @@ class DepartmentSerializer(serializers.ModelSerializer):
             return Department.objects.create(**validated_data)
 
 class CourseSerializer(serializers.ModelSerializer):
-    department = DepartmentSerializer(read_only=True)
+    department = DepartmentSerializer(Department.objects.all())
     class Meta:
         print("here 2")
         model = Course
@@ -19,7 +19,8 @@ class CourseSerializer(serializers.ModelSerializer):
     print("here 4")
 
     # def create(self, validated_data):
-    #     return Course.objects.create(**validated_data)
+    #     department_data = validated_data.pop('department')
+    #     return Course.objects.create(department=department_data, **validated_data)
 
 def fileName(file):
     filename = file.split('/')[-1]
