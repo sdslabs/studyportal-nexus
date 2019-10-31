@@ -54,7 +54,6 @@ class CourseViewSet(APIView):
             course = Course(title = data['title'], department = queryset, code = data['code'])
             course.save()
             return Response(course.save(), status = status.HTTP_201_CREATED)
-
         else:
             return Response("Course already exists")
 
@@ -65,6 +64,24 @@ class CourseViewSet(APIView):
     @classmethod
     def get_extra_actions(cls):
         return []
+
+def get_size(size):
+    file_size = size
+    if round(file_size/(1024*1024),2) == 0.00:
+        return str(round(file_size/(1024),2))+" KB"
+    else:
+        return str(round(file_size/(1024*1024),2))+" MB"
+
+def fileName(file):
+    return file.split('.')[-2]
+
+def get_title(name):
+    file_title = name
+    return fileName(file_title)
+    
+def get_fileext(name):
+    filename = name
+    return filename.split('.')[-1]
 
 class FileViewSet(APIView):
     def get(self, request):
@@ -85,15 +102,15 @@ class FileViewSet(APIView):
 
     def post(self, request):
         data = request.data.copy()
-        queryset = Course.objects.get(id = request.data['department'])
-        query = File.objects.filter(code = data['code'])
+        course = Course.objects.get(code = data['code'])
+        query = File.objects.filter(title = data['title'])
         if not query:
-            course = Course(title = data['title'], department = queryset, code = data['code'])
-            course.save()
-            return Response(course.save(), status = status.HTTP_201_CREATED)
-
+            file = File(title = get_title(data['title']), driveid = data['driveid'], downloads = 0, size = get_size(int(data['size'])), course = course, fileext = get_fileext(data['title']),  filetype = data['filetype'])
+            file.save()
+            return Response(file.save(), status = status.HTTP_201_CREATED)
         else:
-            return Response("Course already exists")
+            return Response("File already exists")
+        return Response('')
 
     def delete(self, request):
         file = File.objects.get(id = request.data.get('file')).delete()
