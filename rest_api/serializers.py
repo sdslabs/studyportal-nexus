@@ -30,7 +30,7 @@ class FileSerializer(serializers.ModelSerializer):
     fileext = serializers.SerializerMethodField()
     class Meta:
         model = File
-        fields = ('id', 'file', 'path', 'title', 'downloads', 'size', 'date_modified', 'fileext', 'filetype', 'course')
+        fields = ('id', 'title', 'driveid', 'downloads', 'size', 'date_modified', 'fileext', 'filetype', 'course')
     def get_size(self, obj):
         file_size = ''
         if obj.file and hasattr(obj.file, 'size'):
