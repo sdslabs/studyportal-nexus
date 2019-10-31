@@ -21,6 +21,7 @@ class DepartmentViewSet(viewsets.ModelViewSet):
             return queryset
 
     def post(self, request):
+        print("here")
         department = request.data.get('department')
         serializer = DepartmentSerializer(data=department)
         if serializer.is_valid(raise_exception=True):

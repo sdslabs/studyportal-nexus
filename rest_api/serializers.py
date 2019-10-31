@@ -12,8 +12,11 @@ class DepartmentSerializer(serializers.ModelSerializer):
 class CourseSerializer(serializers.ModelSerializer):
     department = DepartmentSerializer(Department.objects.all())
     class Meta:
+        print("here 2")
         model = Course
         fields = ('id', 'title', 'department', 'code')
+        print("here 3")
+    print("here 4")
 
     # def create(self, validated_data):
     #     department_data = validated_data.pop('department')
