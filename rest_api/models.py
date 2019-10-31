@@ -35,15 +35,17 @@ def fileName(file):
 
 class File(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
-    file = models.FileField(default='', upload_to=fileLocation)
-    path = models.FilePathField(path=None)
-    downloads = models.IntegerField(editable=False, default=0)
+    title = models.CharField(max_length=100, default='')
+    driveid = models.URLField(default='')
+    downloads = models.IntegerField(default=0)
+    size = models.CharField(max_length=10, default='')
     date_modified = models.DateField(auto_now=True)
+    fileext = models.CharField(max_length=10, default='')
     filetype = models.CharField(max_length=20, choices=FILE_TYPE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
 
     def __str__(self):
-        return fileName(self.file.name)
+        return fileName(self.title)
 
 REQUEST_STATUS = [
     (1,1),

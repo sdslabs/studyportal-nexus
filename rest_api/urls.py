@@ -13,5 +13,6 @@ urlpatterns = [
     path('test', views.sample, name='sample'),
     path('', include(router.urls)),
     path('api-auth', include('rest_framework.urls', namespace='rest_framework')),
-    url(r'^courses', views.CourseViewSet.as_view())
+    url(r'^courses', views.CourseViewSet.as_view()),
+    url(r'^files', views.FileViewSet.as_view())
 ]

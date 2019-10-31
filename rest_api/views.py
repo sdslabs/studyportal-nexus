@@ -66,21 +66,22 @@ class CourseViewSet(APIView):
     def get_extra_actions(cls):
         return []
 
-class FileViewSet(viewsets.ModelViewSet):
-    serializer_class = FileSerializer
-    
-    def get_queryset(self):
+class FileViewSet(APIView):
+    def get(self):
         queryset = File.objects.all()
         course = self.request.query_params.get('course')
         filetype = self.request.query_params.get('filetype')
         if course != None and filetype == 'null':
             queryset = File.objects.filter(course = course)
-            return queryset
+            serializer = FileSerializer(queryset, many=True)
+            return Response(serializer.data)
         elif course != None and filetype != None:
             queryset = File.objects.filter(course = course).filter(filetype = filetype)
-            return queryset
+            serializer = FileSerializer(queryset, many=True)
+            return Response(serializer.data)
         else:
-            return queryset
+            serializer = FileSerializer(queryset, many=True)
+            return Response(serializer.data)
 
     def post(self, request):
         data = request.data.copy()
@@ -98,9 +99,13 @@ class FileViewSet(viewsets.ModelViewSet):
         file = File.objects.get(id = request.data.get('file')).delete()
         return Response(file)
 
-    def download(self, *args, **kwargs):
-        file_path = file_url
-        FilePointer = open(file_path,"r")
-        response = HttpResponse(FilePointer,content_type='application/msword')
-        response['Content-Disposition'] = 'attachment; filename=NameOfFile'
-        return response
+    # def download(self, *args, **kwargs):
+    #     file_path = file_url
+    #     FilePointer = open(file_path,"r")
+    #     response = HttpResponse(FilePointer,content_type='application/msword')
+    #     response['Content-Disposition'] = 'attachment; filename=NameOfFile'
+    #     return response
+
+    @classmethod
+    def get_extra_actions(cls):
+        return []
