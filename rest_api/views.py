@@ -8,28 +8,35 @@ from rest_api.serializers import DepartmentSerializer, CourseSerializer, FileSer
 def sample(request):
     return HttpResponse("Test endpoint")
 
-class DepartmentViewSet(viewsets.ModelViewSet):
-    serializer_class = DepartmentSerializer
-
-    def get_queryset(self):
+class DepartmentViewSet(APIView):
+    def get(self,request):
         queryset = Department.objects.all()
+        serializer_department = DepartmentSerializer(queryset, many=True)
         department = self.request.query_params.get('department')
         if department != None:
-            queryset = Department.objects.filter(abbreviation = department)
-            return queryset
+            queryset = Department.objects.get(abbreviation = department)
+            serializer = DepartmentSerializer(queryset).data
+            course = Course.objects.filter(department = serializer['id'])
+            serializer_course = CourseSerializer(course, many=True).data
+            return Response({
+                "department":serializer,
+                "courses":serializer_course
+                })
         else:
-            return queryset
+            return Response(serializer_department.data)
 
     def post(self, request):
-        print("here")
         department = request.data.get('department')
         serializer = DepartmentSerializer(data=department)
         if serializer.is_valid(raise_exception=True):
             department_saved = serializer.save()
         return Response(department_saved)
 
-class CourseViewSet(APIView):
+    @classmethod
+    def get_extra_actions(cls):
+        return []
 
+class CourseViewSet(APIView):
     def get(self, request):
         queryset = Course.objects.all()
         department = self.request.query_params.get('department')
