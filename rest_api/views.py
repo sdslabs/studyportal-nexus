@@ -26,11 +26,14 @@ class DepartmentViewSet(APIView):
             return Response(serializer_department.data)
 
     def post(self, request):
-        department = request.data.get('department')
-        serializer = DepartmentSerializer(data=department)
-        if serializer.is_valid(raise_exception=True):
-            department_saved = serializer.save()
-        return Response(department_saved)
+        data = request.data
+        query = Department.objects.filter(abbreviation = data['abbreviation'])
+        if not query:
+            department = Department(title = data['title'], abbreviation = data['abbreviation'], imageurl = data['imageurl'])
+            department.save()
+            return Response(department.save(), status = status.HTTP_201_CREATED)
+        else:
+            return Response("Department already exists")
 
     @classmethod
     def get_extra_actions(cls):
@@ -55,7 +58,10 @@ class CourseViewSet(APIView):
 
     def post(self, request):
         data = request.data.copy()
-        queryset = Department.objects.get(id = request.data['department'])
+        if request.data['department'].isdigit():
+            queryset = Department.objects.get(id = request.data['department'])
+        else:
+            queryset = Department.objects.get(title = request.data['department'])
         query = Course.objects.filter(code = data['code'])
         if not query:
             course = Course(title = data['title'], department = queryset, code = data['code'])
@@ -80,7 +86,7 @@ def get_size(size):
         return str(round(file_size/(1024*1024),2))+" MB"
 
 def fileName(file):
-    return file.split('.')[-2]
+    return file.rpartition('.')[0]
 
 def get_title(name):
     file_title = name
