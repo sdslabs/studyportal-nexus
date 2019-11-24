@@ -4,7 +4,7 @@ from django.contrib.postgres.fields import ArrayField
 class Department(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
     title = models.CharField(max_length=100)
-    abbreviation = models.CharField(max_length=3)
+    abbreviation = models.CharField(max_length=10)
     imageurl = models.CharField(max_length=100, default='')
 
     def __str__(self):
@@ -45,7 +45,7 @@ class File(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
 
     def __str__(self):
-        return fileName(self.title)
+        return self.title
 
 REQUEST_STATUS = [
     (1,1),
