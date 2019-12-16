@@ -42,10 +42,30 @@ class File(models.Model):
     date_modified = models.DateField(auto_now=True)
     fileext = models.CharField(max_length=10, default='')
     filetype = models.CharField(max_length=20, choices=FILE_TYPE)
+    finalized = models.BooleanField(default=False)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title
+
+USER_ROLE = [
+    ('user','user'),
+    ('moderator','moderator'),
+    ('admin','admin')
+]
+
+class User(models.Model):
+    id = models.AutoField(primary_key=True, editable=False)
+    falcon_id = models.IntegerField(default=0)
+    username = models.CharField(max_length=100, default='')
+    email = models.CharField(max_length=100, default='')
+    profile_image = models.ImageField(height_field=41, width_field=41)
+    departmennt = models.ForeignKey(Department, on_delete=models.CASCADE)
+    role = models.CharField(max_length=20, choices=USER_ROLE)
+
+    def __str__(self):
+        return self.username
+
 
 REQUEST_STATUS = [
     (1,1),
@@ -55,8 +75,8 @@ REQUEST_STATUS = [
 
 class Request(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
-    user_id = models.IntegerField()
-    filetype = models.CharField(max_length=4)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    filetype = models.CharField(max_length=4, choices=FILE_TYPE)
     status = models.IntegerField(choices=REQUEST_STATUS)
     title = models.CharField(max_length=100)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
