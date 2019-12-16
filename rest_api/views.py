@@ -101,12 +101,16 @@ class FileViewSet(APIView):
         queryset = File.objects.all()
         course = self.request.query_params.get('course')
         filetype = self.request.query_params.get('filetype')
-        if course != None and filetype == 'null':
-            queryset = File.objects.filter(course = course)
+        if course != None and filetype == 'null' :
+            queryset = File.objects.filter(course = course).filter(finalized = True)
+            serializer = FileSerializer(queryset, many=True)
+            return Response(serializer.data)
+        elif course != None and filetype == 'all' :
+            queryset = File.objects.filter(course = course).filter(finalized = True)
             serializer = FileSerializer(queryset, many=True)
             return Response(serializer.data)
         elif course != None and filetype != None:
-            queryset = File.objects.filter(course = course).filter(filetype = filetype)
+            queryset = File.objects.filter(course = course).filter(filetype = filetype).filter(finalized = True)
             serializer = FileSerializer(queryset, many=True)
             return Response(serializer.data)
         else:
@@ -118,7 +122,7 @@ class FileViewSet(APIView):
         course = Course.objects.get(code = data['code'])
         query = File.objects.filter(title = data['title'])
         if not query:
-            file = File(title = get_title(data['title']), driveid = data['driveid'], downloads = 0, size = get_size(int(data['size'])), course = course, fileext = get_fileext(data['title']),  filetype = data['filetype'])
+            file = File(title = get_title(data['title']), driveid = data['driveid'], downloads = 0, size = get_size(int(data['size'])), course = course, fileext = get_fileext(data['title']),  filetype = data['filetype'], finalized = data['finalized'])
             file.save()
             return Response(file.save(), status = status.HTTP_201_CREATED)
         else:
@@ -135,6 +139,22 @@ class FileViewSet(APIView):
     #     response = HttpResponse(FilePointer,content_type='application/msword')
     #     response['Content-Disposition'] = 'attachment; filename=NameOfFile'
     #     return response
+
+    @classmethod
+    def get_extra_actions(cls):
+        return []
+
+class UserViewSet(APIView):
+    def get(self, request):
+        return Response("")
+
+    @classmethod
+    def get_extra_actions(cls):
+        return []
+
+class RequestViewSet(APIView):
+    def get(self, request):
+        return Response("")
 
     @classmethod
     def get_extra_actions(cls):
