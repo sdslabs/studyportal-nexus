@@ -10,6 +10,7 @@ router.register(r'courses', views.CourseViewSet, base_name='courses')
 router.register(r'files', views.FileViewSet, base_name='files')
 router.register(r'users', views.UserViewSet, base_name='users')
 router.register(r'requests', views.RequestViewSet, base_name='requests')
+router.register(r'uploads', views.UploadViewSet, base_name='uploads')
 
 urlpatterns = [
     path('test', views.sample, name='sample'),
@@ -19,5 +20,6 @@ urlpatterns = [
     url(r'^courses', views.CourseViewSet.as_view()),
     url(r'^files', views.FileViewSet.as_view()),
     url(r'^users', views.UserViewSet.as_view()),
-    url(r'^requests', views.RequestViewSet.as_view())
+    url(r'^requests', views.RequestViewSet.as_view()),
+    url(r'^uploads', views.UploadViewSet.as_view())
 ]

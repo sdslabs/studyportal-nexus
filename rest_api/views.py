@@ -159,4 +159,13 @@ class RequestViewSet(APIView):
     @classmethod
     def get_extra_actions(cls):
         return []
-        
+
+class UploadViewSet(APIView):
+    def post(self, request):
+        files = request.data
+        print(files)
+        return Response("")
+
+    @classmethod
+    def get_extra_actions(cls):
+        return []

@@ -20,10 +20,10 @@ class Course(models.Model):
         return self.title
 
 FILE_TYPE = [
-    ('tutorials','Tutorial'),
-    ('books','Books'),
-    ('notes','Notes'),
-    ('exampapers','Examination Papers')
+    ('Tutorial','tutorials'),
+    ('Book','books'),
+    ('Notes','notes'),
+    ('Examination Papers','exampapers')
 ]
 
 def fileLocation(instance, filename):
@@ -79,6 +79,17 @@ class Request(models.Model):
     filetype = models.CharField(max_length=4, choices=FILE_TYPE)
     status = models.IntegerField(choices=REQUEST_STATUS)
     title = models.CharField(max_length=100)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.title
+
+class Upload(models.Model):
+    id = models.AutoField(primary_key=True, editable=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    driveid = models.CharField(max_length=50)
+    resolved = models.BooleanField(default=False)
+    title = models.CharField(max_length=100, default='')
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
 
     def __str__(self):
