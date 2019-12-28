@@ -1,9 +1,9 @@
 from django.http import HttpResponse
-from rest_api.models import Department, Course, File
+from rest_api.models import Department, Course, File, User, Request
 from rest_framework  import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_api.serializers import DepartmentSerializer, CourseSerializer, FileSerializer
+from rest_api.serializers import DepartmentSerializer, CourseSerializer, FileSerializer, UserSerializer, RequestSerializer
 
 def sample(request):
     return HttpResponse("Test endpoint")
@@ -146,7 +146,9 @@ class FileViewSet(APIView):
 
 class UserViewSet(APIView):
     def get(self, request):
-        return Response("")
+        users = User.objects.filter()
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data)
 
     @classmethod
     def get_extra_actions(cls):
@@ -154,7 +156,22 @@ class UserViewSet(APIView):
 
 class RequestViewSet(APIView):
     def get(self, request):
-        return Response("")
+        requests = Request.objects.filter()
+        serializer = RequestSerializer(requests, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        data = request.data
+        print(data)
+        user = User.objects.get(id = data['user'])
+        course = Course.objects.get(id = data['course'])
+        query = Request.objects.filter(title = data['title'])
+        if not query:
+            request = Request(user = user, filetype = data['filetype'], status = data['status'], title = data['title'], course = course)
+            request.save()
+            return Response(request.save(), status = status.HTTP_201_CREATED)
+        else:
+            return Response("Request already exists")
 
     @classmethod
     def get_extra_actions(cls):

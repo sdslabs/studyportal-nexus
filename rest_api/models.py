@@ -59,8 +59,9 @@ class User(models.Model):
     falcon_id = models.IntegerField(default=0)
     username = models.CharField(max_length=100, default='')
     email = models.CharField(max_length=100, default='')
-    profile_image = models.ImageField(height_field=41, width_field=41)
-    departmennt = models.ForeignKey(Department, on_delete=models.CASCADE)
+    profile_image = models.ImageField(height_field=41, width_field=41, blank=True)
+    department = models.ForeignKey(Department, on_delete=models.CASCADE)
+    # courses = ArrayField(Course)
     role = models.CharField(max_length=20, choices=USER_ROLE)
 
     def __str__(self):
@@ -76,7 +77,7 @@ REQUEST_STATUS = [
 class Request(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    filetype = models.CharField(max_length=4, choices=FILE_TYPE)
+    filetype = models.CharField(max_length=20, choices=FILE_TYPE)
     status = models.IntegerField(choices=REQUEST_STATUS)
     title = models.CharField(max_length=100)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
