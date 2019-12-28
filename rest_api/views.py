@@ -133,22 +133,21 @@ class FileViewSet(APIView):
         file = File.objects.get(id = request.data.get('file')).delete()
         return Response(file)
 
-    # def download(self, *args, **kwargs):
-    #     file_path = file_url
-    #     FilePointer = open(file_path,"r")
-    #     response = HttpResponse(FilePointer,content_type='application/msword')
-    #     response['Content-Disposition'] = 'attachment; filename=NameOfFile'
-    #     return response
-
     @classmethod
     def get_extra_actions(cls):
         return []
 
 class UserViewSet(APIView):
     def get(self, request):
-        users = User.objects.filter()
-        serializer = UserSerializer(users, many=True)
-        return Response(serializer.data)
+        queryset = User.objects.filter()
+        user = self.request.query_params.get('user')
+        if user is not None:
+            queryset = User.objects.filter(falcon_id = user)
+            serializer = UserSerializer(queryset, many=True)
+            return Response(serializer.data)
+        else:
+            serializer = UserSerializer(queryset, many=True)
+            return Response(serializer.data)
 
     @classmethod
     def get_extra_actions(cls):
@@ -156,13 +155,18 @@ class UserViewSet(APIView):
 
 class RequestViewSet(APIView):
     def get(self, request):
-        requests = Request.objects.filter()
-        serializer = RequestSerializer(requests, many=True)
-        return Response(serializer.data)
+        queryset = Request.objects.filter()
+        user = self.request.query_params.get('user')
+        if user is not None:
+            queryset = Request.objects.filter(user = user)
+            serializer = RequestSerializer(queryset, many=True)
+            return Response(serializer.data)
+        else:
+            serializer = RequestSerializer(queryset, many=True)
+            return Response(serializer.data)
 
     def post(self, request):
         data = request.data
-        print(data)
         user = User.objects.get(id = data['user'])
         course = Course.objects.get(id = data['course'])
         query = Request.objects.filter(title = data['title'])
@@ -172,6 +176,17 @@ class RequestViewSet(APIView):
             return Response(request.save(), status = status.HTTP_201_CREATED)
         else:
             return Response("Request already exists")
+
+    def put(self, request):
+        data = request.data
+        query = Request.objects.filter(id = data['request']).update(status = data['status'])
+        return Response(query, status = status.HTTP_200_OK)
+        
+
+
+    def delete(self, request):
+        requests = Request.objects.get(id = request.data.get('request')).delete()
+        return Response(requests)
 
     @classmethod
     def get_extra_actions(cls):
