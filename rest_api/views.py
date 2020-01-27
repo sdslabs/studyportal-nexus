@@ -7,6 +7,7 @@ from rest_api.serializers import DepartmentSerializer, CourseSerializer, FileSer
 from rest_api.config import config
 from rest_api import client
 import requests
+import base64
 import os
 
 def sample(request):
@@ -188,8 +189,6 @@ class RequestViewSet(APIView):
         data = request.data
         query = Request.objects.filter(id = data['request']).update(status = data['status'])
         return Response(query, status = status.HTTP_200_OK)
-        
-
 
     def delete(self, request):
         requests = Request.objects.get(id = request.data.get('request')).delete()
@@ -210,11 +209,18 @@ class UploadViewSet(APIView):
 
     def post(self, request):
         files = request.data['files']
-        file = open("a.pdf","w")
-        file.write(files)
-        os.remove("a.pdf")
-        return Response(files, status = status.HTTP_200_OK)
+        # File manipulation starts here
+        type = files.split(",")[0]
+        ext = type.split("/")[1].split(";")[0]
+        base64String = files.split(",")[1]
+        temp = open("temp."+ext,"wb")
+        temp.write(base64.b64decode(base64String))
+        print(type)
+        os.remove("temp."+ext)
+        # end of loop
+        return Response(ext, status = status.HTTP_200_OK)
 
     @classmethod
     def get_extra_actions(cls):
         return []
+# 
