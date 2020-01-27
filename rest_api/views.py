@@ -1,9 +1,13 @@
 from django.http import HttpResponse
-from rest_api.models import Department, Course, File, User, Request
+from rest_api.models import Department, Course, File, User, Request, Upload
 from rest_framework  import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_api.serializers import DepartmentSerializer, CourseSerializer, FileSerializer, UserSerializer, RequestSerializer
+from rest_api.serializers import DepartmentSerializer, CourseSerializer, FileSerializer, UserSerializer, RequestSerializer, UploadSerializer
+from rest_api.config import config
+from rest_api import client
+import requests
+import os
 
 def sample(request):
     return HttpResponse("Test endpoint")
@@ -46,15 +50,10 @@ class CourseViewSet(APIView):
         course = self.request.query_params.get('course')
         if department != None and course == 'null':
             queryset = Course.objects.filter(department = department)
-            serializer = CourseSerializer(queryset, many=True)
-            return Response(serializer.data)
         elif department != None and course != None:
             queryset = Course.objects.filter(department = department).filter(code = course)
-            serializer = CourseSerializer(queryset, many=True)
-            return Response(serializer.data)
-        else:
-            serializer = CourseSerializer(queryset, many=True)
-            return Response(serializer.data)
+        serializer = CourseSerializer(queryset, many=True)
+        return Response(serializer.data)
 
     def post(self, request):
         data = request.data.copy()
@@ -103,19 +102,12 @@ class FileViewSet(APIView):
         filetype = self.request.query_params.get('filetype')
         if course != None and filetype == 'null' :
             queryset = File.objects.filter(course = course).filter(finalized = True)
-            serializer = FileSerializer(queryset, many=True)
-            return Response(serializer.data)
         elif course != None and filetype == 'all' :
             queryset = File.objects.filter(course = course).filter(finalized = True)
-            serializer = FileSerializer(queryset, many=True)
-            return Response(serializer.data)
         elif course != None and filetype != None:
             queryset = File.objects.filter(course = course).filter(filetype = filetype).filter(finalized = True)
-            serializer = FileSerializer(queryset, many=True)
-            return Response(serializer.data)
-        else:
-            serializer = FileSerializer(queryset, many=True)
-            return Response(serializer.data)
+        serializer = FileSerializer(queryset, many=True)
+        return Response(serializer.data)
 
     def post(self, request):
         data = request.data.copy()
@@ -139,15 +131,33 @@ class FileViewSet(APIView):
 
 class UserViewSet(APIView):
     def get(self, request):
-        queryset = User.objects.filter()
-        user = self.request.query_params.get('user')
+        queryset = None
+        user = client.get_logged_in_user(config)
         if user is not None:
-            queryset = User.objects.filter(falcon_id = user)
+            queryset = User.objects.filter(falcon_id = user['id'])
             serializer = UserSerializer(queryset, many=True)
-            return Response(serializer.data)
+            if serializer.data == []:
+                data = {
+                    'falcon_id':user['id'],
+                    'username':user['username'],
+                    'email':user['email'],
+                    'profile_image':user['image_url'],
+                    'role':'user'
+                }
+                requests.post('/users',data=data)
+        queryset = User.objects.filter(falcon_id = user['id'])
+        serializer = UserSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        data = request.data
+        query = User.objects.filter(falcon_id = data['falcon_id'])
+        if not query:
+            user = User(falcon_id = data['falcon_id'], username = data['username'], email = data['email'], profile_image = data['profile_image'], role = data['role'])
+            user.save()
+            return Response(user.save(), status = status.HTTP_201_CREATED)
         else:
-            serializer = UserSerializer(queryset, many=True)
-            return Response(serializer.data)
+            return Response("User already exists")
 
     @classmethod
     def get_extra_actions(cls):
@@ -159,11 +169,8 @@ class RequestViewSet(APIView):
         user = self.request.query_params.get('user')
         if user is not None:
             queryset = Request.objects.filter(user = user)
-            serializer = RequestSerializer(queryset, many=True)
-            return Response(serializer.data)
-        else:
-            serializer = RequestSerializer(queryset, many=True)
-            return Response(serializer.data)
+        serializer = RequestSerializer(queryset, many=True)
+        return Response(serializer.data)
 
     def post(self, request):
         data = request.data
@@ -193,10 +200,20 @@ class RequestViewSet(APIView):
         return []
 
 class UploadViewSet(APIView):
+    def get(self, request):
+        user = self.request.query_params.get('user')
+        queryset = Upload.objects.filter(resolved = False)
+        if user is not None:
+            queryset = Upload.objects.filter(user = user, resolved = False)
+        serializer = UploadSerializer(queryset, many=True)
+        return Response(serializer.data)
+
     def post(self, request):
-        files = request.data
-        print(files)
-        return Response("")
+        files = request.data['files']
+        file = open("a.pdf","w")
+        file.write(files)
+        os.remove("a.pdf")
+        return Response(files, status = status.HTTP_200_OK)
 
     @classmethod
     def get_extra_actions(cls):

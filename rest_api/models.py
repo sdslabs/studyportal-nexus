@@ -59,7 +59,7 @@ class User(models.Model):
     falcon_id = models.IntegerField(default=0)
     username = models.CharField(max_length=100, default='')
     email = models.CharField(max_length=100, default='')
-    profile_image = models.ImageField(height_field=41, width_field=41, blank=True)
+    profile_image = models.URLField(max_length=500)
     department = models.ForeignKey(Department, on_delete=models.CASCADE)
     # courses = ArrayField(Course)
     role = models.CharField(max_length=20, choices=USER_ROLE)
