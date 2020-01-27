@@ -4,6 +4,8 @@ from rest_framework  import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_api.serializers import DepartmentSerializer, CourseSerializer, FileSerializer, UserSerializer, RequestSerializer, UploadSerializer
+from apiclient.http import MediaFileUpload
+from rest_api.drive import driveinit
 from rest_api.config import config
 from rest_api import client
 import requests
@@ -198,6 +200,12 @@ class RequestViewSet(APIView):
     def get_extra_actions(cls):
         return []
 
+def uploadToDrive(service, folder_id, file_details):
+    file_metadata = {'name': file_details['name']}
+    media = MediaFileUpload(file_details['location'],mimetype=file_details['mime_type'])
+    file = service.files().create(body=file_metadata,media_body=media,fields='id').execute()
+    return file.get('id')
+
 class UploadViewSet(APIView):
     def get(self, request):
         user = self.request.query_params.get('user')
@@ -209,16 +217,27 @@ class UploadViewSet(APIView):
 
     def post(self, request):
         files = request.data['files']
+        name = request.data['name']
         # File manipulation starts here
         type = files.split(",")[0]
+        mime_type = type.split(":")[1].split(";")[0]
         ext = type.split("/")[1].split(";")[0]
         base64String = files.split(",")[1]
         temp = open("temp."+ext,"wb")
         temp.write(base64.b64decode(base64String))
-        print(type)
+        file_details = {
+            'name':name,
+            'mime_type':mime_type,
+            'location':"temp."+ext
+        }
+        driveid = uploadToDrive(driveinit(),'1Zd-uN6muFv8jvjUSM7faanEL0Zv6BTwZ',file_details) # Get folder id from config
         os.remove("temp."+ext)
-        # end of loop
-        return Response(ext, status = status.HTTP_200_OK)
+        # end of manipulation
+        user = User.objects.filter(id = request.data['user'])
+        course = Course.objects.filter(id = request.data['course'])
+        upload = Upload(user = user, driveid = driveid, resolved = False, title = name, course = course)
+        upload.save()
+        return Response(upload.save(), status = status.HTTP_200_OK)
 
     @classmethod
     def get_extra_actions(cls):

@@ -3,3 +3,5 @@
 studyportal/config/postgresql.yml
 **/__pycache__
 /files/*
+credentials.json
+token.pickle
