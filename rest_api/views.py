@@ -216,13 +216,13 @@ class UploadViewSet(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        files = request.data['files']
+        file = request.data['file']
         name = request.data['name']
         # File manipulation starts here
-        type = files.split(",")[0]
+        type = file.split(",")[0]
         mime_type = type.split(":")[1].split(";")[0]
         ext = type.split("/")[1].split(";")[0]
-        base64String = files.split(",")[1]
+        base64String = file.split(",")[1]
         temp = open("temp."+ext,"wb")
         temp.write(base64.b64decode(base64String))
         file_details = {
@@ -235,11 +235,11 @@ class UploadViewSet(APIView):
         # end of manipulation
         user = User.objects.filter(id = request.data['user'])
         course = Course.objects.filter(id = request.data['course'])
-        upload = Upload(user = user, driveid = driveid, resolved = False, title = name, course = course)
+        upload = Upload(user = user, driveid = driveid, resolved = False, title = name, filetype = request.data['filetype'], course = course)
         upload.save()
         return Response(upload.save(), status = status.HTTP_200_OK)
 
     @classmethod
     def get_extra_actions(cls):
         return []
-# 
+        
