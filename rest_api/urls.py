@@ -1,7 +1,6 @@
 from django.urls import path, include
 from rest_framework import routers
 from django.conf.urls import url
-
 from rest_api import views
 
 router = routers.DefaultRouter()
@@ -21,5 +20,5 @@ urlpatterns = [
     url(r'^files', views.FileViewSet.as_view()),
     url(r'^users', views.UserViewSet.as_view()),
     url(r'^requests', views.RequestViewSet.as_view()),
-    url(r'^uploads', views.UploadViewSet.as_view())
+    url(r'^uploads', views.UploadViewSet.as_view()),
 ]

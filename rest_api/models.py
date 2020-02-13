@@ -60,8 +60,7 @@ class User(models.Model):
     username = models.CharField(max_length=100, default='')
     email = models.CharField(max_length=100, default='')
     profile_image = models.URLField(max_length=500)
-    department = models.ForeignKey(Department, on_delete=models.CASCADE)
-    # courses = ArrayField(Course)
+    courses = ArrayField(models.IntegerField(), blank=True, default=list)
     role = models.CharField(max_length=20, choices=USER_ROLE)
 
     def __str__(self):

@@ -4,13 +4,17 @@ from rest_framework  import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_api.serializers import DepartmentSerializer, CourseSerializer, FileSerializer, UserSerializer, RequestSerializer, UploadSerializer
+from studyportal.settings import SECRET_KEY
 from apiclient.http import MediaFileUpload
 from rest_api.drive import driveinit
 from rest_api.config import config
 from rest_api import client
 import requests
 import base64
+import jwt
 import os
+
+NEXUS_URL = "http://nexus.sdslabs.local/api/v1"
 
 def sample(request):
     return HttpResponse("Test endpoint")
@@ -135,22 +139,33 @@ class FileViewSet(APIView):
 class UserViewSet(APIView):
     def get(self, request):
         queryset = None
-        user = client.get_logged_in_user(config)
-        if user is not None:
+        token = request.headers['Authorization'].split(' ')[1]
+        if token == 'None':
+            # user = client.get_logged_in_user(config,{'sdslabs': ''})
+            user = client.get_user_by_username('darkrider',config)
+            if user is not None:
+                queryset = User.objects.filter(falcon_id = user['id'])
+                serializer = UserSerializer(queryset, many=True)
+                if serializer.data == []:
+                    data = {
+                        'falcon_id':user['id'],
+                        'username':user['username'],
+                        'email':user['email'],
+                        'profile_image':user['image_url'],
+                        'role':'user'
+                    }
+                    requests.post(NEXUS_URL+'/users',data=data)
             queryset = User.objects.filter(falcon_id = user['id'])
             serializer = UserSerializer(queryset, many=True)
-            if serializer.data == []:
-                data = {
-                    'falcon_id':user['id'],
-                    'username':user['username'],
-                    'email':user['email'],
-                    'profile_image':user['image_url'],
-                    'role':'user'
-                }
-                requests.post('/users',data=data)
-        queryset = User.objects.filter(falcon_id = user['id'])
-        serializer = UserSerializer(queryset, many=True)
-        return Response(serializer.data)
+            user = serializer.data[0]
+            encoded_jwt = jwt.encode({'username':user['username'], 'email':user['email']},SECRET_KEY,algorithm='HS256')
+            return Response({'token':encoded_jwt,'user':user}, status = status.HTTP_200_OK)
+        else:
+            decoded_jwt = jwt.decode(token,SECRET_KEY,algorithms=['HS256'])
+            queryset = User.objects.filter(username = decoded_jwt['username'])
+            serializer = UserSerializer(queryset, many=True)
+            user = serializer.data[0]
+            return Response(user)
 
     def post(self, request):
         data = request.data

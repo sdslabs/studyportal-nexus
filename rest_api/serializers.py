@@ -26,10 +26,9 @@ class FileSerializer(serializers.ModelSerializer):
         fields = ('id', 'title', 'driveid', 'downloads', 'size', 'date_modified', 'fileext', 'filetype', 'course')
 
 class UserSerializer(serializers.ModelSerializer):
-    department = DepartmentSerializer(Department.objects.all())
     class Meta:
         model = User
-        fields = ('id', 'falcon_id', 'username', 'email', 'profile_image', 'department', 'role')
+        fields = ('id', 'falcon_id', 'username', 'email', 'profile_image', 'courses', 'role')
 
 class RequestSerializer(serializers.ModelSerializer):
     user = UserSerializer(User.objects.all())
