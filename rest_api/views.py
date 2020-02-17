@@ -159,13 +159,20 @@ class UserViewSet(APIView):
             serializer = UserSerializer(queryset, many=True)
             user = serializer.data[0]
             encoded_jwt = jwt.encode({'username':user['username'], 'email':user['email']},SECRET_KEY,algorithm='HS256')
-            return Response({'token':encoded_jwt,'user':user}, status = status.HTTP_200_OK)
+            return Response({'token':encoded_jwt,'user':user, 'courses':''}, status = status.HTTP_200_OK)
         else:
             decoded_jwt = jwt.decode(token,SECRET_KEY,algorithms=['HS256'])
             queryset = User.objects.filter(username = decoded_jwt['username'])
             serializer = UserSerializer(queryset, many=True)
             user = serializer.data[0]
-            return Response(user)
+            courselist = user['courses']
+            courses = []
+            for course in courselist:
+                course_object = Course.objects.filter(id = course)
+                if course_object:
+                    coursedata = CourseSerializer(course_object,many=True).data
+                    courses.append(coursedata)
+            return Response({'user':user,'courses':courses})
 
     def post(self, request):
         data = request.data
@@ -176,6 +183,18 @@ class UserViewSet(APIView):
             return Response(user.save(), status = status.HTTP_201_CREATED)
         else:
             return Response("User already exists")
+
+    def put(self,request):
+        data = request.data
+        new_course = data['course']
+        query = User.objects.get(id = data['user'])
+        user = UserSerializer(query).data
+        if int(new_course) not in user['courses']:
+            query.courses.append(new_course)
+            query.save()
+            return Response('Course Added Successfully')
+        else:
+            return Response('Course already added')
 
     @classmethod
     def get_extra_actions(cls):
@@ -220,6 +239,7 @@ def uploadToDrive(service, folder_id, file_details):
     media = MediaFileUpload(file_details['location'],mimetype=file_details['mime_type'])
     file = service.files().create(body=file_metadata,media_body=media,fields='id').execute()
     return file.get('id')
+
 
 class UploadViewSet(APIView):
     def get(self, request):
