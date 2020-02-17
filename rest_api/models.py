@@ -79,6 +79,7 @@ class Request(models.Model):
     filetype = models.CharField(max_length=20, choices=FILE_TYPE)
     status = models.IntegerField(choices=REQUEST_STATUS)
     title = models.CharField(max_length=100)
+    date = models.DateField(auto_now_add=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
 
     def __str__(self):

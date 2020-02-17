@@ -35,7 +35,7 @@ class RequestSerializer(serializers.ModelSerializer):
     course = CourseSerializer(Course.objects.all())
     class Meta:
         model = Request
-        fields = ('id', 'user', 'filetype', 'status', 'title', 'course')
+        fields = ('id', 'user', 'filetype', 'status', 'title', 'date', 'course')
 
 class UploadSerializer(serializers.ModelSerializer):
     user = UserSerializer(User.objects.all())

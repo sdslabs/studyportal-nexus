@@ -170,7 +170,7 @@ class UserViewSet(APIView):
             for course in courselist:
                 course_object = Course.objects.filter(id = course)
                 if course_object:
-                    coursedata = CourseSerializer(course_object,many=True).data
+                    coursedata = CourseSerializer(course_object,many=True).data[0]
                     courses.append(coursedata)
             return Response({'user':user,'courses':courses})
 
@@ -187,7 +187,9 @@ class UserViewSet(APIView):
     def put(self,request):
         data = request.data
         new_course = data['course']
-        query = User.objects.get(id = data['user'])
+        token = request.headers['Authorization'].split(' ')[1]
+        decoded_jwt = jwt.decode(token,SECRET_KEY,algorithms=['HS256'])
+        query = User.objects.get(username = decoded_jwt['username'])
         user = UserSerializer(query).data
         if int(new_course) not in user['courses']:
             query.courses.append(new_course)
