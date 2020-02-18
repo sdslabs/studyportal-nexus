@@ -210,6 +210,11 @@ class RequestViewSet(APIView):
         user = self.request.query_params.get('user')
         if user is not None:
             queryset = Request.objects.filter(user = user)
+        else:
+            token = request.headers['Authorization'].split(' ')[1]
+            if token != 'None':
+                user = getUserFromJWT(token)
+                queryset = Request.objects.filter(user = user['id'])
         serializer = RequestSerializer(queryset, many=True)
         return Response(serializer.data)
 
