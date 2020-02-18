@@ -19,6 +19,11 @@ NEXUS_URL = "http://nexus.sdslabs.local/api/v1"
 def sample(request):
     return HttpResponse("Test endpoint")
 
+def getUserFromJWT(token):
+    decoded_jwt = jwt.decode(token,SECRET_KEY,algorithms=['HS256'])
+    user = User.objects.get(username = decoded_jwt['username'])
+    return UserSerializer(user).data
+
 class DepartmentViewSet(APIView):
     def get(self,request):
         queryset = Department.objects.all()
@@ -161,10 +166,7 @@ class UserViewSet(APIView):
             encoded_jwt = jwt.encode({'username':user['username'], 'email':user['email']},SECRET_KEY,algorithm='HS256')
             return Response({'token':encoded_jwt,'user':user, 'courses':''}, status = status.HTTP_200_OK)
         else:
-            decoded_jwt = jwt.decode(token,SECRET_KEY,algorithms=['HS256'])
-            queryset = User.objects.filter(username = decoded_jwt['username'])
-            serializer = UserSerializer(queryset, many=True)
-            user = serializer.data[0]
+            user = getUserFromJWT(token)
             courselist = user['courses']
             courses = []
             for course in courselist:
@@ -213,7 +215,9 @@ class RequestViewSet(APIView):
 
     def post(self, request):
         data = request.data
-        user = User.objects.get(id = data['user'])
+        token = request.headers['Authorization'].split(' ')[1]
+        decoded_jwt = jwt.decode(token,SECRET_KEY,algorithms=['HS256'])
+        user = User.objects.get(username = decoded_jwt['username'])
         course = Course.objects.get(id = data['course'])
         query = Request.objects.filter(title = data['title'])
         if not query:
@@ -242,13 +246,17 @@ def uploadToDrive(service, folder_id, file_details):
     file = service.files().create(body=file_metadata,media_body=media,fields='id').execute()
     return file.get('id')
 
-
 class UploadViewSet(APIView):
     def get(self, request):
         user = self.request.query_params.get('user')
         queryset = Upload.objects.filter(resolved = False)
         if user is not None:
             queryset = Upload.objects.filter(user = user, resolved = False)
+        else:
+            token = request.headers['Authorization'].split(' ')[1]
+            if token != 'None':
+                user = getUserFromJWT(token)
+                queryset = Upload.objects.filter(user = user['id'])
         serializer = UploadSerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -270,8 +278,10 @@ class UploadViewSet(APIView):
         driveid = uploadToDrive(driveinit(),'1Zd-uN6muFv8jvjUSM7faanEL0Zv6BTwZ',file_details) # Get folder id from config
         os.remove("temp."+ext)
         # end of manipulation
-        user = User.objects.filter(id = request.data['user'])
-        course = Course.objects.filter(id = request.data['course'])
+        token = request.headers['Authorization'].split(' ')[1]
+        username = getUserFromJWT(token)['username']
+        user = User.objects.get(username = username)
+        course = Course.objects.get(id = request.data['course'])
         upload = Upload(user = user, driveid = driveid, resolved = False, title = name, filetype = request.data['filetype'], course = course)
         upload.save()
         return Response(upload.save(), status = status.HTTP_200_OK)
