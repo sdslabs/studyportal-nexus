@@ -1,9 +1,9 @@
 from django.http import HttpResponse
-from rest_api.models import Department, Course, File, User, Request, Upload
+from rest_api.models import Department, Course, File, User, FileRequest, CourseRequest, Upload
 from rest_framework  import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_api.serializers import DepartmentSerializer, CourseSerializer, FileSerializer, UserSerializer, RequestSerializer, UploadSerializer
+from rest_api.serializers import DepartmentSerializer, CourseSerializer, FileSerializer, UserSerializer, FileRequestSerializer, CourseRequestSerializer, UploadSerializer
 from studyportal.settings import SECRET_KEY
 from apiclient.http import MediaFileUpload
 from rest_api.drive import driveinit
@@ -204,18 +204,18 @@ class UserViewSet(APIView):
     def get_extra_actions(cls):
         return []
 
-class RequestViewSet(APIView):
+class FileRequestViewSet(APIView):
     def get(self, request):
-        queryset = Request.objects.filter()
+        queryset = FileRequest.objects.filter()
         user = self.request.query_params.get('user')
         if user is not None:
-            queryset = Request.objects.filter(user = user)
+            queryset = FileRequest.objects.filter(user = user)
         else:
             token = request.headers['Authorization'].split(' ')[1]
             if token != 'None':
                 user = getUserFromJWT(token)
-                queryset = Request.objects.filter(user = user['id'])
-        serializer = RequestSerializer(queryset, many=True)
+                queryset = FileRequest.objects.filter(user = user['id'])
+        serializer = FileRequestSerializer(queryset, many=True)
         return Response(serializer.data)
 
     def post(self, request):
@@ -224,9 +224,9 @@ class RequestViewSet(APIView):
         decoded_jwt = jwt.decode(token,SECRET_KEY,algorithms=['HS256'])
         user = User.objects.get(username = decoded_jwt['username'])
         course = Course.objects.get(id = data['course'])
-        query = Request.objects.filter(title = data['title'])
+        query = FileRequest.objects.filter(title = data['title'])
         if not query:
-            request = Request(user = user, filetype = data['filetype'], status = data['status'], title = data['title'], course = course)
+            request = FileRequest(user = user, filetype = data['filetype'], status = data['status'], title = data['title'], course = course)
             request.save()
             return Response(request.save(), status = status.HTTP_201_CREATED)
         else:
@@ -234,11 +234,50 @@ class RequestViewSet(APIView):
 
     def put(self, request):
         data = request.data
-        query = Request.objects.filter(id = data['request']).update(status = data['status'])
+        query = FileRequest.objects.filter(id = data['request']).update(status = data['status'])
         return Response(query, status = status.HTTP_200_OK)
 
     def delete(self, request):
-        requests = Request.objects.get(id = request.data.get('request')).delete()
+        requests = FileRequest.objects.get(id = request.data.get('request')).delete()
+        return Response(requests)
+
+    @classmethod
+    def get_extra_actions(cls):
+        return []
+
+class CourseRequestViewSet(APIView):
+    def get(self, request):
+        queryset = CourseRequest.objects.filter()
+        user = self.request.query_params.get('user')
+        if user is not None:
+            queryset = CourseRequest.objects.filter(user = user)
+        else:
+            token = request.headers['Authorization'].split(' ')[1]
+            if token != 'None':
+                user = getUserFromJWT(token)
+                queryset = CourseRequest.objects.filter(user = user['id'])
+        serializer = CourseRequestSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        data = request.data
+        token = request.headers['Authorization'].split(' ')[1]
+        decoded_jwt = jwt.decode(token,SECRET_KEY,algorithms=['HS256'])
+        user = User.objects.get(username = decoded_jwt['username'])
+        if not query:
+            request = FileRequest(user = user, department = data['department'], course = data['course'], code = data['code'])
+            request.save()
+            return Response(request.save(), status = status.HTTP_201_CREATED)
+        else:
+            return Response("Request already exists")
+
+    def put(self, request):
+        data = request.data
+        query = CourseRequest.objects.filter(id = data['request']).update(status = data['status'])
+        return Response(query, status = status.HTTP_200_OK)
+
+    def delete(self, request):
+        requests = CourseRequest.objects.get(id = request.data.get('request')).delete()
         return Response(requests)
 
     @classmethod

@@ -1,4 +1,4 @@
-from rest_api.models import Department, Course, File, User, Request, Upload
+from rest_api.models import Department, Course, File, User, FileRequest, CourseRequest, Upload
 from rest_framework import serializers
 
 class DepartmentSerializer(serializers.ModelSerializer):
@@ -30,12 +30,18 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('id', 'falcon_id', 'username', 'email', 'profile_image', 'courses', 'role')
 
-class RequestSerializer(serializers.ModelSerializer):
+class FileRequestSerializer(serializers.ModelSerializer):
     user = UserSerializer(User.objects.all())
     course = CourseSerializer(Course.objects.all())
     class Meta:
-        model = Request
+        model = FileRequest
         fields = ('id', 'user', 'filetype', 'status', 'title', 'date', 'course')
+
+class CourseRequestSerializer(serializers.ModelSerializer):
+    user = UserSerializer(User.objects.all())
+    class Meta:
+        model = CourseRequest
+        fields = ('id', 'user', 'status', 'department', 'course', 'code')
 
 class UploadSerializer(serializers.ModelSerializer):
     user = UserSerializer(User.objects.all())
