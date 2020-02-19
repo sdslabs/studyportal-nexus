@@ -337,7 +337,7 @@ class UploadViewSet(APIView):
         username = getUserFromJWT(token)['username']
         user = User.objects.get(username = username)
         course = Course.objects.get(id = request.data['course'])
-        upload = Upload(user = user, driveid = driveid, resolved = False, title = name, filetype = request.data['filetype'], course = course)
+        upload = Upload(user = user, driveid = driveid, resolved = False, status = request.data['status'], title = name, filetype = request.data['filetype'], course = course)
         upload.save()
         return Response(UploadSerializer(upload).data, status = status.HTTP_200_OK)
 
