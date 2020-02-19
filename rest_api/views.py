@@ -10,6 +10,7 @@ from rest_api.drive import driveinit
 from rest_api.config import config
 from rest_api import client
 import requests
+import random
 import base64
 import jwt
 import os
@@ -131,7 +132,6 @@ class FileViewSet(APIView):
             return Response(file.save(), status = status.HTTP_201_CREATED)
         else:
             return Response("File already exists")
-        return Response('')
 
     def delete(self, request):
         file = File.objects.get(id = request.data.get('file')).delete()
@@ -193,12 +193,21 @@ class UserViewSet(APIView):
         decoded_jwt = jwt.decode(token,SECRET_KEY,algorithms=['HS256'])
         query = User.objects.get(username = decoded_jwt['username'])
         user = UserSerializer(query).data
-        if int(new_course) not in user['courses']:
-            query.courses.append(new_course)
-            query.save()
-            return Response('Course Added Successfully')
+        if data['action'] == 'add':
+            if int(new_course) not in user['courses']:
+                query.courses.append(new_course)
+                query.save()
+                return Response('Course added successfully')
+            else:
+                return Response('Course already added')
         else:
-            return Response('Course already added')
+            if int(new_course) in user['courses']:
+                print(int(new_course) in user['courses'])
+                query.courses.remove(int(new_course))
+                query.save()
+                return Response('Course removed successfully')
+            else:
+                return Response('Course does not exist')
 
     @classmethod
     def get_extra_actions(cls):
@@ -228,7 +237,7 @@ class FileRequestViewSet(APIView):
         if not query:
             request = FileRequest(user = user, filetype = data['filetype'], status = data['status'], title = data['title'], course = course)
             request.save()
-            return Response(request.save(), status = status.HTTP_201_CREATED)
+            return Response(FileRequestSerializer(request).data, status = status.HTTP_201_CREATED)
         else:
             return Response("Request already exists")
 
@@ -264,10 +273,11 @@ class CourseRequestViewSet(APIView):
         token = request.headers['Authorization'].split(' ')[1]
         decoded_jwt = jwt.decode(token,SECRET_KEY,algorithms=['HS256'])
         user = User.objects.get(username = decoded_jwt['username'])
+        query = CourseRequest.objects.filter(department = data['department'], course = data['course'], code = data['code'])
         if not query:
-            request = FileRequest(user = user, department = data['department'], course = data['course'], code = data['code'])
+            request = CourseRequest(user = user, status = data['status'], department = data['department'], course = data['course'], code = data['code'])
             request.save()
-            return Response(request.save(), status = status.HTTP_201_CREATED)
+            return Response(CourseRequestSerializer(request).data, status = status.HTTP_201_CREATED)
         else:
             return Response("Request already exists")
 
@@ -312,15 +322,16 @@ class UploadViewSet(APIView):
         mime_type = type.split(":")[1].split(";")[0]
         ext = type.split("/")[1].split(";")[0]
         base64String = file.split(",")[1]
-        temp = open("temp."+ext,"wb")
+        rand = str(random.randint(0,100000))
+        temp = open("temp"+rand+"."+ext,"wb")
         temp.write(base64.b64decode(base64String))
         file_details = {
             'name':name,
             'mime_type':mime_type,
-            'location':"temp."+ext
+            'location':"temp"+rand+"."+ext
         }
         driveid = uploadToDrive(driveinit(),'1Zd-uN6muFv8jvjUSM7faanEL0Zv6BTwZ',file_details) # Get folder id from config
-        os.remove("temp."+ext)
+        os.remove("temp"+rand+"."+ext)
         # end of manipulation
         token = request.headers['Authorization'].split(' ')[1]
         username = getUserFromJWT(token)['username']
@@ -328,7 +339,7 @@ class UploadViewSet(APIView):
         course = Course.objects.get(id = request.data['course'])
         upload = Upload(user = user, driveid = driveid, resolved = False, title = name, filetype = request.data['filetype'], course = course)
         upload.save()
-        return Response(upload.save(), status = status.HTTP_200_OK)
+        return Response(UploadSerializer(upload).data, status = status.HTTP_200_OK)
 
     @classmethod
     def get_extra_actions(cls):
