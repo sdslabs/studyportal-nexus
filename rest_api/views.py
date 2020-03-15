@@ -30,7 +30,7 @@ class DepartmentViewSet(APIView):
         queryset = Department.objects.all()
         serializer_department = DepartmentSerializer(queryset, many=True)
         department = self.request.query_params.get('department')
-        if department != None:
+        if department is not None and department != 'undefined':
             queryset = Department.objects.get(abbreviation = department)
             serializer = DepartmentSerializer(queryset).data
             course = Course.objects.filter(department = serializer['id'])
@@ -40,7 +40,7 @@ class DepartmentViewSet(APIView):
                 "courses":serializer_course
                 })
         else:
-            return Response(serializer_department.data)
+            return Response({"department":serializer_department.data})
 
     def post(self, request):
         data = request.data
