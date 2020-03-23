@@ -5,14 +5,16 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 
+
 def driveinit():
     creds = None
-    SCOPES = ['https://www.googleapis.com/auth/drive.readonly',
-    'https://www.googleapis.com/auth/drive.file',
-    'https://www.googleapis.com/auth/drive.appdata',
-    'https://www.googleapis.com/auth/userinfo.profile',
-    'openid',
-    'https://www.googleapis.com/auth/userinfo.email']
+    SCOPES = [
+        'https://www.googleapis.com/auth/drive.readonly',
+        'https://www.googleapis.com/auth/drive.file',
+        'https://www.googleapis.com/auth/drive.appdata',
+        'https://www.googleapis.com/auth/userinfo.profile',
+        'openid',
+        'https://www.googleapis.com/auth/userinfo.email']
     if os.path.exists('token.pickle'):
         with open('token.pickle', 'rb') as token:
             creds = pickle.load(token)
@@ -31,9 +33,14 @@ def driveinit():
 
     user_service = build('oauth2', 'v2', credentials=creds)
     info = user_service.userinfo().get().execute()
-    print("Accessing drive of user {} <{}>".format(((info['name'])), info['email']))
+    print(
+        "Accessing drive of user {} <{}>".format(
+            ((info['name'])), info['email']
+        )
+    )
 
     return service
+
 
 if __name__ == '__main__':
     driveinit()

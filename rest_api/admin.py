@@ -1,6 +1,6 @@
 from django.contrib import admin
-
-from .models import Department, Course, File, User, FileRequest, CourseRequest, Upload
+from .models import Department, Course, File
+from .models import User, FileRequest, CourseRequest, Upload
 
 admin.site.register(Department)
 admin.site.register(Course)

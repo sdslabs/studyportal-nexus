@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 
+
 class Department(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
     title = models.CharField(max_length=100)
@@ -10,28 +11,38 @@ class Department(models.Model):
     def __str__(self):
         return self.title
 
+
 class Course(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
     title = models.CharField(max_length=200)
-    department = models.ForeignKey(Department, on_delete=models.CASCADE, blank=True, null=True)
+    department = models.ForeignKey(
+        Department,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True
+    )
     code = models.CharField(max_length=10, default='')
 
     def __str__(self):
         return self.title
 
+
 FILE_TYPE = [
-    ('Tutorial','tutorials'),
-    ('Book','books'),
-    ('Notes','notes'),
-    ('Examination Papers','exampapers')
+    ('Tutorial', 'tutorials'),
+    ('Book', 'books'),
+    ('Notes', 'notes'),
+    ('Examination Papers', 'exampapers')
 ]
+
 
 def fileLocation(instance, filename):
     return '/'.join(['./files', instance.filetype, filename])
 
+
 def fileName(file):
     filename = file.split('/')[-1]
     return filename.split('.')[-2]
+
 
 class File(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
@@ -48,11 +59,13 @@ class File(models.Model):
     def __str__(self):
         return self.title
 
+
 USER_ROLE = [
-    ('user','user'),
-    ('moderator','moderator'),
-    ('admin','admin')
+    ('user', 'user'),
+    ('moderator', 'moderator'),
+    ('admin', 'admin')
 ]
+
 
 class User(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
@@ -68,10 +81,11 @@ class User(models.Model):
 
 
 REQUEST_STATUS = [
-    (1,1),
-    (2,2),
-    (3,3)
+    (1, 1),
+    (2, 2),
+    (3, 3)
 ]
+
 
 class FileRequest(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
@@ -85,6 +99,7 @@ class FileRequest(models.Model):
     def __str__(self):
         return self.title
 
+
 class CourseRequest(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -96,6 +111,7 @@ class CourseRequest(models.Model):
 
     def __str__(self):
         return self.course
+
 
 class Upload(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
