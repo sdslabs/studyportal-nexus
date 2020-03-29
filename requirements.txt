@@ -9,3 +9,8 @@ PyYAML==5.1
 requests==2.21.0
 sqlparse==0.3.0
 urllib3==1.24.1
+django-cors-headers=="*"
+google-api-python-client=="*" 
+google-auth-httplib2=="*"
+google-auth-oauthlib=="*"
+jwt="*"
