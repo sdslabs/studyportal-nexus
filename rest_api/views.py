@@ -18,6 +18,8 @@ import random
 import base64
 import jwt
 import os
+import itertools
+from rest_api.documents import CourseDocument, FileDocument, DepartmentDocument
 
 NEXUS_URL = "http://nexus.sdslabs.local/api/v1"
 
@@ -520,7 +522,7 @@ class SearchViewSet(APIView):
                 "departments" : serializer_departments,
                 "courses" : serializer_courses,
                 "files" : serializer_files,
-            }, status = status.HTTP_200_OK)
+            }, status=status.HTTP_200_OK)
         else:
             return Response(status.HTTP_400_BAD_REQUEST)
 
