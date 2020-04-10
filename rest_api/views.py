@@ -18,6 +18,8 @@ import random
 import base64
 import jwt
 import os
+import itertools
+from rest_api.documents import CourseDocument, DepartmentDocument, FileDocument
 
 NEXUS_URL = "http://nexus.sdslabs.local/api/v1"
 
@@ -71,6 +73,7 @@ class DepartmentViewSet(APIView):
 class CourseViewSet(APIView):
     def get(self, request):
         queryset = Course.objects.all()
+        print(type(queryset))
         department = self.request.query_params.get('department')
         course = self.request.query_params.get('course')
         if department is not None and course == 'null':
@@ -460,6 +463,54 @@ class UploadViewSet(APIView):
             status=status.HTTP_200_OK
         )
 
+    @classmethod
+    def get_extra_actions(cls):
+        return []
+
+
+class SearchViewSet(APIView):
+    def get(self,request):
+        q = request.query_params.get('q')
+
+        if q:
+            courses = CourseDocument.search().query("multi_match", query=q, type="phrase_prefix", fields=['title','code'])
+            departments = DepartmentDocument.search().query("multi_match", query=q, type="phrase_prefix", fields=['title','abbreviation'])
+            files = FileDocument.search().query("multi_match", query=q, type="phrase_prefix", fields=['title','fileext','filetype'])
+
+            response_courses = courses.execute()
+            queryset_courses = Course.objects.none()
+            response_departments = departments.execute()
+            queryset_departments = Department.objects.none()
+            response_files = files.execute()
+            queryset_files = File.objects.none()
+
+            for hit in response_files.hits.hits:
+                fileId = hit['_source']["id"]
+                query_files = File.objects.filter(id=fileId)
+                queryset_files = list(itertools.chain(queryset_files,query_files))
+
+            for hit in response_departments.hits.hits:
+                departmentId = hit['_source']["id"]
+                query_departments = Department.objects.filter(id=departmentId)
+                queryset_departments = list(itertools.chain(queryset_departments,query_departments))
+            
+            for hit in response_courses.hits.hits:
+                courseId = hit['_source']["id"]
+                query = Course.objects.filter(id=courseId)
+                queryset_courses = list(itertools.chain(queryset_courses,query))
+            
+            serializer_courses = CourseSerializer(queryset_courses,many=True).data
+            serializer_departments = DepartmentSerializer(queryset_departments,many=True).data
+            serializer_files = FileSerializer(queryset_files,many=True).data
+
+            return Response({
+                "departments" : serializer_departments,
+                "courses" : serializer_courses,
+                "files" : serializer_files,
+            })
+        else:
+            return Response("search query not found")
+        
     @classmethod
     def get_extra_actions(cls):
         return []
