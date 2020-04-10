@@ -73,7 +73,6 @@ class DepartmentViewSet(APIView):
 class CourseViewSet(APIView):
     def get(self, request):
         queryset = Course.objects.all()
-        print(type(queryset))
         department = self.request.query_params.get('department')
         course = self.request.query_params.get('course')
         if department is not None and course == 'null':
