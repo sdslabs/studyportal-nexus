@@ -70,8 +70,8 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'studyportal.urls'
 
 CORS_ORIGIN_WHITELIST = (
-   'http://studyportal.sdslabs.local',
-   'http://nexus.sdslabs.local'
+    'http://studyportal.sdslabs.local',
+    'http://nexus.sdslabs.local'
 )
 
 TEMPLATES = [
@@ -146,8 +146,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-ELASTICSEARCH_DSL={
-    'default':{
+ELASTICSEARCH_DSL = {
+    'default': {
         'hosts': 'localhost:9200'
     }
 }

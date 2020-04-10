@@ -1,11 +1,11 @@
 from django_elasticsearch_dsl import Document, Index
 from rest_api.models import Course, Department, File
 
-courses = Index('courses')
-departments = Index('departments')
-files = Index('files')
+COURSES = Index('courses')
+DEPARTMENTS = Index('departments')
+FILES = Index('files')
 
-@courses.doc_type
+@COURSES.doc_type
 class CourseDocument(Document):
     class Django:
         model = Course
@@ -16,7 +16,7 @@ class CourseDocument(Document):
             'code',
         ]
 
-@departments.doc_type
+@DEPARTMENTS.doc_type
 class DepartmentDocument(Document):
     class Django:
         model = Department
@@ -27,7 +27,7 @@ class DepartmentDocument(Document):
             'abbreviation',
         ]
 
-@files.doc_type
+@FILES.doc_type
 class FileDocument(Document):
     class Django:
         model = File

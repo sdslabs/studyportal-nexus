@@ -159,14 +159,14 @@ class FileViewSet(APIView):
         query = File.objects.filter(title=data['title'])
         if not query:
             file = File(
-                    title=get_title(data['title']),
-                    driveid=data['driveid'],
-                    downloads=0,
-                    size=get_size(int(data['size'])),
-                    course=course,
-                    fileext=get_fileext(data['title']),
-                    filetype=data['filetype'],
-                    finalized=data['finalized']
+                title=get_title(data['title']),
+                driveid=data['driveid'],
+                downloads=0,
+                size=get_size(int(data['size'])),
+                course=course,
+                fileext=get_fileext(data['title']),
+                filetype=data['filetype'],
+                finalized=data['finalized']
                 )
             file.save()
             return Response(file.save(), status=status.HTTP_201_CREATED)
@@ -468,13 +468,28 @@ class UploadViewSet(APIView):
 
 
 class SearchViewSet(APIView):
-    def get(self,request):
+    def get(self, request):
         q = request.query_params.get('q')
 
         if q:
-            courses = CourseDocument.search().query("multi_match", query=q, type="phrase_prefix", fields=['title','code'])
-            departments = DepartmentDocument.search().query("multi_match", query=q, type="phrase_prefix", fields=['title','abbreviation'])
-            files = FileDocument.search().query("multi_match", query=q, type="phrase_prefix", fields=['title','fileext','filetype'])
+            courses = CourseDocument.search().query(
+                "multi_match",
+                query=q,
+                type="phrase_prefix",
+                fields=['title', 'code']
+                )
+            departments = DepartmentDocument.search().query(
+                "multi_match",
+                query=q,
+                type="phrase_prefix",
+                fields=['title', 'abbreviation']
+                )
+            files = FileDocument.search().query(
+                "multi_match",
+                query=q,
+                type="phrase_prefix",
+                fields=['title', 'fileext', 'filetype']
+                )
 
             response_courses = courses.execute()
             queryset_courses = Course.objects.none()
@@ -486,30 +501,31 @@ class SearchViewSet(APIView):
             for hit in response_files.hits.hits:
                 fileId = hit['_source']["id"]
                 query_files = File.objects.filter(id=fileId)
-                queryset_files = list(itertools.chain(queryset_files,query_files))
+                queryset_files = list(itertools.chain(queryset_files, query_files))
 
             for hit in response_departments.hits.hits:
                 departmentId = hit['_source']["id"]
                 query_departments = Department.objects.filter(id=departmentId)
-                queryset_departments = list(itertools.chain(queryset_departments,query_departments))
-            
+                queryset_departments = list(itertools.chain(
+                    queryset_departments, query_departments))
+
             for hit in response_courses.hits.hits:
                 courseId = hit['_source']["id"]
                 query = Course.objects.filter(id=courseId)
-                queryset_courses = list(itertools.chain(queryset_courses,query))
-            
-            serializer_courses = CourseSerializer(queryset_courses,many=True).data
-            serializer_departments = DepartmentSerializer(queryset_departments,many=True).data
-            serializer_files = FileSerializer(queryset_files,many=True).data
+                queryset_courses = list(itertools.chain(queryset_courses, query))
+
+            serializer_courses = CourseSerializer(queryset_courses, many=True).data
+            serializer_departments = DepartmentSerializer(queryset_departments, many=True).data
+            serializer_files = FileSerializer(queryset_files, many=True).data
 
             return Response({
                 "departments" : serializer_departments,
                 "courses" : serializer_courses,
                 "files" : serializer_files,
-            })
+            }, status = status.HTTP_200_OK)
         else:
-            return Response("search query not found")
-        
+            return Response(status.HTTP_400_BAD_REQUEST)
+
     @classmethod
     def get_extra_actions(cls):
         return []
