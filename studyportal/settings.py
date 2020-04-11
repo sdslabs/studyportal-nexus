@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'rest_api',
     'rest_framework',
     'corsheaders',
+    'django_elasticsearch_dsl',
 ]
 
 MIDDLEWARE = [
@@ -69,8 +70,8 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'studyportal.urls'
 
 CORS_ORIGIN_WHITELIST = (
-   'http://studyportal.sdslabs.local',
-   'http://nexus.sdslabs.local'
+    'http://studyportal.sdslabs.local',
+    'http://nexus.sdslabs.local'
 )
 
 TEMPLATES = [
@@ -144,3 +145,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+ELASTICSEARCH_DSL = {
+    'default': {
+        'hosts': 'localhost:9200'
+    }
+}

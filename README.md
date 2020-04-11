@@ -65,3 +65,19 @@ This is the backend API repository for Study Portal intended to be used by Study
    ```bash
    python manage.py runserver
    ```
+
+8. Setup and run Elasticsearch
+
+   ```bash
+   wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.6.2-linux-x86_64.tar.gz
+   wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.6.2-linux-x86_64.tar.gz.sha512
+   shasum -a 512 -c elasticsearch-7.6.2-linux-x86_64.tar.gz.sha512 
+   tar -xzf elasticsearch-7.6.2-linux-x86_64.tar.gz
+   cd elasticsearch-7.6.2/bin/
+   ./elasticsearch
+   ```
+   In a separate terminal, run the following command
+
+   ```bash
+   python3 manage.py search_index --rebuild
+   ```
