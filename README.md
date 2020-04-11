@@ -76,3 +76,8 @@ This is the backend API repository for Study Portal intended to be used by Study
    cd elasticsearch-7.6.2/bin/
    ./elasticsearch
    ```
+   In a separate terminal, run the following command
+
+   ```bash
+   python3 manage.py search_index --rebuild
+   ```
