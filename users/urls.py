@@ -7,8 +7,8 @@ router = routers.DefaultRouter()
 
 urlpatterns = [
     path('', include(router.urls)),
-    url('users', views.UserViewSet.as_view()),
-    url('filerequests', views.FileRequestViewSet.as_view()),
-    url('courserequests', views.CourseRequestViewSet.as_view()),
-    url('uploads', views.UploadViewSet.as_view()),
+    url(r'^users', views.UserViewSet.as_view()),
+    url(r'^filerequests', views.FileRequestViewSet.as_view()),
+    url(r'^courserequests', views.CourseRequestViewSet.as_view()),
+    url(r'^uploads', views.UploadViewSet.as_view()),
 ]
