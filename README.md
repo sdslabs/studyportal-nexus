@@ -12,72 +12,45 @@ This is the backend API repository for Study Portal intended to be used by Study
 
 ## Setup Instructions
 
+Ensure that you have installed [Docker](https://docs.docker.com/install/) (with [Docker Compose](https://docs.docker.com/compose/install/)) and that the [Docker daemon is running](https://docs.docker.com/config/daemon/).
+
 1. Clone the repository
 
    ```bash
-   git clone git@github.com:sdslabs/studyportal.git
+   git@github.com:sdslabs/studyportal-nexus.git
    ```
 
-2. Create a virtualenv using your preferred method.
-   * Using virtualenv
-  
-   ```bash
-   virtualenv venv
-   source venv/bin/activate
-   ```
+2. Setup and start docker containers
 
-    * Using virtualenvwrapper
-  
-   ```bash
-   mkvirtualenv studyportal
-   workon studyportal
-   ```
+    ```bash
+    docker-compose up
+    ```
 
-3. Install packages in virtual environment.
+After executing `docker-compose up`, you will be running:
 
-   ```bash
-   pip install -r requirements.txt
-   ```
+* A Django API server
+* One PostgreSQL instance (serves as the application database)
+* Elasticsearch
 
-4. Edit config file.
+Once everything has initialized, with `docker-compose` still running in the background, load the sample data. You will need to install PostgreSQL client tools to perform this step. On Debian, the package is called `postgresql-client-common`.
 
-   ```bash
-   cd studyportal/config
-   cp postgresql.yml.example postgresql.yml
-   ```
+```bash
+./ingest.sh
+```
 
-5. Initialize the database
+You are now ready to start sending the API server requests. Hit the API with a request to make sure it is working:
+`curl localhost:8005/api/v1/courses`
 
-   ```bash
-   python manage.py makemigrations
-   python manage.py migrate
-   ```
+### Diagnosing local Elasticsearch issues
 
-6. Create Django admin user
+If the API server container failed to start, there's a good chance that Elasticsearch failed to start on your machine. Ensure that you have allocated enough memory to Docker applications, otherwise the container will instantly exit with an error. Also, if the logs mention "insufficient max map count", increase the number of open files allowed on your system. For most Linux machines, you can fix this by adding the following line to `/etc/sysctl.conf`:
 
-   ```bash
-   python manage.py makemigrations
-   python manage.py migrate
-   ```
+```bash
+vm.max_map_count=262144
+```
 
-7. Run production server
+To make this setting take effect, run:
 
-   ```bash
-   python manage.py runserver
-   ```
-
-8. Setup and run Elasticsearch
-
-   ```bash
-   wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.6.2-linux-x86_64.tar.gz
-   wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.6.2-linux-x86_64.tar.gz.sha512
-   shasum -a 512 -c elasticsearch-7.6.2-linux-x86_64.tar.gz.sha512 
-   tar -xzf elasticsearch-7.6.2-linux-x86_64.tar.gz
-   cd elasticsearch-7.6.2/bin/
-   ./elasticsearch
-   ```
-   In a separate terminal, run the following command
-
-   ```bash
-   python3 manage.py search_index --rebuild
-   ```
+```bash
+sudo sysctl -p
+```
