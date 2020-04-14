@@ -6,9 +6,8 @@ This is the backend API repository for Study Portal intended to be used by Study
 
 ## Prerequisites
 
-1. Install and start PostgreSQL service.
-2. Create a database `studyportal`
-3. Setup Arceus and Falcon locally or get a remote instance for development/testing.
+1. Install [PostgreSQL service](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-18-04).
+2. Setup Arceus and Falcon locally or get a remote instance for development/testing.
 
 ## Setup Instructions
 
