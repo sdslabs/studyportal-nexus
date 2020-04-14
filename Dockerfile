@@ -4,7 +4,6 @@ ENV PYTHONBUFFERED 1
 
 RUN apt-get update \
     && apt-get install libexempi3 \
-    && mkdir /cccatalog-api \
     && mkdir -p /var/log/studyportal.log
 
 WORKDIR /studyportal-nexus
