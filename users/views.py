@@ -15,11 +15,15 @@ from rest_api import client
 import requests
 import random
 import base64
+import json
 import jwt
 import os
 
 NEXUS_URL = "http://nexus.sdslabs.local/api/v1"
-
+STRUCTURE = os.path.join(
+    os.path.abspath(os.path.dirname(__file__)),
+    'structure.json'
+)
 
 def getUserFromJWT(token):
     decoded_jwt = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
@@ -237,7 +241,10 @@ class CourseRequestViewSet(APIView):
 
 
 def uploadToDrive(service, folder_id, file_details):
-    file_metadata = {'name': file_details['name']}
+    file_metadata = {
+        'name': file_details['name'],
+        'parents': [folder_id]
+    }
     media = MediaFileUpload(
         file_details['location'],
         mimetype=file_details['mime_type']
@@ -265,6 +272,8 @@ class UploadViewSet(APIView):
         return Response(serializer.data)
 
     def post(self, request):
+        with open(STRUCTURE) as f:
+            structure = json.load(f)
         file = request.data['file']
         name = request.data['name']
         # File manipulation starts here
@@ -281,9 +290,12 @@ class UploadViewSet(APIView):
             'location': "temp"+rand+"."+ext
         }
         # Get folder id from config
+        course = Course.objects.get(id=request.data['course'])
+        folder_identifier = request.data['filetype'].lower().replace(" ","") + "_review"
+        folder_id = structure['study'][course.department.abbreviation][course.code][folder_identifier]
         driveid = uploadToDrive(
             driveinit(),
-            '1Zd-uN6muFv8jvjUSM7faanEL0Zv6BTwZ',
+            folder_id,
             file_details
         )
         os.remove("temp"+rand+"."+ext)
@@ -291,7 +303,6 @@ class UploadViewSet(APIView):
         token = request.headers['Authorization'].split(' ')[1]
         username = getUserFromJWT(token)['username']
         user = User.objects.get(username=username)
-        course = Course.objects.get(id=request.data['course'])
         upload = Upload(
             user=user,
             driveid=driveid,

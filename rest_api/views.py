@@ -25,12 +25,6 @@ def sample(request):
     return HttpResponse("Test endpoint")
 
 
-def getUserFromJWT(token):
-    decoded_jwt = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
-    user = User.objects.get(username=decoded_jwt['username'])
-    return UserSerializer(user).data
-
-
 class DepartmentViewSet(APIView):
     def get(self, request):
         queryset = Department.objects.all()

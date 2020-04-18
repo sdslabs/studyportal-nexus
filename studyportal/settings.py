@@ -72,7 +72,8 @@ ROOT_URLCONF = 'studyportal.urls'
 
 CORS_ORIGIN_WHITELIST = (
     'http://studyportal.sdslabs.local',
-    'http://nexus.sdslabs.local'
+    'http://nexus.sdslabs.local',
+    'http://localhost:3005',
 )
 
 TEMPLATES = [
