@@ -206,7 +206,7 @@ class SearchViewSet(APIView):
 
             for hit in response_files.hits.hits:
                 fileId = hit['_source']["id"]
-                query_files = File.objects.filter(id=fileId)
+                query_files = File.objects.filter(id=fileId).filter(finalized=True)
                 queryset_files = list(itertools.chain(queryset_files, query_files))
 
             for hit in response_departments.hits.hits:
