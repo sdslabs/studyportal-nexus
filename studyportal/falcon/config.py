@@ -1,4 +1,4 @@
-from rest_api import client
+from studyportal.falcon import client
 
 client_id = "study-vT1gzcnoVml4Mcfq"
 client_secret = (

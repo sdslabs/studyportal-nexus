@@ -9,9 +9,10 @@ from users.serializers import FileRequestSerializer, CourseRequestSerializer
 from users.serializers import UploadSerializer
 from studyportal.settings import SECRET_KEY
 from apiclient.http import MediaFileUpload
-from rest_api.drive import driveinit
-from rest_api.config import config
-from rest_api import client
+from studyportal.drive.drive import driveinit
+from studyportal.falcon.config import config
+from studyportal.falcon import client
+from studyportal.settings import CUR_DIR
 import requests
 import random
 import base64
@@ -19,10 +20,14 @@ import json
 import jwt
 import os
 
-NEXUS_URL = "http://nexus.sdslabs.local/api/v1"
+NEXUS_URL = "http://localhost:8005/api/v1"
 STRUCTURE = os.path.join(
-    os.path.abspath(os.path.dirname(__file__)),
-    'structure.json'
+    CUR_DIR,
+    'drive/structure.json'
+)
+STRUCTURE_TEST = os.path.join(
+    CUR_DIR,
+    'test/resources/structure.json'
 )
 
 def getUserFromJWT(token):
@@ -272,6 +277,7 @@ class UploadViewSet(APIView):
         return Response(serializer.data)
 
     def post(self, request):
+        # For local dev change 'STRUCTURE' to 'STRUCTURE_TEST'
         with open(STRUCTURE) as f:
             structure = json.load(f)
         file = request.data['file']

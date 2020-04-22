@@ -7,9 +7,9 @@ from rest_api.serializers import DepartmentSerializer, CourseSerializer
 from rest_api.serializers import FileSerializer
 from studyportal.settings import SECRET_KEY
 from apiclient.http import MediaFileUpload
-from rest_api.drive import driveinit
-from rest_api.config import config
-from rest_api import client
+from studyportal.drive.drive import driveinit
+from studyportal.falcon.config import config
+from studyportal.falcon import client
 import requests
 import random
 import base64
@@ -18,7 +18,7 @@ import os
 import itertools
 from rest_api.documents import CourseDocument, FileDocument, DepartmentDocument
 
-NEXUS_URL = "http://nexus.sdslabs.local/api/v1"
+NEXUS_URL = "http://localhost:8005/api/v1"
 
 
 def sample(request):
