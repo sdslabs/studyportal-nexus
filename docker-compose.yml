@@ -34,7 +34,10 @@ services:
   web:
     build: ./
     image: studyportal-nexus
-    command: bash -c 'python manage.py migrate && python manage.py search_index --rebuild -f && python manage.py runserver 0.0.0.0:8005'
+    command: bash -c 'python manage.py makemigrations && 
+             python manage.py migrate && 
+             python manage.py search_index --rebuild -f && 
+             python manage.py runserver 0.0.0.0:8005'
     container_name: studyportal-nexus
     volumes: 
         - ".:/studyportal-nexus:rw"
