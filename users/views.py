@@ -30,6 +30,7 @@ STRUCTURE_TEST = os.path.join(
     'test/resources/structure.json'
 )
 
+
 def getUserFromJWT(token):
     decoded_jwt = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
     user = User.objects.get(username=decoded_jwt['username'])
@@ -54,7 +55,7 @@ class UserViewSet(APIView):
                         'profile_image': user['image_url'],
                         'role': 'user'
                     }
-                    requests.post(NEXUS_URL+'/users', data=data)
+                    requests.post(NEXUS_URL + '/users', data=data)
             queryset = User.objects.filter(falcon_id=user['id'])
             serializer = UserSerializer(queryset, many=True)
             user = serializer.data[0]
@@ -288,23 +289,23 @@ class UploadViewSet(APIView):
         ext = type.split("/")[1].split(";")[0]
         base64String = file.split(",")[1]
         rand = str(random.randint(0, 100000))
-        temp = open("temp"+rand+"."+ext, "wb")
+        temp = open("temp" + rand + "." + ext, "wb")
         temp.write(base64.b64decode(base64String))
         file_details = {
             'name': name,
             'mime_type': mime_type,
-            'location': "temp"+rand+"."+ext
+            'location': "temp" + rand + "." + ext
         }
         # Get folder id from config
         course = Course.objects.get(id=request.data['course'])
-        folder_identifier = request.data['filetype'].lower().replace(" ","") + "_review"
+        folder_identifier = request.data['filetype'].lower().replace(" ", "") + "_review"
         folder_id = structure['study'][course.department.abbreviation][course.code][folder_identifier]
         driveid = uploadToDrive(
             driveinit(),
             folder_id,
             file_details
         )
-        os.remove("temp"+rand+"."+ext)
+        os.remove("temp" + rand + "." + ext)
         # end of manipulation
         token = request.headers['Authorization'].split(' ')[1]
         username = getUserFromJWT(token)['username']

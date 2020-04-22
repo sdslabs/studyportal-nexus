@@ -5,6 +5,7 @@ COURSES = Index('courses')
 DEPARTMENTS = Index('departments')
 FILES = Index('files')
 
+
 @COURSES.doc_type
 class CourseDocument(Document):
     class Django:
@@ -16,6 +17,7 @@ class CourseDocument(Document):
             'code',
         ]
 
+
 @DEPARTMENTS.doc_type
 class DepartmentDocument(Document):
     class Django:
@@ -26,6 +28,7 @@ class DepartmentDocument(Document):
             'title',
             'abbreviation',
         ]
+
 
 @FILES.doc_type
 class FileDocument(Document):
