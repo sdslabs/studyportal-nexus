@@ -1,0 +1,13 @@
+[
+    {
+        "id": 1251,
+        "title": "SEMINAR",
+        "department": {
+            "id": 118,
+            "title": "Applied Science and Engineering",
+            "abbreviation": "ASED",
+            "imageurl": "ased.png"
+        },
+        "code": "ASN-700"
+    }
+]

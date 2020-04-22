@@ -11,8 +11,9 @@ user.save()
 "
 EOF
 # Create database
-docker exec -ti $POSTGRES_CONTAINER_NAME /bin/bash -c 'PGPASSWORD=studyportal createdb -h localhost -U studyportal studyportal'
+docker exec $POSTGRES_CONTAINER_NAME /bin/bash -c 'PGPASSWORD=studyportal createdb -h localhost -U studyportal studyportal'
 # Ingest mock data
 PGPASSWORD=studyportal psql -h localhost -d studyportal -U studyportal < dump.sql
+PGPASSWORD=studyportal psql -h localhost -d studyportal -U studyportal < dump.sql
 # Rebuild indexes
-docker exec -ti $NEXUS_CONTAINER_NAME /bin/bash -c 'python3 manage.py search_index --rebuild -f'
+docker exec $NEXUS_CONTAINER_NAME /bin/bash -c 'python3 manage.py search_index --rebuild -f'
