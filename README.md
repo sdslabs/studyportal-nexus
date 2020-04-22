@@ -8,6 +8,8 @@ This is the backend API repository for Study Portal intended to be used by Study
 
 1. Install [PostgreSQL service](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-18-04).
 2. Setup Arceus and Falcon locally or get a remote instance for development/testing.
+3. Register study as an app in Arceus and make changes to `studyportal/falcon/config.py`.
+4. Obtain a credentials.json from the author/generate one yourself and place it in `studyportal/drive`.
 
 ## Setup Instructions
 
@@ -53,3 +55,53 @@ To make this setting take effect, run:
 ```bash
 sudo sysctl -p
 ```
+
+## Alternate Setup Instructions
+
+You can setup the local dev in a virtualenv:
+
+1. Create a virtualenv using your preferred method.
+   * Using virtualenv
+  
+   ```bash
+   virtualenv -p python3 venv
+   source venv/bin/activate
+   ```
+
+    * Using virtualenvwrapper
+  
+   ```bash
+   mkvirtualenv studyportal
+   workon studyportal
+   ```
+
+2. Install packages in virtual environment.
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. Edit config file.
+
+   Change `host` in `studyportal/config/postgresql.yml` to `localhost` and in `studyportal/settings.py` change the elasticsearch host from `es` to `localhost`.
+
+    #### DO NOT COMMIT THESE FILE CHANGES.
+
+4. Initialize the database
+
+   ```bash
+   python manage.py makemigrations
+   python manage.py migrate
+   ```
+
+5. Create Django admin user
+
+   ```bash
+   python manage.py createsuperuser 
+   ```
+
+6. Run production server
+
+   ```bash
+   python manage.py runserver
+   ```
