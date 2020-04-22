@@ -38,7 +38,7 @@ class DepartmentViewSet(APIView):
             return Response({
                 "department": serializer,
                 "courses": serializer_course
-                })
+            })
         else:
             return Response({"department": serializer_department.data})
 
@@ -104,10 +104,10 @@ class CourseViewSet(APIView):
 
 def get_size(size):
     file_size = size
-    if round(file_size/(1024*1024), 2) == 0.00:
-        return str(round(file_size/(1024), 2))+" KB"
+    if round(file_size / (1024 * 1024), 2) == 0.00:
+        return str(round(file_size / (1024), 2)) + " KB"
     else:
-        return str(round(file_size/(1024*1024), 2))+" MB"
+        return str(round(file_size / (1024 * 1024), 2)) + " MB"
 
 
 def fileName(file):
@@ -158,7 +158,7 @@ class FileViewSet(APIView):
                 fileext=get_fileext(data['title']),
                 filetype=data['filetype'],
                 finalized=data['finalized']
-                )
+            )
             file.save()
             return Response(file.save(), status=status.HTTP_201_CREATED)
         else:
@@ -183,19 +183,19 @@ class SearchViewSet(APIView):
                 query=q,
                 type="phrase_prefix",
                 fields=['title', 'code']
-                )
+            )
             departments = DepartmentDocument.search().query(
                 "multi_match",
                 query=q,
                 type="phrase_prefix",
                 fields=['title', 'abbreviation']
-                )
+            )
             files = FileDocument.search().query(
                 "multi_match",
                 query=q,
                 type="phrase_prefix",
                 fields=['title', 'fileext', 'filetype']
-                )
+            )
 
             response_courses = courses.execute()
             queryset_courses = Course.objects.none()
@@ -206,8 +206,10 @@ class SearchViewSet(APIView):
 
             for hit in response_files.hits.hits:
                 fileId = hit['_source']["id"]
-                query_files = File.objects.filter(id=fileId).filter(finalized=True)
-                queryset_files = list(itertools.chain(queryset_files, query_files))
+                query_files = File.objects.filter(id=fileId, finalized=True)
+                queryset_files = list(
+                    itertools.chain(queryset_files, query_files)
+                )
 
             for hit in response_departments.hits.hits:
                 departmentId = hit['_source']["id"]
@@ -225,9 +227,9 @@ class SearchViewSet(APIView):
             serializer_files = FileSerializer(queryset_files, many=True).data
 
             return Response({
-                "departments" : serializer_departments,
-                "courses" : serializer_courses,
-                "files" : serializer_files,
+                "departments": serializer_departments,
+                "courses": serializer_courses,
+                "files": serializer_files,
             }, status=status.HTTP_200_OK)
         else:
             return Response(status.HTTP_400_BAD_REQUEST)

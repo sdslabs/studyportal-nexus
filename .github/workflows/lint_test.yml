@@ -17,6 +17,6 @@ jobs:
         pip install pycodestyle
     - name: Run lint test
       run: |
-        pycodestyle *
+        pycodestyle
       env:
         ADMIN_GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN }}
