@@ -52,7 +52,7 @@ class DepartmentViewSet(APIView):
                 imageurl=data['imageurl']
             )
             department.save()
-            return Response(department.save(), status=status.HTTP_201_CREATED)
+            return Response(department.save(), status=status.HTTP_200_OK)
         else:
             return Response("Department already exists")
 
@@ -89,7 +89,7 @@ class CourseViewSet(APIView):
                 code=data['code']
             )
             course.save()
-            return Response(course.save(), status=status.HTTP_201_CREATED)
+            return Response(course.save(), status=status.HTTP_200_OK)
         else:
             return Response("Course already exists")
 
@@ -160,7 +160,7 @@ class FileViewSet(APIView):
                 finalized=data['finalized']
             )
             file.save()
-            return Response(file.save(), status=status.HTTP_201_CREATED)
+            return Response(file.save(), status=status.HTTP_200_OK)
         else:
             return Response("File already exists")
 

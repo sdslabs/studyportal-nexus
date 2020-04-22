@@ -1,4 +1,4 @@
-name: Normalize Repos
+name: Lint Test
 on: 
   push:
 
