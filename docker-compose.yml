@@ -34,18 +34,22 @@ services:
   web:
     build: ./
     image: studyportal-nexus
-    command: bash -c 'python manage.py makemigrations && 
-             python manage.py migrate && 
-             python manage.py search_index --rebuild -f && 
+    command: bash -c 'python manage.py makemigrations &&
+             python manage.py migrate &&
+             python manage.py search_index --rebuild -f &&
              python manage.py runserver 0.0.0.0:8005'
     container_name: studyportal-nexus
-    volumes: 
+    volumes:
         - ".:/studyportal-nexus:rw"
     ports:
       - "8005:8005"
     depends_on:
       - db
       - es
+    extra_hosts:
+      - "arceus.sdslabs.local:127.0.0.1"
+      - "falcon.sdslabs.local:127.0.0.1"
+      - "localhost:127.0.0.1"
     environment:
       DJANGO_DATABASE_NAME: "studyportal"
       DJANGO_DATABASE_USER: "studyportal"
