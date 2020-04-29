@@ -1,0 +1,132 @@
+{
+    "departments": [],
+    "courses": [],
+    "files": [
+        {
+            "id": 36,
+            "title": "test2",
+            "driveid": "123456789",
+            "downloads": 0,
+            "size": "0.01 MB",
+            "date_modified": "2020-04-22",
+            "fileext": "pdf",
+            "filetype": "exampapers",
+            "course": {
+                "id": 1251,
+                "title": "SEMINAR",
+                "department": {
+                    "id": 118,
+                    "title": "Applied Science and Engineering",
+                    "abbreviation": "ASED",
+                    "imageurl": "ased.png"
+                },
+                "code": "ASN-700"
+            }
+        },
+        {
+            "id": 37,
+            "title": "test1",
+            "driveid": "123456789",
+            "downloads": 0,
+            "size": "0.01 MB",
+            "date_modified": "2020-04-22",
+            "fileext": "pdf",
+            "filetype": "exampapers",
+            "course": {
+                "id": 1251,
+                "title": "SEMINAR",
+                "department": {
+                    "id": 118,
+                    "title": "Applied Science and Engineering",
+                    "abbreviation": "ASED",
+                    "imageurl": "ased.png"
+                },
+                "code": "ASN-700"
+            }
+        },
+        {
+            "id": 38,
+            "title": "test1",
+            "driveid": "123456789",
+            "downloads": 0,
+            "size": "0.01 MB",
+            "date_modified": "2019-04-21",
+            "fileext": "pdf",
+            "filetype": "exampapers",
+            "course": {
+                "id": 1251,
+                "title": "SEMINAR",
+                "department": {
+                    "id": 118,
+                    "title": "Applied Science and Engineering",
+                    "abbreviation": "ASED",
+                    "imageurl": "ased.png"
+                },
+                "code": "ASN-700"
+            }
+        },
+        {
+            "id": 39,
+            "title": "test1",
+            "driveid": "123456789",
+            "downloads": 0,
+            "size": "0.01 MB",
+            "date_modified": "2020-04-22",
+            "fileext": "pdf",
+            "filetype": "exampapers",
+            "course": {
+                "id": 1251,
+                "title": "SEMINAR",
+                "department": {
+                    "id": 118,
+                    "title": "Applied Science and Engineering",
+                    "abbreviation": "ASED",
+                    "imageurl": "ased.png"
+                },
+                "code": "ASN-700"
+            }
+        },
+        {
+            "id": 40,
+            "title": "test1",
+            "driveid": "123456789",
+            "downloads": 0,
+            "size": "0.01 MB",
+            "date_modified": "2020-04-22",
+            "fileext": "pdf",
+            "filetype": "exampapers",
+            "course": {
+                "id": 1251,
+                "title": "SEMINAR",
+                "department": {
+                    "id": 118,
+                    "title": "Applied Science and Engineering",
+                    "abbreviation": "ASED",
+                    "imageurl": "ased.png"
+                },
+                "code": "ASN-700"
+            }
+        },
+        {
+            "id": 31,
+            "title": "test",
+            "driveid": "123456789",
+            "downloads": 0,
+            "size": "0.01 MB",
+            "date_modified": "2020-04-21",
+            "fileext": "pdf",
+            "filetype": "exampapers",
+            "course": {
+                "id": 1251,
+                "title": "SEMINAR",
+                "department": {
+                    "id": 118,
+                    "title": "Applied Science and Engineering",
+                    "abbreviation": "ASED",
+                    "imageurl": "ased.png"
+                },
+                "code": "ASN-700"
+            }
+        }
+    ]
+}

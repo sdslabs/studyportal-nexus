@@ -9,3 +9,12 @@ PyYAML==5.1
 requests==2.21.0
 sqlparse==0.3.0
 urllib3==1.24.1
+django-cors-headers==3.2.1
+google-api-python-client==1.7.11 
+google-auth-httplib2==0.0.3
+google-auth-oauthlib==0.4.1
+pyjwt==1.7.1
+django-elasticsearch-dsl==7.1.1
+elasticsearch==7.6.0
+elasticsearch-dsl==7.1.0
+pytest==5.4.1
