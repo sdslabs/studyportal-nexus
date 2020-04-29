@@ -76,6 +76,8 @@ CORS_ORIGIN_WHITELIST = (
     'http://localhost:3005',
 )
 
+CORS_ALLOW_CREDENTIALS = True
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
