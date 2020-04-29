@@ -42,8 +42,14 @@ class UserViewSet(APIView):
         queryset = None
         token = request.headers['Authorization'].split(' ')[1]
         if token == 'None':
-            # user = client.get_logged_in_user(config,{'sdslabs': ''})
-            user = client.get_user_by_username('darkrider', config)
+            # cookie manipulation starts here
+            cookies={}
+            separateCookies = request.headers['Cookie'].split('; ')
+            for cookie in separateCookies:
+                array = cookie.split('=')
+                cookies[array[0]] = array[1]
+            # end of cookie manipulation
+            user = client.get_logged_in_user(config,{'sdslabs': cookies['sdslabs']})
             if user is not None:
                 queryset = User.objects.filter(falcon_id=user['id'])
                 serializer = UserSerializer(queryset, many=True)
