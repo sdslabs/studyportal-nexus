@@ -1,0 +1,756 @@
+openapi: 3.0.0
+info:
+  description: >-
+    This is the REST API documentation of studyportal nexus, the backend of Studyportal written in django-drf.
+  version: "1.0.0-oas3"
+  title: Studyportal Nexus
+  contact:
+    email: contact@sdslabs.co.in
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+tags:
+  - name: Nexus
+    description: REST API for Studyportal
+paths:
+  /departments:
+    get:
+      tags:
+        - departments
+      summary: Fetches individual or list of departments
+      description: ''
+      operationId: getDepartments
+      parameters:
+        - in: query
+          name: department
+          description: Department abbreviation to fetch individual department
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: format
+          description: Format of response
+          required: true
+          schema:
+            type: string
+            default: json
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  department:
+                    $ref: '#/components/schemas/Department'
+                  courses:
+                    $ref: '#/components/schemas/Course'
+    post:
+      tags:
+        - departments
+      summary: Add a new department to the database
+      description: ''
+      operationId: addDepartment
+      responses:
+        '200':
+          description: Department Exists
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                abbreviation:
+                  type: string
+                code:
+                  type: string
+        description: Department object that needs to be added
+        required: true
+  /courses:
+    get:
+      tags:
+        - courses
+      summary: Fetches individual or list of courses
+      description: ''
+      operationId: getCourses
+      parameters:
+        - in: query
+          name: department
+          description: Department id to fetch courses of department
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: course
+          description: Course code to fetch individual course
+          required: false
+          schema:
+            type: string
+            default: None
+        - in: query
+          name: format
+          description: Format of response
+          required: true
+          schema:
+            type: string
+            default: json
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Course'
+    post:
+      tags:
+        - courses
+      summary: Add a new course to the database
+      description: ''
+      operationId: addCourse
+      responses:
+        '200':
+          description: Course Exists
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                department:
+                  oneOf:
+                    - type: string
+                    - type: number
+                code:
+                  type: string
+        description: Course object that needs to be added
+        required: true
+    delete:
+      tags:
+        - courses
+      summary: Deletes a course
+      description: ''
+      operationId: deleteCourse
+      parameters:
+        - name: course
+          in: query
+          description: Course id to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: delete successful
+  /files:
+    get:
+      tags:
+        - files
+      summary: Fetches list of files
+      description: ''
+      operationId: getFiles
+      parameters:
+        - in: query
+          name: course
+          description: Course id to fetch files of course
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: filetype
+          description: Type of file to fetch
+          required: true
+          schema:
+            type: string
+            default: null
+        - in: query
+          name: format
+          description: Format of response
+          required: true
+          schema:
+            type: string
+            default: json
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/File'
+    post:
+      tags:
+        - files
+      summary: Add a new file to the database
+      description: ''
+      operationId: addFile
+      responses:
+        '200':
+          description: File Exists
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                driveid:
+                  type: string
+                size:
+                  type: string
+                code:
+                  type: string
+                filetype:
+                  type: string
+                finalized:
+                  type: boolean
+                  default: false
+        description: File object that needs to be added
+        required: true
+    delete:
+      tags:
+        - files
+      summary: Deletes a file
+      description: ''
+      operationId: deleteFile
+      parameters:
+        - name: file
+          in: query
+          description: File id to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: delete successful
+  /search:
+    get:
+      tags:
+        - search
+      summary: Fetches search results
+      description: ''
+      operationId: search
+      parameters:
+        - in: query
+          name: q
+          description: Search string
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: format
+          description: Format of response
+          required: true
+          schema:
+            type: string
+            default: json
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  departments:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Department'
+                  courses:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Course'
+                  files:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/File'
+  /users:
+    get:
+      tags:
+        - user
+      summary: Fetches user information
+      description: ''
+      operationId: loginUser
+      parameters:
+        - in: cookie
+          name: sdslabs
+          description: Cookie to get logged in user
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: format
+          description: Format of response
+          required: true
+          schema:
+            type: string
+            default: json
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+                  courses:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Course'
+      security:
+        - bearer_auth: []
+    post:
+      tags:
+        - user
+      summary: Add a new user to the database
+      description: ''
+      operationId: addUser
+      responses:
+        '200':
+          description: User Exists
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                falcon_id:
+                  type: number
+                username:
+                  type: string
+                email:
+                  type: string
+                profile_image:
+                  type: string
+                role:
+                  type: string
+                  description: either user, moderator or admin
+        description: User object that needs to be added
+        required: true
+    put:
+      tags:
+        - user
+      summary: Update an existing user
+      operationId: updateUser
+      responses:
+        '200':
+          description: successful updation
+      security:
+        - bearer_auth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                action:
+                  type: string
+                  description: either add or remove
+                course:
+                  type: string
+                  description: id of course
+        description: User that needs to be updated
+        required: true
+  /filerequests:
+    get:
+      tags:
+        - file requests
+      summary: Fetches user file requests
+      description: ''
+      operationId: getFileRequests
+      parameters:
+        - in: query
+          name: user
+          description: User id to get request
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: format
+          description: Format of response
+          required: true
+          schema:
+            type: string
+            default: json
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileRequest'
+      security:
+        - bearer_auth: []
+    post:
+      tags:
+        - file requests
+      summary: Add a new file request for user
+      description: ''
+      operationId: addFileRequest
+      responses:
+        '200':
+          description: Request Exists
+      security:
+        - bearer_auth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                filetype:
+                  type: string
+                status:
+                  type: number
+                title:
+                  type: string
+                course:
+                  type: number
+                  description: course id
+        description: File request object that needs to be added
+        required: true
+    put:
+      tags:
+        - file requests
+      summary: Update an existing file request
+      operationId: updateFileRequest
+      responses:
+        '200':
+          description: successful updation
+      security:
+        - bearer_auth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                request:
+                  type: number
+                  description: request id
+                status:
+                  type: number
+        description: File request that needs to be updated
+        required: true
+    delete:
+      tags:
+        - file requests
+      summary: Deletes a file request
+      description: ''
+      operationId: deleteFileRequest
+      parameters:
+        - name: request
+          in: query
+          description: File id to delete
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: delete successful
+  /courserequests:
+    get:
+      tags:
+        - course requests
+      summary: Fetches user course requests
+      description: ''
+      operationId: getCourseRequests
+      parameters:
+        - in: query
+          name: user
+          description: User id to get request
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: format
+          description: Format of response
+          required: true
+          schema:
+            type: string
+            default: json
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseRequest'
+      security:
+        - bearer_auth: []
+    post:
+      tags:
+        - course requests
+      summary: Add a new course request for user
+      description: ''
+      operationId: addCourseRequest
+      responses:
+        '200':
+          description: Request Exists
+      security:
+        - bearer_auth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: number
+                department:
+                  type: string
+                course:
+                  type: number
+                  description: course id
+                code:
+                  type: string
+        description: Course request object that needs to be added
+        required: true
+    put:
+      tags:
+        - course requests
+      summary: Update an existing course request
+      operationId: updateCourseRequest
+      responses:
+        '200':
+          description: successful updation
+      security:
+        - bearer_auth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                request:
+                  type: number
+                  description: request id
+                status:
+                  type: number
+        description: Course request that needs to be updated
+        required: true
+    delete:
+      tags:
+        - course requests
+      summary: Deletes a course request
+      description: ''
+      operationId: deleteCourseRequest
+      parameters:
+        - name: request
+          in: query
+          description: File id to delete
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: delete successful
+  /uploads:
+    get:
+      tags:
+        - uploads
+      summary: Fetches user uploads
+      description: ''
+      operationId: getUploads
+      parameters:
+        - in: query
+          name: user
+          description: User id to get request
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: format
+          description: Format of response
+          required: true
+          schema:
+            type: string
+            default: json
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Upload'
+      security:
+        - bearer_auth: []
+    post:
+      tags:
+        - uploads
+      summary: Add a new course request for user
+      description: ''
+      operationId: addUpload
+      responses:
+        '200':
+          description: Upload Exists
+      security:
+        - bearer_auth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: base64
+                name:
+                  type: string
+                course:
+                  type: number
+                  description: course id
+                filetype:
+                  type: string
+                status:
+                  type: number
+                  description: either 1, 2 or 3
+        description: Upload object that needs to be added
+        required: true
+servers:
+  - url: 'http://nexus.sdslabs.local/api/v1'
+components:
+  securitySchemes:
+    bearer_auth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Department:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        abbreviation:
+          type: string
+        imageurl:
+          type: string
+    Course:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        department:
+          $ref: '#/components/schemas/Department'
+        code:
+          type: string
+    File:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        driveid:
+          type: string
+        downloads:
+          type: number
+        size:
+          type: string
+        date_modified:
+          type: string
+        fileext:
+          type: string
+        filetype:
+          type: string
+        course:
+          $ref: '#/components/schemas/Course'
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        falcon_id:
+          type: integer
+          format: int64
+        username:
+          type: string
+        email:
+          type: string
+        profile_image:
+          type: string
+        courses:
+          type: array
+          items:
+            type: integer
+        role:
+          type: string
+          description: either user, moderator or admin
+    FileRequest:
+      type: object
+      properties:
+        id:
+          type: number
+        user:
+          $ref: '#/components/schemas/User'
+        filetype:
+          type: string
+        status:
+          type: number
+          description: either 1, 2 or 3
+        title:
+          type: string
+        date:
+          type: string
+        course:
+          $ref: '#/components/schemas/Course'
+    CourseRequest:
+      type: object
+      properties:
+        id:
+          type: number
+        user:
+          $ref: '#/components/schemas/User'
+        status:
+          type: number
+          description: either 1, 2 or 3
+        department:
+          type: string
+        course:
+          type: string
+        code:
+          type: string
+    Upload:
+      type: object
+      properties:
+        id:
+          type: number
+        user:
+          $ref: '#/components/schemas/User'
+        driveid:
+          type: string
+        resolved:
+          type: boolean
+          default: false
+        status:
+          type: number
+          description: either 1, 2 or 3
+        title:
+          type: string
+        filetype:
+          type: string
+        date:
+          type: string
+        course:
+          $ref: '#/components/schemas/Course'
