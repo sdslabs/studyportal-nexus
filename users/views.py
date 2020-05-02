@@ -36,7 +36,7 @@ def getUserFromJWT(token):
         decoded_jwt = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
         user = User.objects.get(username=decoded_jwt['username'])
         return UserSerializer(user).data
-    except:
+    except Exception:
         return None
 
 
@@ -49,8 +49,8 @@ class UserViewSet(APIView):
             cookies = {}
             separateCookies = request.headers['Cookie'].split('; ')
             for cookie in separateCookies:
-              array = cookie.split('=')
-              cookies[array[0]] = array[1]
+                array = cookie.split('=')
+                cookies[array[0]] = array[1]
             # end of cookie manipulation
             user = client.get_logged_in_user(config, {'sdslabs': cookies['sdslabs']})
             for key in user:
