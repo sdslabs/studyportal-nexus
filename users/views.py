@@ -32,9 +32,12 @@ STRUCTURE_TEST = os.path.join(
 
 
 def getUserFromJWT(token):
-    decoded_jwt = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
-    user = User.objects.get(username=decoded_jwt['username'])
-    return UserSerializer(user).data
+    try:
+        decoded_jwt = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+        user = User.objects.get(username=decoded_jwt['username'])
+        return UserSerializer(user).data
+    except Exception:
+        return None
 
 
 class UserViewSet(APIView):
@@ -42,8 +45,19 @@ class UserViewSet(APIView):
         queryset = None
         token = request.headers['Authorization'].split(' ')[1]
         if token == 'None':
-            # user = client.get_logged_in_user(config,{'sdslabs': ''})
-            user = client.get_user_by_username('darkrider', config)
+            # cookie manipulation starts here
+            cookies = {}
+            separateCookies = request.headers['Cookie'].split('; ')
+            for cookie in separateCookies:
+                array = cookie.split('=')
+                cookies[array[0]] = array[1]
+            # end of cookie manipulation
+            user = client.get_logged_in_user(config, {'sdslabs': cookies['sdslabs']})
+            for key in user:
+                if key == 'error':
+                    return Response(
+                        status=status.HTTP_404_NOT_FOUND
+                    )
             if user is not None:
                 queryset = User.objects.filter(falcon_id=user['id'])
                 serializer = UserSerializer(queryset, many=True)
@@ -77,17 +91,22 @@ class UserViewSet(APIView):
             )
         else:
             user = getUserFromJWT(token)
-            courselist = user['courses']
-            courses = []
-            for course in courselist:
-                course_object = Course.objects.filter(id=course)
-                if course_object:
-                    coursedata = CourseSerializer(
-                        course_object,
-                        many=True
-                    ).data[0]
-                    courses.append(coursedata)
-            return Response({'user': user, 'courses': courses})
+            if user is not None:
+                courselist = user['courses']
+                courses = []
+                for course in courselist:
+                    course_object = Course.objects.filter(id=course)
+                    if course_object:
+                        coursedata = CourseSerializer(
+                            course_object,
+                            many=True
+                        ).data[0]
+                        courses.append(coursedata)
+                return Response({'user': user, 'courses': courses})
+            else:
+                return Response(
+                    status=status.HTTP_404_NOT_FOUND
+                )
 
     def post(self, request):
         data = request.data
