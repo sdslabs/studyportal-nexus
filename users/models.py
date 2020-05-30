@@ -75,3 +75,18 @@ class Upload(models.Model):
 
     def __str__(self):
         return self.title
+
+class Notifications(models.Model):
+    id = models.AutoField(primary_key=True, editable=False)
+    recipient = models.ForeignKey(User,
+                                  blank=False,
+                                  related_name='notifications',
+                                  on_delete=models.CASCADE)
+    unread = models.BooleanField(default=True, blank=False)
+    actor = models.CharField(max_length=255, blank=False)
+    verb = models.CharField(max_length=255,blank=False)
+    action = models.CharField(max_length=255,blank=False)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.actor}{self.verb}{self.action}at  {self.timestamp}"
