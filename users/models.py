@@ -83,7 +83,7 @@ class Notifications(models.Model):
                                   related_name='notifications',
                                   on_delete=models.CASCADE)
     unread = models.BooleanField(default=True, blank=False)
-    actor = models.CharField(max_length=255, blank=False)
+    actor = models.CharField(max_length=255, blank=True)
     verb = models.CharField(max_length=255,blank=False)
     action = models.CharField(max_length=255,blank=False)
     timestamp = models.DateTimeField(auto_now_add=True)

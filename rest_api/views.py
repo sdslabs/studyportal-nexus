@@ -17,6 +17,9 @@ import jwt
 import os
 import itertools
 from rest_api.documents import CourseDocument, FileDocument, DepartmentDocument
+from users.models import User, Notifications
+from users.serializers import UserSerializer
+from users.signals import notification_handler
 
 NEXUS_URL = "http://localhost:8005/api/v1"
 
@@ -27,6 +30,8 @@ def sample(request):
 
 class DepartmentViewSet(APIView):
     def get(self, request):
+        notifications = Notifications.objects.all()
+        print(notifications)
         queryset = Department.objects.all()
         serializer_department = DepartmentSerializer(queryset, many=True)
         department = self.request.query_params.get('department')
@@ -52,6 +57,12 @@ class DepartmentViewSet(APIView):
                 imageurl=data['imageurl']
             )
             department.save()
+            notification_queryset = User.objects.all()
+            serializer_user = UserSerializer(notification_queryset, many=True)
+            recipients = serializer_user.data[:]
+            for recipient in recipients:
+                notification_handler(recipient=recipient['id'], actor="Admin",
+                                     verb="added a department", action=data['abbreviation'])
             return Response(department.save(), status=status.HTTP_200_OK)
         else:
             return Response("Department already exists")
@@ -89,6 +100,12 @@ class CourseViewSet(APIView):
                 code=data['code']
             )
             course.save()
+            notification_queryset = User.objects.all()
+            serializer_user = UserSerializer(notification_queryset, many=True)
+            recipients = serializer_user.data[:]
+            for recipient in recipients:
+                notification_handler(recipient=recipient['id'], actor="Admin",
+                                     verb="added a course", action=data['code'])
             return Response(course.save(), status=status.HTTP_200_OK)
         else:
             return Response("Course already exists")
@@ -160,6 +177,14 @@ class FileViewSet(APIView):
                 finalized=data['finalized']
             )
             file.save()
+            notification_queryset = User.objects.all()
+            serializer_user = UserSerializer(notification_queryset, many=True)
+            recipients = serializer_user.data[:]
+            for recipient in recipients:
+                for course_id in recipient['courses']:
+                    if course == Course.objects.get(id=course_id):
+                        notification_handler(recipient=recipient['id'], actor="Admin",
+                                             verb="added a file", action=data['title'])
             return Response(file.save(), status=status.HTTP_200_OK)
         else:
             return Response("File already exists")

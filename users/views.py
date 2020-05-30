@@ -19,6 +19,7 @@ import base64
 import json
 import jwt
 import os
+from users.signals import notification_handler
 
 NEXUS_URL = "http://localhost:8005/api/v1"
 STRUCTURE = os.path.join(
@@ -182,6 +183,7 @@ class FileRequestViewSet(APIView):
                 course=course
             )
             request.save()
+            notification_handler(user, "You", "placed a request for", data['title'])
             return Response(
                 FileRequestSerializer(request).data,
                 status=status.HTTP_201_CREATED
@@ -240,6 +242,7 @@ class CourseRequestViewSet(APIView):
                 code=data['code']
             )
             request.save()
+            notification_handler(user, "You", "placed a request for", data['course'])
             return Response(
                 CourseRequestSerializer(request).data,
                 status=status.HTTP_201_CREATED
@@ -339,6 +342,7 @@ class UploadViewSet(APIView):
             course=course
         )
         upload.save()
+        notification_handler(user, "You", "placed a request to upload", name)
         return Response(
             UploadSerializer(upload).data,
             status=status.HTTP_200_OK
