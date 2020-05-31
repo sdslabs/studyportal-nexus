@@ -173,7 +173,7 @@ class FileViewSet(APIView):
         if action:
             if(action == 'download_file'):
                 queryset.update(downloads=queryset[0].downloads + 1)
-        else:    
+        else:
             File.objects.filter(title=data['title']).update(**data)
         serializer = FileSerializer(queryset, many=True)
         return Response(serializer.data[0]['downloads'], status=status.HTTP_200_OK)
