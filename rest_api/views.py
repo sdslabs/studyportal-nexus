@@ -30,8 +30,6 @@ def sample(request):
 
 class DepartmentViewSet(APIView):
     def get(self, request):
-        notifications = Notifications.objects.all()
-        print(notifications)
         queryset = Department.objects.all()
         serializer_department = DepartmentSerializer(queryset, many=True)
         department = self.request.query_params.get('department')

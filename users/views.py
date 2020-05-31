@@ -183,7 +183,8 @@ class FileRequestViewSet(APIView):
                 course=course
             )
             request.save()
-            notification_handler(user, "You", "placed a request for", data['title'])
+            user_id = UserSerializer(user).data['id']
+            notification_handler(user_id, "You", "placed a request for", data['title'])
             return Response(
                 FileRequestSerializer(request).data,
                 status=status.HTTP_201_CREATED
@@ -242,7 +243,8 @@ class CourseRequestViewSet(APIView):
                 code=data['code']
             )
             request.save()
-            notification_handler(user, "You", "placed a request for", data['course'])
+            user_id = UserSerializer(user).data['id']
+            notification_handler(user_id, "You", "placed a request for", data['course'])
             return Response(
                 CourseRequestSerializer(request).data,
                 status=status.HTTP_201_CREATED
@@ -342,7 +344,8 @@ class UploadViewSet(APIView):
             course=course
         )
         upload.save()
-        notification_handler(user, "You", "placed a request to upload", name)
+        user_id = UserSerializer(user).data['id']
+        notification_handler(user_id, "You", "placed a request to upload", name)
         return Response(
             UploadSerializer(upload).data,
             status=status.HTTP_200_OK

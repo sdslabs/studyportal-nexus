@@ -21,7 +21,6 @@ class User(models.Model):
     def __str__(self):
         return self.username
 
-
 REQUEST_STATUS = [
     (1, 1),
     (2, 2),
@@ -78,10 +77,7 @@ class Upload(models.Model):
 
 class Notifications(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
-    recipient = models.ForeignKey(User,
-                                  blank=False,
-                                  related_name='notifications',
-                                  on_delete=models.CASCADE)
+    recipient = models.IntegerField(blank=False)
     unread = models.BooleanField(default=True, blank=False)
     actor = models.CharField(max_length=255, blank=True)
     verb = models.CharField(max_length=255,blank=False)
@@ -89,4 +85,4 @@ class Notifications(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.actor}{self.verb}{self.action}at  {self.timestamp}"
+        return f"{self.actor} {self.verb} {self.action} at {self.timestamp}"
