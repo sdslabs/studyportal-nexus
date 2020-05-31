@@ -166,8 +166,11 @@ class FileViewSet(APIView):
 
     def put(self, request):
         data = request.data.copy()
-        queryset = File.objects.filter(id=data['id'])
-        queryset.update(downloads=queryset[0].downloads + 1)
+        action = data['action']
+        queryset = File.objects.filter(title=data['title'])
+        if(action == 'download_file'):
+            queryset.update(downloads=queryset[0].downloads + 1)
+        
         serializer = FileSerializer(queryset, many=True)
         return Response(serializer.data)
 
