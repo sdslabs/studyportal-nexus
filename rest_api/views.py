@@ -166,14 +166,14 @@ class FileViewSet(APIView):
 
     def put(self, request):
         data = request.data.copy()
-        queryset = File.objects.filter(title=data['title'])
+        queryset = File.objects.filter(id=data['id'])
         download = data.get('downloads')
         if not queryset:
             return Response("File doesn't exist!", status=status.HTTP_404_NOT_FOUND)
         if download == 'true':
             queryset.update(downloads=queryset[0].downloads + 1)
         else:
-            File.objects.filter(title=data['title']).update(**data)
+            queryset.update(**data)
         serializer = FileSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
