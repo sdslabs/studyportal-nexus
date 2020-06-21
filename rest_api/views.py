@@ -164,6 +164,19 @@ class FileViewSet(APIView):
         else:
             return Response("File already exists")
 
+    def put(self, request):
+        data = request.data.copy()
+        queryset = File.objects.filter(id=data['id'])
+        download = data.get('downloads')
+        if not queryset:
+            return Response("File doesn't exist!", status=status.HTTP_404_NOT_FOUND)
+        if download == 'true':
+            queryset.update(downloads=queryset[0].downloads + 1)
+        else:
+            queryset.update(**data)
+        serializer = FileSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     def delete(self, request):
         file = File.objects.get(id=request.data.get('file')).delete()
         return Response(file)
