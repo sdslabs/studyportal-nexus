@@ -31,6 +31,15 @@ STRUCTURE_TEST = os.path.join(
 )
 
 
+def get_size(size):
+    file_size = size
+    if round(file_size / (1024 * 1024), 2) == 0.00:
+        return str(round(file_size / (1024), 2)) + " KB"
+    else:
+        return str(round(file_size / (1024 * 1024), 2)) + " MB"
+
+
+
 def getUserFromJWT(token):
     try:
         decoded_jwt = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
@@ -307,6 +316,12 @@ class UploadViewSet(APIView):
         mime_type = type.split(":")[1].split(";")[0]
         ext = type.split("/")[1].split(";")[0]
         base64String = file.split(",")[1]
+        
+        # TODO: get size of the file
+        # size = os.path.getsize()
+        size=get_size(0),
+        ##
+        
         rand = str(random.randint(0, 100000))
         temp = open("temp" + rand + "." + ext, "wb")
         temp.write(base64.b64decode(base64String))
@@ -332,6 +347,7 @@ class UploadViewSet(APIView):
         upload = Upload(
             user=user,
             driveid=driveid,
+            size=size,
             resolved=False,
             status=request.data['status'],
             title=name,
@@ -343,6 +359,42 @@ class UploadViewSet(APIView):
             UploadSerializer(upload).data,
             status=status.HTTP_200_OK
         )
+
+    def put(self, request):
+        # when the admin reviews the files in the drive
+        # resolved = True
+        # make a post request to FileView set API
+
+        token = request.headers['Authorization'].split(' ')[1]
+        if token != 'None':
+            user = getUserFromJWT(token)
+        else:
+            return Response("Sorry, can't authenticate you fam, send me a token")
+
+        if(user['role'] == 'admin'):
+            fileID = request.data['file_id']
+            file = Upload.objects.get(id=fileID)
+            # add the file to the db
+            url = "http://localhost:8005/api/v1/files/"
+            data = {
+                "title": file.title,
+                "driveid": file.driveid,
+                "size": file.size,
+                "code": file.course.code,
+                "filetype": file.filetype,
+                "finalized": True
+            }
+            response = requests.post(url, data)
+            if(response.status_code == 200):
+                queryset = Upload.objects.filter(id=fileID)
+                queryset.update(resolved=True)
+            else:
+                return Response("Failed to add to db :(")
+        else:
+            return Response("You ain't the admin, go away from my api!!!")
+
+        serializer = UploadSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     @classmethod
     def get_extra_actions(cls):
