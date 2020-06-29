@@ -18,12 +18,17 @@ class MyConsumer(WebsocketConsumer):
             async_to_sync(self.channel_layer.group_add)(
                 self.groupname, self.channel_name
             )
-        self.send(text_data="Hello world!")
 
     def send_notification(self, event):
         notification = event['notification']
+        notification_type = event['notification_type']
+        target = event['target']
+        notification_data = event['notification_data']
         self.send(text_data=json.dumps({
-            'notification' : notification
+            'notification' : notification,
+            'notification_type': notification_type,
+            'target' : target,
+            'notification_data' : notification_data
         }))
 
     def disconnect(self, code):

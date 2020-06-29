@@ -1,4 +1,4 @@
-from users.models import User, FileRequest, CourseRequest, Upload
+from users.models import User, FileRequest, CourseRequest, Upload, Notifications
 from rest_api.models import Course
 from rest_api.serializers import CourseSerializer
 from rest_framework import serializers
@@ -55,3 +55,8 @@ class UploadSerializer(serializers.ModelSerializer):
             'date',
             'course'
         )
+
+class NotificationsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notifications
+        fields = '__all__'

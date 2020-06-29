@@ -11,4 +11,5 @@ urlpatterns = [
     url(r'^filerequests', views.FileRequestViewSet.as_view()),
     url(r'^courserequests', views.CourseRequestViewSet.as_view()),
     url(r'^uploads', views.UploadViewSet.as_view()),
+    url(r'^notifications', views.NotificationViewSet.as_view()),
 ]

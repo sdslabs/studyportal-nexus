@@ -83,6 +83,8 @@ class Notifications(models.Model):
     verb = models.CharField(max_length=255,blank=False)
     action = models.CharField(max_length=255,blank=False)
     timestamp = models.DateTimeField(auto_now_add=True)
+    notification_type = models.CharField(max_length=255)
+    target = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
         return f"{self.actor} {self.verb} {self.action} at {self.timestamp}"
