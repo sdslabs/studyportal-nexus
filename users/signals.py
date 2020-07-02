@@ -9,6 +9,7 @@ from users.serializers import NotificationsSerializer
 
 notify = django.dispatch.Signal(providing_args=["recipient, notification, notification_data"])
 
+
 def notification_handler(recipient, actor, verb, action, notification_type, target, link):
     new_notification = Notifications(
         recipient=recipient,
@@ -26,6 +27,7 @@ def notification_handler(recipient, actor, verb, action, notification_type, targ
                 notification=new_notification,
                 notification_data=notification_data)
 
+
 @receiver(notify, sender=Notifications)
 def send_notification(sender, **kwargs):
     channel_layer = get_channel_layer()
@@ -35,8 +37,8 @@ def send_notification(sender, **kwargs):
     async_to_sync(channel_layer.group_send)(
         groupname,
         {
-            'type' : 'send.notification',
-            'notification' : notification,
-            'notification_data' : notification_data
+            'type': 'send.notification',
+            'notification': notification,
+            'notification_data': notification_data
         }
     )

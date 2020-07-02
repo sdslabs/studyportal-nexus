@@ -3,6 +3,7 @@ from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 from users.views import getUserFromJWT
 
+
 class MyConsumer(WebsocketConsumer):
     def connect(self):
         self.accept()
@@ -22,8 +23,8 @@ class MyConsumer(WebsocketConsumer):
         notification = event['notification']
         notification_data = event['notification_data']
         self.send(text_data=json.dumps({
-            'notification' : notification,
-            'notification_data' : notification_data
+            'notification': notification,
+            'notification_data': notification_data
         }))
 
     def disconnect(self, code):

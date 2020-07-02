@@ -56,6 +56,7 @@ class UploadSerializer(serializers.ModelSerializer):
             'course'
         )
 
+
 class NotificationsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notifications

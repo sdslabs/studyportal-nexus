@@ -62,7 +62,7 @@ class DepartmentViewSet(APIView):
                 notification_handler(recipient=recipient['id'], actor="Admin",
                                      verb="added a department", action=data['abbreviation'],
                                      notification_type="adddepaartment", target=None,
-                                     link="/departments/"+data['abbreviation'])
+                                     link="/departments/" + data['abbreviation'])
             return Response(department.save(), status=status.HTTP_200_OK)
         else:
             return Response("Department already exists")
@@ -107,7 +107,7 @@ class CourseViewSet(APIView):
                 notification_handler(recipient=recipient['id'], actor="Admin",
                                      verb="added a course", action=data['code'],
                                      notification_type="addcourse", target=queryset,
-                                     link="/departments/"+queryset+"/courses/"+data['code'])
+                                     link="/departments/" + queryset + "/courses/" + data['code'])
             return Response(course.save(), status=status.HTTP_200_OK)
         else:
             return Response("Course already exists")
@@ -199,8 +199,8 @@ class FileViewSet(APIView):
                         notification_handler(recipient=recipient['id'], actor="Admin",
                                              verb="added a file", action=data['title'],
                                              notification_type="addfile", target=course,
-                                             link="/departments/"+department_code+"/courses/"
-                                             +data['code'])
+                                             link="/departments/" + department_code + "/courses/" +
+                                             data['code'])
             return Response(file.save(), status=status.HTTP_200_OK)
         else:
             return Response("File already exists")

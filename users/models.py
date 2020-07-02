@@ -21,6 +21,7 @@ class User(models.Model):
     def __str__(self):
         return self.username
 
+
 REQUEST_STATUS = [
     (1, 1),
     (2, 2),
@@ -74,6 +75,7 @@ class Upload(models.Model):
 
     def __str__(self):
         return self.title
+
 
 class Notifications(models.Model):
     id = models.AutoField(primary_key=True, editable=False)

@@ -361,6 +361,7 @@ class UploadViewSet(APIView):
     def get_extra_actions(cls):
         return []
 
+
 class NotificationViewSet(APIView):
     def get(self, request):
         token = request.headers['Authorization'].split(' ')[1]
