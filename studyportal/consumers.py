@@ -1,7 +1,6 @@
 import json
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
-from users.models import User
 from users.views import getUserFromJWT
 
 class MyConsumer(WebsocketConsumer):
@@ -21,13 +20,9 @@ class MyConsumer(WebsocketConsumer):
 
     def send_notification(self, event):
         notification = event['notification']
-        notification_type = event['notification_type']
-        target = event['target']
         notification_data = event['notification_data']
         self.send(text_data=json.dumps({
             'notification' : notification,
-            'notification_type': notification_type,
-            'target' : target,
             'notification_data' : notification_data
         }))
 

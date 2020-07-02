@@ -61,7 +61,8 @@ class DepartmentViewSet(APIView):
             for recipient in recipients:
                 notification_handler(recipient=recipient['id'], actor="Admin",
                                      verb="added a department", action=data['abbreviation'],
-                                     notification_type="adddepaartment", target=None)
+                                     notification_type="adddepaartment", target=None,
+                                     link="/departments/"+data['abbreviation'])
             return Response(department.save(), status=status.HTTP_200_OK)
         else:
             return Response("Department already exists")
@@ -105,7 +106,8 @@ class CourseViewSet(APIView):
             for recipient in recipients:
                 notification_handler(recipient=recipient['id'], actor="Admin",
                                      verb="added a course", action=data['code'],
-                                     notification_type="addcourse", target=queryset)
+                                     notification_type="addcourse", target=queryset,
+                                     link="/departments/"+queryset+"/courses/"+data['code'])
             return Response(course.save(), status=status.HTTP_200_OK)
         else:
             return Response("Course already exists")
@@ -118,7 +120,8 @@ class CourseViewSet(APIView):
         for recipient in recipients:
             notification_handler(recipient=recipient['id'], actor="Admin",
                                  verb="deleted a course", action=course,
-                                 notification_type="deletecourse", target=None)
+                                 notification_type="deletecourse", target=None,
+                                 link="")
         return Response(course)
 
     @classmethod
@@ -190,9 +193,14 @@ class FileViewSet(APIView):
             for recipient in recipients:
                 for course_id in recipient['courses']:
                     if course == Course.objects.get(id=course_id):
+                        serializer_course = CourseSerializer(course)
+                        department = serializer_course.data['department']
+                        department_code = DepartmentSerializer(department).data['abbreviation']
                         notification_handler(recipient=recipient['id'], actor="Admin",
                                              verb="added a file", action=data['title'],
-                                             notification_type="addfile", target=course)
+                                             notification_type="addfile", target=course,
+                                             link="/departments/"+department_code+"/courses/"
+                                             +data['code'])
             return Response(file.save(), status=status.HTTP_200_OK)
         else:
             return Response("File already exists")

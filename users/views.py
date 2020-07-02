@@ -184,8 +184,10 @@ class FileRequestViewSet(APIView):
             )
             request.save()
             user_id = UserSerializer(user).data['id']
+            course_code = CourseSerializer(course).data['code']
             notification_handler(user_id, "You", "placed a request for",
-                                 data['title'], "filerequest", course)
+                                 data['title'], "request", course_code,
+                                 "/activity/requests")
             return Response(
                 FileRequestSerializer(request).data,
                 status=status.HTTP_201_CREATED
@@ -246,7 +248,8 @@ class CourseRequestViewSet(APIView):
             request.save()
             user_id = UserSerializer(user).data['id']
             notification_handler(user_id, "You", "placed a request for",
-                                 data['course'], "courserequest", data['department'])
+                                 data['course'], "request", data['department'],
+                                 "/activity/requests")
             return Response(
                 CourseRequestSerializer(request).data,
                 status=status.HTTP_201_CREATED
@@ -347,7 +350,8 @@ class UploadViewSet(APIView):
         )
         upload.save()
         user_id = UserSerializer(user).data['id']
-        notification_handler(user_id, "You", "placed a request to upload", name, "upload", course)
+        notification_handler(user_id, "You", "placed a request to upload",
+                             name, "upload", course, "activity/uploads")
         return Response(
             UploadSerializer(upload).data,
             status=status.HTTP_200_OK
@@ -366,6 +370,6 @@ class NotificationViewSet(APIView):
         serializer = NotificationsSerializer(queryset, many=True)
         return Response(serializer.data)
 
-    def delete(self, request):
-        notification = Notifications.objetcs.get(id=request.data.get('notification')).delete()
+    def put(self, request):
+        notification = Notifications.objects.get(id=request.data.get('notification')).delete()
         return Response(notification)
