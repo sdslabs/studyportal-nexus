@@ -199,8 +199,7 @@ class FileViewSet(APIView):
                         notification_handler(recipient=recipient['id'], actor="Admin",
                                              verb="added a file", action=data['title'],
                                              notification_type="addfile", target=course,
-                                             link="/departments/" + department_code + "/courses/" +
-                                             data['code'])
+                                             link="/departments/" + department_code + "/courses/" + data['code'])
             return Response(file.save(), status=status.HTTP_200_OK)
         else:
             return Response("File already exists")
