@@ -55,7 +55,7 @@ class DepartmentViewSet(APIView):
                 imageurl=data['imageurl']
             )
             department.save()
-            notification_queryset = User.objects.all()
+            users_list = User.objects.all()
             serializer_user = UserSerializer(notification_queryset, many=True)
             recipients = serializer_user.data[:]
             for recipient in recipients:
