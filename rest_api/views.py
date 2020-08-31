@@ -56,7 +56,7 @@ class DepartmentViewSet(APIView):
             )
             department.save()
             users_list = User.objects.all()
-            serializer_user = UserSerializer(notification_queryset, many=True)
+            recipients_list = UserSerializer(notification_queryset, many=True)
             recipients = serializer_user.data[:]
             for recipient in recipients:
                 notification_handler(recipient=recipient['id'], actor="Admin",
