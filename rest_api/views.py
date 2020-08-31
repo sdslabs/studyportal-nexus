@@ -61,7 +61,7 @@ class DepartmentViewSet(APIView):
             for recipient in recipients:
                 notification_handler(recipient=recipient['id'], actor="Admin",
                                      verb="added a department", action=data['abbreviation'],
-                                     notification_type="adddepaartment", target=None,
+                                     notification_type="adddepaartment", target='',
                                      link="/departments/" + data['abbreviation'])
             return Response(department.save(), status=status.HTTP_200_OK)
         else:
@@ -102,12 +102,13 @@ class CourseViewSet(APIView):
             course.save()
             notification_queryset = User.objects.all()
             serializer_user = UserSerializer(notification_queryset, many=True)
+            department_code = DepartmentSerializer(queryset).data['abbreviation']
             recipients = serializer_user.data[:]
             for recipient in recipients:
                 notification_handler(recipient=recipient['id'], actor="Admin",
                                      verb="added a course", action=data['code'],
                                      notification_type="addcourse", target=queryset,
-                                     link="/departments/" + queryset + "/courses/" + data['code'])
+                                     link="/departments/" + department_code + "/courses/" + data['code'])
             return Response(course.save(), status=status.HTTP_200_OK)
         else:
             return Response("Course already exists")
