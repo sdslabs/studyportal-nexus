@@ -56,8 +56,8 @@ class DepartmentViewSet(APIView):
             )
             department.save()
             users_list = User.objects.all()
-            recipients_list = UserSerializer(notification_queryset, many=True)
-            recipients = serializer_user.data[:]
+            recipients_list = UserSerializer(users_list, many=True)
+            recipients = recipients_list.data[:]
             for recipient in recipients:
                 notification_handler(recipient=recipient['id'], actor="Admin",
                                      verb="added a department", action=data['abbreviation'],
@@ -100,10 +100,10 @@ class CourseViewSet(APIView):
                 code=data['code']
             )
             course.save()
-            notification_queryset = User.objects.all()
-            serializer_user = UserSerializer(notification_queryset, many=True)
+            user_list = User.objects.all()
+            recipient_list = UserSerializer(user_list, many=True)
             department_code = DepartmentSerializer(queryset).data['abbreviation']
-            recipients = serializer_user.data[:]
+            recipients = recipient_list.data[:]
             for recipient in recipients:
                 notification_handler(recipient=recipient['id'], actor="Admin",
                                      verb="added a course", action=data['code'],
@@ -115,9 +115,9 @@ class CourseViewSet(APIView):
 
     def delete(self, request):
         course = Course.objects.get(id=request.data.get('course')).delete()
-        notification_queryset = User.objects.all()
-        serializer_user = UserSerializer(notification_queryset, many=True)
-        recipients = serializer_user.data[:]
+        user_list = User.objects.all()
+        recipient_list = UserSerializer(user_list, many=True)
+        recipients = recipient_list.data[:]
         for recipient in recipients:
             notification_handler(recipient=recipient['id'], actor="Admin",
                                  verb="deleted a course", action=course,
@@ -188,9 +188,9 @@ class FileViewSet(APIView):
                 finalized=data['finalized']
             )
             file.save()
-            notification_queryset = User.objects.all()
-            serializer_user = UserSerializer(notification_queryset, many=True)
-            recipients = serializer_user.data[:]
+            user_list = User.objects.all()
+            recipient_list = UserSerializer(user_list, many=True)
+            recipients = recipient_list.data[:]
             for recipient in recipients:
                 for course_id in recipient['courses']:
                     if course == Course.objects.get(id=course_id):
