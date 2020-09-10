@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_elasticsearch_dsl',
     'users',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -95,6 +96,16 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'studyportal.wsgi.application'
+ASGI_APPLICATION = 'studyportal.routing.application'
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [('redis', 6379)],
+        },
+    },
+}
 
 
 # Database
