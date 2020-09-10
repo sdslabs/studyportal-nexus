@@ -31,6 +31,16 @@ services:
         soft: 65536
         hard: 65536
 
+  redis:
+    container_name: redis
+    image: redis
+    ports:
+      - "6389:6389"
+    volumes:
+      - ../data/redis:/data
+    entrypoint: redis-server --appendonly yes
+    restart: always
+
   web:
     build: ./
     image: studyportal-nexus
@@ -46,6 +56,7 @@ services:
     depends_on:
       - db
       - es
+      - redis
     extra_hosts:
       - "arceus.sdslabs.local:127.0.0.1"
       - "falcon.sdslabs.local:127.0.0.1"

@@ -76,3 +76,19 @@ class Upload(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Notifications(models.Model):
+    id = models.AutoField(primary_key=True, editable=False)
+    recipient = models.IntegerField(blank=False)
+    unread = models.BooleanField(default=True, blank=False)
+    actor = models.CharField(max_length=255, blank=True)
+    verb = models.CharField(max_length=255, blank=False)
+    action = models.CharField(max_length=255, blank=False)
+    timestamp = models.DateField(auto_now_add=True)
+    notification_type = models.CharField(max_length=255)
+    target = models.CharField(max_length=100, blank=True)
+    link = models.CharField(max_length=255, blank=True)
+
+    def __str__(self):
+        return f"{self.actor} {self.verb} {self.action} on {self.timestamp}"
