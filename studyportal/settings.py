@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_elasticsearch_dsl',
     'users',
+    'admin_panel',
 ]
 
 MIDDLEWARE = [

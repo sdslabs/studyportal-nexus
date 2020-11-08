@@ -198,19 +198,6 @@ class FileRequestViewSet(APIView):
         else:
             return Response("Request already exists")
 
-    def put(self, request):
-        data = request.data
-        query = FileRequest.objects.filter(
-            id=data['request']
-        ).update(status=data['status'])
-        return Response(query, status=status.HTTP_200_OK)
-
-    def delete(self, request):
-        requests = FileRequest.objects.get(
-            id=request.data.get('request')
-        ).delete()
-        return Response(requests)
-
     @classmethod
     def get_extra_actions(cls):
         return []
@@ -255,19 +242,6 @@ class CourseRequestViewSet(APIView):
             )
         else:
             return Response("Request already exists")
-
-    def put(self, request):
-        data = request.data
-        query = CourseRequest.objects.filter(
-            id=data['request']
-        ).update(status=data['status'])
-        return Response(query, status=status.HTTP_200_OK)
-
-    def delete(self, request):
-        requests = CourseRequest.objects.get(
-            id=request.data.get('request')
-        ).delete()
-        return Response(requests)
 
     @classmethod
     def get_extra_actions(cls):
@@ -316,7 +290,7 @@ class UploadViewSet(APIView):
         mime_type = type.split(":")[1].split(";")[0]
         ext = type.split("/")[1].split(";")[0]
         base64String = file.split(",")[1]
-        
+
         # TODO: get size of the file
         # size = os.path.getsize()
         size=get_size(0),
@@ -359,42 +333,6 @@ class UploadViewSet(APIView):
             UploadSerializer(upload).data,
             status=status.HTTP_200_OK
         )
-
-    def put(self, request):
-        # when the admin reviews the files in the drive
-        # resolved = True
-        # make a post request to FileView set API
-
-        token = request.headers['Authorization'].split(' ')[1]
-        if token != 'None':
-            user = getUserFromJWT(token)
-        else:
-            return Response("Sorry, can't authenticate you fam, send me a token")
-
-        if(user['role'] == 'admin'):
-            fileID = request.data['file_id']
-            file = Upload.objects.get(id=fileID)
-            # add the file to the db
-            url = "http://localhost:8005/api/v1/files/"
-            data = {
-                "title": file.title,
-                "driveid": file.driveid,
-                "size": file.size,
-                "code": file.course.code,
-                "filetype": file.filetype,
-                "finalized": True
-            }
-            response = requests.post(url, data)
-            if(response.status_code == 200):
-                queryset = Upload.objects.filter(id=fileID)
-                queryset.update(resolved=True)
-            else:
-                return Response("Failed to add to db :(")
-        else:
-            return Response("You ain't the admin, go away from my api!!!")
-
-        serializer = UploadSerializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
     @classmethod
     def get_extra_actions(cls):
