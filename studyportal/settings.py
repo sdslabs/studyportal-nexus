@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'django_elasticsearch_dsl',
     'users',
     'channels',
+    'admin_panel',
 ]
 
 MIDDLEWARE = [
