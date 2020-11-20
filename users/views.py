@@ -39,7 +39,6 @@ def get_size(size):
         return str(round(file_size / (1024 * 1024), 2)) + " MB"
 
 
-
 def getUserFromJWT(token):
     try:
         decoded_jwt = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
@@ -316,12 +315,12 @@ class UploadViewSet(APIView):
         mime_type = type.split(":")[1].split(";")[0]
         ext = type.split("/")[1].split(";")[0]
         base64String = file.split(",")[1]
-        
+
         # TODO: get size of the file
         # size = os.path.getsize()
-        size=get_size(0),
+        size = get_size(0),
         ##
-        
+
         rand = str(random.randint(0, 100000))
         temp = open("temp" + rand + "." + ext, "wb")
         temp.write(base64.b64decode(base64String))
@@ -372,10 +371,9 @@ class UploadViewSet(APIView):
             return Response("Sorry, can't authenticate you fam, send me a token")
 
         if(user['role'] == 'admin'):
-            fileID = request.data['file_id']
-            file = Upload.objects.get(id=fileID)
+            file_id = request.data['file_id']
+            file = Upload.objects.get(id=file_id)
             # add the file to the db
-            url = "http://localhost:8005/api/v1/files/"
             data = {
                 "title": file.title,
                 "driveid": file.driveid,
@@ -384,9 +382,9 @@ class UploadViewSet(APIView):
                 "filetype": file.filetype,
                 "finalized": True
             }
-            response = requests.post(url, data)
+            response = requests.post(NEXUS_URL + "/files", data)
             if(response.status_code == 200):
-                queryset = Upload.objects.filter(id=fileID)
+                queryset = Upload.objects.filter(id=file_id)
                 queryset.update(resolved=True)
             else:
                 return Response("Failed to add to db :(")
