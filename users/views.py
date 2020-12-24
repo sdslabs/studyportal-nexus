@@ -39,7 +39,6 @@ def get_size(size):
         return str(round(file_size / (1024 * 1024), 2)) + " MB"
 
 
-
 def getUserFromJWT(token):
     try:
         decoded_jwt = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
@@ -293,9 +292,9 @@ class UploadViewSet(APIView):
 
         # TODO: get size of the file
         # size = os.path.getsize()
-        size=get_size(0),
+        size = get_size(0),
         ##
-        
+
         rand = str(random.randint(0, 100000))
         temp = open("temp" + rand + "." + ext, "wb")
         temp.write(base64.b64decode(base64String))
