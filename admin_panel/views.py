@@ -6,13 +6,12 @@ from users.serializers import CourseRequestSerializer, FileRequestSerializer, Up
 from users.models import CourseRequest, FileRequest, Upload
 from rest_framework.views import APIView
 
+
 class FileRequestViewSet(APIView):
     def get(self, request):
         queryset = FileRequest.objects.all()
         serializer = FileRequestSerializer(queryset, many=True)
-        print(serializer)
-        print('hello')
-        return Response({'filerequest':serializer.data})
+        return Response({'filerequest': serializer.data})
 
     def put(self, request):
         data = request.data
@@ -31,11 +30,12 @@ class FileRequestViewSet(APIView):
     def get_extra_actions(cls):
         return []
 
+
 class CourseRequestViewSet(APIView):
     def get(self, request):
         queryset = CourseRequest.objects.all()
         serializer = CourseRequestSerializer(queryset, many=True)
-        return Response({'courserequest':serializer.data})
+        return Response({'courserequest': serializer.data})
 
     def put(self, request):
         data = request.data
@@ -54,11 +54,12 @@ class CourseRequestViewSet(APIView):
     def get_extra_actions(cls):
         return []
 
+
 class UploadViewSet(APIView):
     def get(self, request):
         queryset = Upload.objects.all()
         serializer = UploadSerializer(queryset, many=True)
-        return Response({'upload':serializer.data})
+        return Response({'upload': serializer.data})
 
     def put(self, request):
         # when the admin reviews the files in the drive
