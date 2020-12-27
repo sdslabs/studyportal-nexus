@@ -122,7 +122,7 @@ class CourseRequestViewSet(APIView):
             'request', course_request['department'],
             "/activity/requests"
         )
-        requests.delete()
+        requests = requests.delete()
         return Response(requests)
 
     @classmethod
