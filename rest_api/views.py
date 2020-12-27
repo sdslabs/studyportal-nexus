@@ -20,7 +20,7 @@ from rest_api.documents import CourseDocument, FileDocument, DepartmentDocument
 from users.models import User, Notifications
 from users.serializers import UserSerializer
 from users.signals import notification_handler
-from rest_api.utils import add_course
+from rest_api.utils import add_course, add_file
 
 NEXUS_URL = "http://localhost:8005/api/v1"
 
@@ -179,20 +179,7 @@ class FileViewSet(APIView):
                 filetype=data['filetype'],
                 finalized=data['finalized']
             )
-            file.save()
-            user_list = User.objects.all()
-            recipient_list = UserSerializer(user_list, many=True)
-            recipients = recipient_list.data[:]
-            for recipient in recipients:
-                for course_id in recipient['courses']:
-                    if course == Course.objects.get(id=course_id):
-                        serializer_course = CourseSerializer(course)
-                        department = serializer_course.data['department']
-                        department_code = DepartmentSerializer(department).data['abbreviation']
-                        notification_handler(recipient=recipient['id'], actor="Admin",
-                                             verb="added a file", action=data['title'],
-                                             notification_type="addfile", target=course,
-                                             link="/departments/" + department_code + "/courses/" + data['code'])
+            add_file(file, course)
             return Response(file.save(), status=status.HTTP_200_OK)
         else:
             return Response("File already exists")

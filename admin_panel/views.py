@@ -7,8 +7,10 @@ from users.models import CourseRequest, FileRequest, Upload, User
 from rest_framework.views import APIView
 from users.models import Notifications
 from users.signals import notification_handler
-from rest_api.models import Course, Department
-from rest_api.utils import add_course
+from rest_api.models import Course, Department, File
+from rest_api.utils import add_course, add_file
+from rest_api.views import get_fileext, get_size, get_title
+from rest_api.serializers import CourseSerializer
 
 
 class FileRequestViewSet(APIView):
@@ -22,12 +24,35 @@ class FileRequestViewSet(APIView):
         query = FileRequest.objects.filter(
             id=data['request']
         ).update(status=data['status'])
-        file_request = FileRequestSerializer(FileRequest.objects.get(id=data['request']))
-        user = file_request.data['user']
-        course_code = CourseSerializer(Course.objects.get(id=file_request.data['course'])).data['code']
+        file_request = FileRequestSerializer(FileRequest.objects.get(id=data['request'])).data
+        user = file_request['user']
+        course_code = file_request['course']['code']
         user_id = UserSerializer(user).data['id']
         if data['status'] == "2":
-            notification_handler(user_id, 'Admin', 'approved your request for', file_request.data['title'], 'request', course_code, '/activity/requests')
+            notification_handler(
+                user_id, 'Admin', 'approved your request for',
+                file_request['title'], 'request', course_code,
+                '/activity/requests'
+            )
+        if data['status'] == "3":
+            course = Course.objects.get(code=course_code)
+            file = File(
+                title=get_title(file_request['title']),
+                driveid=data['driveid'],
+                downloads=0,
+                size=get_size(int(data['size'])),
+                course=course,
+                fileext=get_fileext(file_request['title']),
+                filetype=file_request['filetype'],
+                finalized=True,
+            )
+            add_file(file, course)
+            notification_handler(
+                user_id, 'Admin', 'upload the file you requested',
+                file_request['title'], 'request', course_code,
+                '/activity/requests'
+            )
+            FileRequest.objects.get(id=request.data.get('request')).delete()
         return Response(query, status=status.HTTP_200_OK)
 
     def delete(self, request):
