@@ -2,9 +2,13 @@ import requests
 from users.views import getUserFromJWT
 from rest_framework import status
 from rest_framework.response import Response
-from users.serializers import CourseRequestSerializer, FileRequestSerializer, UploadSerializer
-from users.models import CourseRequest, FileRequest, Upload
+from users.serializers import CourseRequestSerializer, FileRequestSerializer, UploadSerializer, UserSerializer
+from users.models import CourseRequest, FileRequest, Upload, User
 from rest_framework.views import APIView
+from users.models import Notifications
+from users.signals import notification_handler
+from rest_api.models import Course, Department
+from rest_api.utils import add_course
 
 
 class FileRequestViewSet(APIView):
@@ -18,6 +22,12 @@ class FileRequestViewSet(APIView):
         query = FileRequest.objects.filter(
             id=data['request']
         ).update(status=data['status'])
+        file_request = FileRequestSerializer(FileRequest.objects.get(id=data['request']))
+        user = file_request.data['user']
+        course_code = CourseSerializer(Course.objects.get(id=file_request.data['course'])).data['code']
+        user_id = UserSerializer(user).data['id']
+        if data['status'] == "2":
+            notification_handler(user_id, 'Admin', 'approved your request for', file_request.data['title'], 'request', course_code, '/activity/requests')
         return Response(query, status=status.HTTP_200_OK)
 
     def delete(self, request):
@@ -42,6 +52,17 @@ class CourseRequestViewSet(APIView):
         query = CourseRequest.objects.filter(
             id=data['request']
         ).update(status=data['status'])
+        course_object = CourseRequest.objects.get(id=data['request'])
+        if data['status'] == "3":
+            course_request = CourseRequestSerializer(course_object).data
+            queryset = Department.objects.get(abbreviation=course_request['department'])
+            course = Course(
+                title=course_request['course'],
+                code=course_request['code'],
+                department=queryset
+            )
+            add_course(course, queryset)
+            CourseRequest.objects.get(id=request.data.get('request')).delete()
         return Response(query, status=status.HTTP_200_OK)
 
     def delete(self, request):
