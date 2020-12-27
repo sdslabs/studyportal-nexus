@@ -20,6 +20,7 @@ from rest_api.documents import CourseDocument, FileDocument, DepartmentDocument
 from users.models import User, Notifications
 from users.serializers import UserSerializer
 from users.signals import notification_handler
+from rest_api.utils import add_course
 
 NEXUS_URL = "http://localhost:8005/api/v1"
 
@@ -99,16 +100,7 @@ class CourseViewSet(APIView):
                 department=queryset,
                 code=data['code']
             )
-            course.save()
-            user_list = User.objects.all()
-            recipient_list = UserSerializer(user_list, many=True)
-            department_code = DepartmentSerializer(queryset).data['abbreviation']
-            recipients = recipient_list.data[:]
-            for recipient in recipients:
-                notification_handler(recipient=recipient['id'], actor="Admin",
-                                     verb="added a course", action=data['code'],
-                                     notification_type="addcourse", target=queryset,
-                                     link="/departments/" + department_code + "/courses/" + data['code'])
+            add_course(course, queryset)
             return Response(course.save(), status=status.HTTP_200_OK)
         else:
             return Response("Course already exists")
