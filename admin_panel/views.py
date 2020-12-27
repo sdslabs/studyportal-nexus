@@ -77,7 +77,17 @@ class CourseRequestViewSet(APIView):
     def delete(self, request):
         requests = CourseRequest.objects.get(
             id=request.data.get('request')
-        ).delete()
+        )
+        course_request = CourseRequestSerializer(requests).data
+        user = course_request['user']
+        user_id = UserSerializer(user).data['id']
+        notification_handler(
+            user_id, 'Admin', 'rejected your request for',
+            course_request['code'],
+            'request', course_request['department'],
+            "/activity/requests"
+        )
+        requests.delete()
         return Response(requests)
 
     @classmethod
