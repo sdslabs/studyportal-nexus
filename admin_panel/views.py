@@ -53,8 +53,17 @@ class CourseRequestViewSet(APIView):
             id=data['request']
         ).update(status=data['status'])
         course_object = CourseRequest.objects.get(id=data['request'])
+        course_request = CourseRequestSerializer(course_object).data
+        user = course_request['user']
+        user_id = UserSerializer(user).data['id']
+        if data['status'] == "2":
+            notification_handler(
+                user_id, 'Admin', 'approved your request for',
+                course_request['code'],
+                'request', course_request['department'],
+                "/activity/requests"
+            )
         if data['status'] == "3":
-            course_request = CourseRequestSerializer(course_object).data
             queryset = Department.objects.get(abbreviation=course_request['department'])
             course = Course(
                 title=course_request['course'],
