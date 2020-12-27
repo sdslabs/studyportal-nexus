@@ -48,7 +48,7 @@ class FileRequestViewSet(APIView):
             )
             add_file(file, course)
             notification_handler(
-                user_id, 'Admin', 'upload the file you requested',
+                user_id, 'Admin', 'uploaded the file you requested',
                 file_request['title'], 'request', course_code,
                 '/activity/requests'
             )
@@ -58,7 +58,17 @@ class FileRequestViewSet(APIView):
     def delete(self, request):
         requests = FileRequest.objects.get(
             id=request.data.get('request')
-        ).delete()
+        )
+        file_request = FileRequestSerializer(requests).data
+        user = file_request['user']
+        course_code = file_request['course']['code']
+        user_id = UserSerializer(user).data['id']
+        notification_handler(
+            user_id, 'Admin', 'rejected the file you requested',
+            file_request['title'], 'request', course_code,
+            '/activity/requests'
+        )
+        requests = requests.delete()
         return Response(requests)
 
     @classmethod

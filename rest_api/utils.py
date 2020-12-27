@@ -20,6 +20,7 @@ def add_course(course, department):
             link="/departments/" + department_code + "/courses/" + course_code
         )
 
+
 def add_file(file, course):
     file.save()
     file_data = FileSerializer(file).data
