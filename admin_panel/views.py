@@ -106,6 +106,12 @@ class CourseRequestViewSet(APIView):
                 department=queryset
             )
             add_course(course, queryset)
+            notification_handler(
+                user_id, 'Admin', 'added a course you requested',
+                course_request['code'],
+                'request', course_request['department'],
+                "/activity/requests"
+            )
             CourseRequest.objects.get(id=request.data.get('request')).delete()
         return Response(query, status=status.HTTP_200_OK)
 
