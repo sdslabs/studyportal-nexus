@@ -1,9 +1,10 @@
-import requests
+import json
 from users.views import getUserFromJWT
 from rest_framework import status
 from rest_framework.response import Response
 from users.serializers import CourseRequestSerializer, FileRequestSerializer, UploadSerializer, UserSerializer
 from users.models import CourseRequest, FileRequest, Upload, User
+from users.views import STRUCTURE_TEST, STRUCTURE
 from rest_framework.views import APIView
 from users.models import Notifications
 from users.signals import notification_handler
@@ -11,6 +12,7 @@ from rest_api.models import Course, Department, File
 from rest_api.utils import add_course, add_file
 from rest_api.views import get_fileext, get_size, get_title
 from rest_api.serializers import CourseSerializer
+from studyportal.drive.drive import driveinit
 
 
 class FileRequestViewSet(APIView):
@@ -143,40 +145,42 @@ class UploadViewSet(APIView):
         return Response({'upload': serializer.data})
 
     def put(self, request):
-        # when the admin reviews the files in the drive
-        # resolved = True
-        # make a post request to FileView set API
-
-        token = request.headers['Authorization'].split(' ')[1]
-        if token != 'None':
-            user = getUserFromJWT(token)
-        else:
-            return Response("Sorry, can't authenticate you fam, send me a token")
-
-        if(user['role'] == 'admin'):
-            file_id = request.data['file_id']
-            file = Upload.objects.get(id=file_id)
-            # add the file to the db
-            url = "http://localhost:8005/api/v1/files/"
-            data = {
-                "title": file.title,
-                "driveid": file.driveid,
-                "size": file.size,
-                "code": file.course.code,
-                "filetype": file.filetype,
-                "finalized": True
-            }
-            response = requests.post(url, data)
-            if(response.status_code == 200):
-                queryset = Upload.objects.filter(id=file_id)
-                queryset.update(resolved=True)
-            else:
-                return Response("Failed to add to db :(")
-        else:
-            return Response("You ain't the admin, go away from my api!!!")
-
-        serializer = UploadSerializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        file_id = request.data['file_id']
+        file = Upload.objects.get(id=file_id)
+        upload_status = request.data['status']
+        queryset = Upload.objects.filter(id=file_id)
+        query = queryset.update(status=upload_status)
+        if upload_status == "2":
+            notification_handler(file.user.id, "Admin", "approved the file you uploaded",
+                                 file.title, "upload", file.course, "activity/uploads")
+        elif upload_status == "3":
+            with open(STRUCTURE) as f:
+                structure = json.load(f)
+            course = file.course
+            folder_identifier = file.filetype.lower().replace(" ", "")
+            folder_id = structure['study'][course.department.abbreviation][course.code][folder_identifier]
+            previous_parent = structure['study'][course.department.abbreviation][course.code][folder_identifier + str("_review")]
+            driveinit().files().update(
+                fileId=file.driveid,
+                addParents=folder_id,
+                removeParents=previous_parent,
+                fields='id, parents'
+            ).execute()
+            query = queryset.update(resolved=True)
+            notification_handler(file.user.id, "Admin", "added the file you uploaded",
+                                 file.title, "upload", file.course, "activity/uploads")
+            user_list = User.objects.all()
+            recipient_list = UserSerializer(user_list, many=True)
+            recipients = recipient_list.data[:]
+            for recipient in recipients:
+                for course_id in recipient['courses']:
+                    if course == Course.objects.get(id=course_id):
+                        department_code = course.department.abbreviation
+                        notification_handler(recipient=recipient['id'], actor="Admin",
+                                            verb="added a file", action=file.title,
+                                            notification_type="addfile", target=course,
+                                            link="/departments/" + department_code + "/courses/" + file.course.code)
+        return Response(query, status=status.HTTP_200_OK)
 
     @classmethod
     def get_extra_actions(cls):
