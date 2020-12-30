@@ -182,6 +182,15 @@ class UploadViewSet(APIView):
                                             link="/departments/" + department_code + "/courses/" + file.course.code)
         return Response(query, status=status.HTTP_200_OK)
 
+    def delete(self, request):
+        requests = Upload.objects.get(
+            id=request.data.get('request')
+        )
+        notification_handler(requests.user.id, "Admin", "rejected the file you uploaded",
+                             requests.title, "upload", requests.course, "activity/uploads")
+        requests = requests.delete()
+        return Response(requests)
+
     @classmethod
     def get_extra_actions(cls):
         return []
