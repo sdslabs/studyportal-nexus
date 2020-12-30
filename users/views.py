@@ -1,11 +1,11 @@
 from rest_api.models import Course
-from users.models import User, FileRequest, CourseRequest, Upload
+from users.models import User, FileRequest, CourseRequest, Upload, Notifications
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_api.serializers import CourseSerializer
 from users.serializers import UserSerializer
-from users.serializers import FileRequestSerializer, CourseRequestSerializer
+from users.serializers import FileRequestSerializer, CourseRequestSerializer, NotificationsSerializer
 from users.serializers import UploadSerializer
 from studyportal.settings import SECRET_KEY
 from apiclient.http import MediaFileUpload
@@ -19,6 +19,7 @@ import base64
 import json
 import jwt
 import os
+from users.signals import notification_handler
 
 NEXUS_URL = "http://localhost:8005/api/v1"
 STRUCTURE = os.path.join(
@@ -182,6 +183,11 @@ class FileRequestViewSet(APIView):
                 course=course
             )
             request.save()
+            user_id = UserSerializer(user).data['id']
+            course_code = CourseSerializer(course).data['code']
+            notification_handler(user_id, "You", "placed a request for",
+                                 data['title'], "request", course_code,
+                                 "/activity/requests")
             return Response(
                 FileRequestSerializer(request).data,
                 status=status.HTTP_201_CREATED
@@ -240,6 +246,10 @@ class CourseRequestViewSet(APIView):
                 code=data['code']
             )
             request.save()
+            user_id = UserSerializer(user).data['id']
+            notification_handler(user_id, "You", "placed a request for",
+                                 data['course'], "request", data['department'],
+                                 "/activity/requests")
             return Response(
                 CourseRequestSerializer(request).data,
                 status=status.HTTP_201_CREATED
@@ -339,6 +349,9 @@ class UploadViewSet(APIView):
             course=course
         )
         upload.save()
+        user_id = UserSerializer(user).data['id']
+        notification_handler(user_id, "You", "placed a request to upload",
+                             name, "upload", course, "activity/uploads")
         return Response(
             UploadSerializer(upload).data,
             status=status.HTTP_200_OK
@@ -347,3 +360,17 @@ class UploadViewSet(APIView):
     @classmethod
     def get_extra_actions(cls):
         return []
+
+
+class NotificationViewSet(APIView):
+    def get(self, request):
+        token = request.headers['Authorization'].split(' ')[1]
+        if token != 'None':
+            user = getUserFromJWT(token)
+            queryset = Notifications.objects.filter(recipient=user['id'])
+        serializer = NotificationsSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def put(self, request):
+        notification = Notifications.objects.get(id=request.data.get('notification')).delete()
+        return Response(notification)

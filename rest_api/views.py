@@ -17,6 +17,9 @@ import jwt
 import os
 import itertools
 from rest_api.documents import CourseDocument, FileDocument, DepartmentDocument
+from users.models import User, Notifications
+from users.serializers import UserSerializer
+from users.signals import notification_handler
 
 NEXUS_URL = "http://localhost:8005/api/v1"
 
@@ -52,6 +55,14 @@ class DepartmentViewSet(APIView):
                 imageurl=data['imageurl']
             )
             department.save()
+            users_list = User.objects.all()
+            recipients_list = UserSerializer(users_list, many=True)
+            recipients = recipients_list.data[:]
+            for recipient in recipients:
+                notification_handler(recipient=recipient['id'], actor="Admin",
+                                     verb="added a department", action=data['abbreviation'],
+                                     notification_type="adddepaartment", target='',
+                                     link="/departments/" + data['abbreviation'])
             return Response(department.save(), status=status.HTTP_200_OK)
         else:
             return Response("Department already exists")
@@ -89,12 +100,29 @@ class CourseViewSet(APIView):
                 code=data['code']
             )
             course.save()
+            user_list = User.objects.all()
+            recipient_list = UserSerializer(user_list, many=True)
+            department_code = DepartmentSerializer(queryset).data['abbreviation']
+            recipients = recipient_list.data[:]
+            for recipient in recipients:
+                notification_handler(recipient=recipient['id'], actor="Admin",
+                                     verb="added a course", action=data['code'],
+                                     notification_type="addcourse", target=queryset,
+                                     link="/departments/" + department_code + "/courses/" + data['code'])
             return Response(course.save(), status=status.HTTP_200_OK)
         else:
             return Response("Course already exists")
 
     def delete(self, request):
         course = Course.objects.get(id=request.data.get('course')).delete()
+        user_list = User.objects.all()
+        recipient_list = UserSerializer(user_list, many=True)
+        recipients = recipient_list.data[:]
+        for recipient in recipients:
+            notification_handler(recipient=recipient['id'], actor="Admin",
+                                 verb="deleted a course", action=course,
+                                 notification_type="deletecourse", target=None,
+                                 link="")
         return Response(course)
 
     @classmethod
@@ -160,9 +188,35 @@ class FileViewSet(APIView):
                 finalized=data['finalized']
             )
             file.save()
+            user_list = User.objects.all()
+            recipient_list = UserSerializer(user_list, many=True)
+            recipients = recipient_list.data[:]
+            for recipient in recipients:
+                for course_id in recipient['courses']:
+                    if course == Course.objects.get(id=course_id):
+                        serializer_course = CourseSerializer(course)
+                        department = serializer_course.data['department']
+                        department_code = DepartmentSerializer(department).data['abbreviation']
+                        notification_handler(recipient=recipient['id'], actor="Admin",
+                                             verb="added a file", action=data['title'],
+                                             notification_type="addfile", target=course,
+                                             link="/departments/" + department_code + "/courses/" + data['code'])
             return Response(file.save(), status=status.HTTP_200_OK)
         else:
             return Response("File already exists")
+
+    def put(self, request):
+        data = request.data.copy()
+        queryset = File.objects.filter(id=data['id'])
+        download = data.get('downloads')
+        if not queryset:
+            return Response("File doesn't exist!", status=status.HTTP_404_NOT_FOUND)
+        if download == 'true':
+            queryset.update(downloads=queryset[0].downloads + 1)
+        else:
+            queryset.update(**data)
+        serializer = FileSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def delete(self, request):
         file = File.objects.get(id=request.data.get('file')).delete()
