@@ -315,7 +315,7 @@ class UploadViewSet(APIView):
         }
         # Get folder id from config
         course = Course.objects.get(id=request.data['course'])
-        folder_identifier = request.data['filetype'].lower().replace(" ", "") + "_review"
+        folder_identifier = request.data['filetype'].lower().replace(" ", "") + str("_review")
         folder_id = structure['study'][course.department.abbreviation][course.code][folder_identifier]
         driveid = uploadToDrive(
             driveinit(),
