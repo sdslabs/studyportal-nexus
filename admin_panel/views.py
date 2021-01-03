@@ -177,9 +177,9 @@ class UploadViewSet(APIView):
                     if course == Course.objects.get(id=course_id):
                         department_code = course.department.abbreviation
                         notification_handler(recipient=recipient['id'], actor="Admin",
-                                            verb="added a file", action=file.title,
-                                            notification_type="addfile", target=course,
-                                            link="/departments/" + department_code + "/courses/" + file.course.code)
+                                             verb="added a file", action=file.title,
+                                             notification_type="addfile", target=course,
+                                             link="/departments/" + department_code + "/courses/" + file.course.code)
         return Response(query, status=status.HTTP_200_OK)
 
     def delete(self, request):
