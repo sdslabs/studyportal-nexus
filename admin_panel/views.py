@@ -19,7 +19,7 @@ class FileRequestViewSet(APIView):
     def get(self, request):
         queryset = FileRequest.objects.all()
         serializer = FileRequestSerializer(queryset, many=True)
-        return Response({'filerequest': serializer.data})
+        return Response({'filerequest': serializer.data}, status=status.HTTP_200_OK)
 
     def put(self, request):
         data = request.data
@@ -82,7 +82,7 @@ class CourseRequestViewSet(APIView):
     def get(self, request):
         queryset = CourseRequest.objects.all()
         serializer = CourseRequestSerializer(queryset, many=True)
-        return Response({'courserequest': serializer.data})
+        return Response({'courserequest': serializer.data}, status=status.HTTP_200_OK)
 
     def put(self, request):
         data = request.data

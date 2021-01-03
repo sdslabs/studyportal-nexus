@@ -201,7 +201,7 @@ class FileRequestViewSet(APIView):
                 status=status.HTTP_201_CREATED
             )
         else:
-            return Response("Request already exists")
+            return Response("Request already exists", status=status.HTTP_200_OK)
 
     @classmethod
     def get_extra_actions(cls):
@@ -250,7 +250,7 @@ class CourseRequestViewSet(APIView):
                 status=status.HTTP_201_CREATED
             )
         else:
-            return Response("Request already exists")
+            return Response("Request already exists", status=status.HTTP_200_OK)
 
     @classmethod
     def get_extra_actions(cls):
