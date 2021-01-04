@@ -20,7 +20,7 @@ from rest_api.documents import CourseDocument, FileDocument, DepartmentDocument
 from users.models import User, Notifications
 from users.serializers import UserSerializer
 from users.signals import notification_handler
-from rest_api.utils import add_course, add_file
+from rest_api.utils import add_course, add_file, get_fileext, get_size, get_title
 
 NEXUS_URL = "http://localhost:8005/api/v1"
 
@@ -120,28 +120,6 @@ class CourseViewSet(APIView):
     @classmethod
     def get_extra_actions(cls):
         return []
-
-
-def get_size(size):
-    file_size = size
-    if round(file_size / (1024 * 1024), 2) == 0.00:
-        return str(round(file_size / (1024), 2)) + " KB"
-    else:
-        return str(round(file_size / (1024 * 1024), 2)) + " MB"
-
-
-def fileName(file):
-    return file.rpartition('.')[0]
-
-
-def get_title(name):
-    file_title = name
-    return fileName(file_title)
-
-
-def get_fileext(name):
-    filename = name
-    return filename.split('.')[-1]
 
 
 class FileViewSet(APIView):

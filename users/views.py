@@ -13,6 +13,7 @@ from studyportal.drive.drive import driveinit
 from studyportal.falcon.config import config
 from studyportal.falcon import client
 from studyportal.settings import CUR_DIR
+from rest_api.utils import get_size
 import requests
 import random
 import base64
@@ -30,14 +31,6 @@ STRUCTURE_TEST = os.path.join(
     CUR_DIR,
     'test/resources/structure.json'
 )
-
-
-def get_size(size):
-    file_size = size
-    if round(file_size / (1024 * 1024), 2) == 0.00:
-        return str(round(file_size / (1024), 2)) + " KB"
-    else:
-        return str(round(file_size / (1024 * 1024), 2)) + " MB"
 
 
 def getUserFromJWT(token):
