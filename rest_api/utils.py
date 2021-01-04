@@ -37,3 +37,25 @@ def add_file(file, course):
                                      verb="added a file", action=file_data['title'],
                                      notification_type="addfile", target=course,
                                      link="/departments/" + department_code + "/courses/" + file_data['course']['code'])
+
+
+def get_size(size):
+    file_size = size
+    if round(file_size / (1024 * 1024), 2) == 0.00:
+        return str(round(file_size / (1024), 2)) + " KB"
+    else:
+        return str(round(file_size / (1024 * 1024), 2)) + " MB"
+
+
+def fileName(file):
+    return file.rpartition('.')[0]
+
+
+def get_title(name):
+    file_title = name
+    return fileName(file_title)
+
+
+def get_fileext(name):
+    filename = name
+    return filename.split('.')[-1]
