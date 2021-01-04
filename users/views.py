@@ -104,7 +104,7 @@ class UserViewSet(APIView):
                             many=True
                         ).data[0]
                         courses.append(coursedata)
-                return Response({'user': user, 'courses': courses})
+                return Response({'user': user, 'courses': courses}, status=status.HTTP_200_OK)
             else:
                 return Response(
                     status=status.HTTP_404_NOT_FOUND
@@ -124,7 +124,7 @@ class UserViewSet(APIView):
             user.save()
             return Response(user.save(), status=status.HTTP_201_CREATED)
         else:
-            return Response("User already exists")
+            return Response("User already exists", status=status.HTTP_200_OK)
 
     def put(self, request):
         data = request.data
@@ -137,17 +137,17 @@ class UserViewSet(APIView):
             if int(new_course) not in user['courses']:
                 query.courses.append(new_course)
                 query.save()
-                return Response('Course added successfully')
+                return Response('Course added successfully', status=status.HTTP_201_CREATED)
             else:
-                return Response('Course already added')
+                return Response('Course already added', status=status.HTTP_200_OK)
         else:
             if int(new_course) in user['courses']:
                 print(int(new_course) in user['courses'])
                 query.courses.remove(int(new_course))
                 query.save()
-                return Response('Course removed successfully')
+                return Response('Course removed successfully', status=status.HTTP_200_OK)
             else:
-                return Response('Course does not exist')
+                return Response('Course does not exist', status=status.HTTP_404_NOT_FOUND)
 
     @classmethod
     def get_extra_actions(cls):
@@ -166,7 +166,7 @@ class FileRequestViewSet(APIView):
                 user = getUserFromJWT(token)
                 queryset = FileRequest.objects.filter(user=user['id'])
         serializer = FileRequestSerializer(queryset, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
         data = request.data
@@ -213,7 +213,7 @@ class CourseRequestViewSet(APIView):
                 user = getUserFromJWT(token)
                 queryset = CourseRequest.objects.filter(user=user['id'])
         serializer = CourseRequestSerializer(queryset, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
         data = request.data
@@ -279,7 +279,7 @@ class UploadViewSet(APIView):
                 user = getUserFromJWT(token)
                 queryset = Upload.objects.filter(user=user['id'])
         serializer = UploadSerializer(queryset, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
         # For local dev change 'STRUCTURE' to 'STRUCTURE_TEST'
@@ -351,8 +351,8 @@ class NotificationViewSet(APIView):
             user = getUserFromJWT(token)
             queryset = Notifications.objects.filter(recipient=user['id'])
         serializer = NotificationsSerializer(queryset, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request):
         notification = Notifications.objects.get(id=request.data.get('notification')).delete()
-        return Response(notification)
+        return Response(notification, status=status.HTTP_200_OK)

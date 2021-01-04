@@ -70,7 +70,7 @@ class FileRequestViewSet(APIView):
             '/activity/requests'
         )
         requests = requests.delete()
-        return Response(requests)
+        return Response(requests, status=status.HTTP_200_OK)
 
     @classmethod
     def get_extra_actions(cls):
@@ -129,7 +129,7 @@ class CourseRequestViewSet(APIView):
             "/activity/requests"
         )
         requests = requests.delete()
-        return Response(requests)
+        return Response(requests, status=status.HTTP_200_OK)
 
     @classmethod
     def get_extra_actions(cls):
@@ -140,7 +140,7 @@ class UploadViewSet(APIView):
     def get(self, request):
         queryset = Upload.objects.all()
         serializer = UploadSerializer(queryset, many=True)
-        return Response({'upload': serializer.data})
+        return Response({'upload': serializer.data}, status=status.HTTP_200_OK)
 
     def put(self, request):
         file_id = request.data['file_id']
@@ -187,7 +187,7 @@ class UploadViewSet(APIView):
         notification_handler(requests.user.id, "Admin", "rejected the file you uploaded",
                              requests.title, "upload", requests.course, "activity/uploads")
         requests = requests.delete()
-        return Response(requests)
+        return Response(requests, status=status.HTTP_200_OK)
 
     @classmethod
     def get_extra_actions(cls):
