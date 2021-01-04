@@ -42,9 +42,9 @@ class DepartmentViewSet(APIView):
             return Response({
                 "department": serializer,
                 "courses": serializer_course
-            })
+            }, status=status.HTTP_200_OK)
         else:
-            return Response({"department": serializer_department.data})
+            return Response({"department": serializer_department.data}, status=status.HTTP_200_OK)
 
     def post(self, request):
         data = request.data
@@ -66,7 +66,7 @@ class DepartmentViewSet(APIView):
                                      link="/departments/" + data['abbreviation'])
             return Response(department.save(), status=status.HTTP_200_OK)
         else:
-            return Response("Department already exists")
+            return Response("Department already exists", status=status.HTTP_200_OK)
 
     @classmethod
     def get_extra_actions(cls):
@@ -85,7 +85,7 @@ class CourseViewSet(APIView):
                 department=department
             ).filter(code=course)
         serializer = CourseSerializer(queryset, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
         data = request.data.copy()
@@ -103,7 +103,7 @@ class CourseViewSet(APIView):
             add_course(course, queryset)
             return Response(course.save(), status=status.HTTP_200_OK)
         else:
-            return Response("Course already exists")
+            return Response("Course already exists", status=status.HTTP_200_OK)
 
     def delete(self, request):
         course = Course.objects.get(id=request.data.get('course')).delete()
@@ -115,7 +115,7 @@ class CourseViewSet(APIView):
                                  verb="deleted a course", action=course,
                                  notification_type="deletecourse", target=None,
                                  link="")
-        return Response(course)
+        return Response(course, status=status.HTTP_200_OK)
 
     @classmethod
     def get_extra_actions(cls):
@@ -140,7 +140,7 @@ class FileViewSet(APIView):
                 course=course
             ).filter(filetype=filetype).filter(finalized=True)
         serializer = FileSerializer(queryset, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
         data = request.data.copy()
@@ -160,7 +160,7 @@ class FileViewSet(APIView):
             add_file(file, course)
             return Response(file.save(), status=status.HTTP_200_OK)
         else:
-            return Response("File already exists")
+            return Response("File already exists", status=status.HTTP_200_OK)
 
     def put(self, request):
         data = request.data.copy()
@@ -177,7 +177,7 @@ class FileViewSet(APIView):
 
     def delete(self, request):
         file = File.objects.get(id=request.data.get('file')).delete()
-        return Response(file)
+        return Response(file, status=status.HTTP_200_OK)
 
     @classmethod
     def get_extra_actions(cls):
