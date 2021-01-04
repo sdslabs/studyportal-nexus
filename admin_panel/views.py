@@ -54,7 +54,6 @@ class FileRequestViewSet(APIView):
                 file_request['title'], 'request', course_code,
                 '/activity/requests'
             )
-            FileRequest.objects.get(id=request.data.get('request')).delete()
         return Response(query, status=status.HTTP_200_OK)
 
     def delete(self, request):
@@ -114,7 +113,6 @@ class CourseRequestViewSet(APIView):
                 'request', course_request['department'],
                 "/activity/requests"
             )
-            CourseRequest.objects.get(id=request.data.get('request')).delete()
         return Response(query, status=status.HTTP_200_OK)
 
     def delete(self, request):
