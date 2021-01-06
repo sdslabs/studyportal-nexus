@@ -131,15 +131,15 @@ class FileViewSet(APIView):
         filetype = self.request.query_params.get('filetype')
         if course is not None and filetype == 'null':
             queryset = File.objects.filter(
-                course=course
+                course__code=course
             ).filter(finalized=True)
         elif course is not None and filetype == 'all':
             queryset = File.objects.filter(
-                course=course
+                course__code=course
             ).filter(finalized=True)
         elif course is not None and filetype is not None:
             queryset = File.objects.filter(
-                course=course
+                course__code=course
             ).filter(filetype=filetype).filter(finalized=True)
         serializer = FileSerializer(queryset, many=True)
         return Response(serializer.data)
@@ -165,7 +165,10 @@ class FileViewSet(APIView):
             return Response("File already exists")
 
     def delete(self, request):
-        file = File.objects.get(id=request.data.get('file')).delete()
+        if request.data.get('file'):
+            file = File.objects.get(id=request.data.get('file')).delete()
+        elif request.data.get('driveid'):
+            file = File.objects.filter(driveid=request.data.get('driveid')).delete()
         return Response(file)
 
     @classmethod
