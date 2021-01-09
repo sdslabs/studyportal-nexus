@@ -17,7 +17,7 @@ from studyportal.drive.drive import driveinit
 
 class FileRequestViewSet(APIView):
     def get(self, request):
-        queryset = FileRequest.objects.all()
+        queryset = FileRequest.objects.exclude(status=3)
         serializer = FileRequestSerializer(queryset, many=True)
         return Response({'filerequest': serializer.data}, status=status.HTTP_200_OK)
 
@@ -79,7 +79,7 @@ class FileRequestViewSet(APIView):
 
 class CourseRequestViewSet(APIView):
     def get(self, request):
-        queryset = CourseRequest.objects.all()
+        queryset = CourseRequest.objects.exclude(status=3)
         serializer = CourseRequestSerializer(queryset, many=True)
         return Response({'courserequest': serializer.data}, status=status.HTTP_200_OK)
 
@@ -138,7 +138,7 @@ class CourseRequestViewSet(APIView):
 
 class UploadViewSet(APIView):
     def get(self, request):
-        queryset = Upload.objects.all()
+        queryset = Upload.objects.exclude(status=3)
         serializer = UploadSerializer(queryset, many=True)
         return Response({'upload': serializer.data}, status=status.HTTP_200_OK)
 
