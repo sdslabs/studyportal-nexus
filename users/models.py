@@ -67,7 +67,7 @@ class Upload(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     driveid = models.CharField(max_length=50)
     resolved = models.BooleanField(default=False)
-    size = models.CharField(max_length=20, default='0B')
+    size = models.CharField(max_length=20, default='0KB')
     status = models.IntegerField(choices=REQUEST_STATUS)
     title = models.CharField(max_length=100, default='')
     filetype = models.CharField(max_length=20, choices=FILE_TYPE, default='')
