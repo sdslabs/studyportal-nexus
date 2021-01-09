@@ -12,7 +12,7 @@ from apiclient.http import MediaFileUpload
 from studyportal.drive.drive import driveinit
 from studyportal.falcon.config import config
 from studyportal.falcon import client
-from studyportal.settings import CUR_DIR
+from studyportal.settings import CUR_DIR, NEXUS_URL
 from rest_api.utils import get_size
 import requests
 import random
@@ -22,7 +22,7 @@ import jwt
 import os
 from users.signals import notification_handler
 
-NEXUS_URL = "http://localhost:8005/api/v1"
+
 STRUCTURE = os.path.join(
     CUR_DIR,
     'drive/structure.json'

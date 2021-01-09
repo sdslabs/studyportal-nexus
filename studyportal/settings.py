@@ -32,6 +32,8 @@ DB_PARAMS = yaml.safe_load(confFile)
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 's-0n5h@4*e((tj3ll%8v=)9t$*24t*mdx6tyt&4+5k-l3x)pl='
 
+NEXUS_URL = "http://localhost:8005/api/v1"
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
