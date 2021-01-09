@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_api.serializers import DepartmentSerializer, CourseSerializer
 from rest_api.serializers import FileSerializer
-from studyportal.settings import SECRET_KEY
+from studyportal.settings import SECRET_KEY, NEXUS_URL
 from apiclient.http import MediaFileUpload
 from studyportal.drive.drive import driveinit
 from studyportal.falcon.config import config
@@ -21,8 +21,6 @@ from users.models import User, Notifications
 from users.serializers import UserSerializer
 from users.signals import notification_handler
 from rest_api.utils import add_course, add_file, get_fileext, get_size, get_title
-
-NEXUS_URL = "http://localhost:8005/api/v1"
 
 
 def sample(request):
