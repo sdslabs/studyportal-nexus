@@ -26,7 +26,7 @@ class FileRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = FileRequest
         fields = (
-            'id', 'user', 'filetype', 'status', 'title', 'date', 'course'
+            'id', 'user', 'filetype', 'status', 'title', 'date', 'course', 'files'
         )
 
 

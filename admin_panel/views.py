@@ -1,5 +1,8 @@
 import json
-from users.views import getUserFromJWT
+import os
+import random
+import base64
+from users.views import getUserFromJWT, uploadToDrive
 from rest_framework import status
 from rest_framework.response import Response
 from users.serializers import CourseRequestSerializer, FileRequestSerializer, UploadSerializer, UserSerializer
@@ -26,29 +29,63 @@ class FileRequestViewSet(APIView):
         query = FileRequest.objects.filter(
             id=data['request']
         ).update(status=data['status'])
-        file_request = FileRequestSerializer(FileRequest.objects.get(id=data['request'])).data
-        user = file_request['user']
-        course_code = file_request['course']['code']
+        file_request = FileRequest.objects.get(id=data['request'])
+        user = file_request.user
+        course_code = file_request.course.code
         user_id = UserSerializer(user).data['id']
         if data['status'] == "2":
             notification_handler(
                 user_id, 'Admin', 'approved your request for',
-                file_request['title'], 'request', course_code,
+                file_request.title, 'request', course_code,
                 '/activity/requests'
             )
         if data['status'] == "3":
             course = Course.objects.get(code=course_code)
+            # For local dev change 'STRUCTURE' to 'STRUCTURE_TEST'
+            with open(STRUCTURE_TEST) as f:
+                structure = json.load(f)
+            file = data['file']
+            name = data['name']
+            # File manipulation starts here
+            file_type = file.split(",")[0]
+            mime_type = file_type.split(":")[1].split(";")[0]
+            ext = file_type.split("/")[1].split(";")[0]
+            base64String = file.split(",")[1]
+
+            rand = str(random.randint(0, 100000))
+            temp = open("temp" + rand + "." + ext, "wb")
+            temp.write(base64.b64decode(base64String))
+            file_details = {
+                'name': name,
+                'mime_type': mime_type,
+                'location': "temp" + rand + "." + ext
+            }
+            file_size = os.path.getsize("temp" + rand + "." + ext)
+            size = get_size(file_size)
+
+            # Get folder id from config
+            folder_identifier = request.data['filetype'].lower().replace(" ", "")
+            folder_id = structure['study'][course.department.abbreviation][course.code][folder_identifier]
+            driveid = uploadToDrive(
+                driveinit(),
+                folder_id,
+                file_details
+            )
+            os.remove("temp" + rand + "." + ext)
+            # end of manipulation
             file = File(
-                title=get_title(file_request['title']),
-                driveid=data['driveid'],
+                title=get_title(file_request.title),
+                driveid=driveid,
                 downloads=0,
-                size=get_size(int(data['size'])),
+                size=size,
                 course=course,
-                fileext=get_fileext(file_request['title']),
-                filetype=file_request['filetype'],
+                fileext=get_fileext(file_request.title),
+                filetype=file_request.filetype,
                 finalized=True,
             )
             add_file(file, course)
+            file_request.files.append(file)
+            file_request.save()
             notification_handler(
                 user_id, 'Admin', 'uploaded the file you requested',
                 file_request['title'], 'request', course_code,

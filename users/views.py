@@ -283,7 +283,7 @@ class UploadViewSet(APIView):
 
     def post(self, request):
         # For local dev change 'STRUCTURE' to 'STRUCTURE_TEST'
-        with open(STRUCTURE) as f:
+        with open(STRUCTURE_TEST) as f:
             structure = json.load(f)
         file = request.data['file']
         name = request.data['name']
