@@ -84,7 +84,7 @@ class FileRequestViewSet(APIView):
                 finalized=True,
             )
             add_file(file, course)
-            file_request.files.append(file)
+            file_request.files.append(file.id)
             file_request.save()
             notification_handler(
                 user_id, 'Admin', 'uploaded the file you requested',
