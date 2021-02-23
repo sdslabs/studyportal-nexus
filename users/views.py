@@ -293,11 +293,6 @@ class UploadViewSet(APIView):
         ext = type.split("/")[1].split(";")[0]
         base64String = file.split(",")[1]
 
-        # TODO: get size of the file
-        # size = os.path.getsize()
-        size = get_size(0),
-        ##
-
         rand = str(random.randint(0, 100000))
         temp = open("temp" + rand + "." + ext, "wb")
         temp.write(base64.b64decode(base64String))
@@ -306,6 +301,9 @@ class UploadViewSet(APIView):
             'mime_type': mime_type,
             'location': "temp" + rand + "." + ext
         }
+        file_size = os.path.getsize("temp" + rand + "." + ext)
+        size = get_size(file_size)
+
         # Get folder id from config
         course = Course.objects.get(id=request.data['course'])
         folder_identifier = request.data['filetype'].lower().replace(" ", "") + str("_review")
