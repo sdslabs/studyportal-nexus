@@ -189,7 +189,7 @@ class UploadViewSet(APIView):
             notification_handler(file.user.id, "Admin", "approved the file you uploaded",
                                  file.title, "upload", file.course, "activity/uploads")
         elif upload_status == "3":
-            with open(STRUCTURE) as f:
+            with open(STRUCTURE_TEST) as f:
                 structure = json.load(f)
             course = file.course
             folder_identifier = file.filetype.lower().replace(" ", "")
@@ -202,6 +202,18 @@ class UploadViewSet(APIView):
                 fields='id, parents'
             ).execute()
             query = queryset.update(resolved=True)
+            new_file = File(
+                title=file.title,
+                filetype=file.filetype,
+                driveid=file.driveid,
+                size=file.size,
+                fileext=file.fileext,
+                finalized=True,
+                course=file.course
+            )
+            new_file.save()
+            file.files.append(new_file.id)
+            file.save()
             notification_handler(file.user.id, "Admin", "added the file you uploaded",
                                  file.title, "upload", file.course, "activity/uploads")
             user_list = User.objects.all()

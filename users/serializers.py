@@ -53,7 +53,9 @@ class UploadSerializer(serializers.ModelSerializer):
             'title',
             'filetype',
             'date',
-            'course'
+            'course',
+            'files',
+            'fileext'
         )
 
 

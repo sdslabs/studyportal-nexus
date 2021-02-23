@@ -326,7 +326,8 @@ class UploadViewSet(APIView):
             status=request.data['status'],
             title=name,
             filetype=request.data['filetype'],
-            course=course
+            course=course,
+            fileext=ext
         )
         upload.save()
         user_id = UserSerializer(user).data['id']
