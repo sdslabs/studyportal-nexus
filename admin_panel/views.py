@@ -12,8 +12,7 @@ from rest_framework.views import APIView
 from users.models import Notifications
 from users.signals import notification_handler
 from rest_api.models import Course, Department, File
-from rest_api.utils import add_course, add_file
-from rest_api.utils import get_fileext, get_size, get_title
+from rest_api.utils import get_fileext, get_size, get_title, add_course, add_file
 from rest_api.serializers import CourseSerializer
 from studyportal.drive.drive import driveinit
 
