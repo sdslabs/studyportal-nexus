@@ -8,12 +8,11 @@ from users.serializers import UserSerializer
 from users.serializers import FileRequestSerializer, CourseRequestSerializer, NotificationsSerializer
 from users.serializers import UploadSerializer
 from studyportal.settings import SECRET_KEY
-from apiclient.http import MediaFileUpload
 from studyportal.drive.drive import driveinit
 from studyportal.falcon.config import config
 from studyportal.falcon import client
-from studyportal.settings import CUR_DIR, NEXUS_URL
-from rest_api.utils import get_size
+from studyportal.settings import NEXUS_URL
+from rest_api.utils import get_size, get_file_details, STRUCTURE, STRUCTURE_TEST
 import requests
 import random
 import base64
@@ -21,16 +20,6 @@ import json
 import jwt
 import os
 from users.signals import notification_handler
-
-
-STRUCTURE = os.path.join(
-    CUR_DIR,
-    'drive/structure.json'
-)
-STRUCTURE_TEST = os.path.join(
-    CUR_DIR,
-    'test/resources/structure.json'
-)
 
 
 def getUserFromJWT(token):
@@ -250,23 +239,6 @@ class CourseRequestViewSet(APIView):
         return []
 
 
-def uploadToDrive(service, folder_id, file_details):
-    file_metadata = {
-        'name': file_details['name'],
-        'parents': [folder_id]
-    }
-    media = MediaFileUpload(
-        file_details['location'],
-        mimetype=file_details['mime_type']
-    )
-    file = service.files().create(
-        body=file_metadata,
-        media_body=media,
-        fields='id'
-    ).execute()
-    return file.get('id')
-
-
 class UploadViewSet(APIView):
     def get(self, request):
         user = self.request.query_params.get('user')
@@ -282,52 +254,23 @@ class UploadViewSet(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
-        # For local dev change 'STRUCTURE' to 'STRUCTURE_TEST'
-        with open(STRUCTURE_TEST) as f:
-            structure = json.load(f)
         file = request.data['file']
         name = request.data['name']
-        # File manipulation starts here
-        type = file.split(",")[0]
-        mime_type = type.split(":")[1].split(";")[0]
-        ext = type.split("/")[1].split(";")[0]
-        base64String = file.split(",")[1]
-
-        rand = str(random.randint(0, 100000))
-        temp = open("temp" + rand + "." + ext, "wb")
-        temp.write(base64.b64decode(base64String))
-        file_details = {
-            'name': name,
-            'mime_type': mime_type,
-            'location': "temp" + rand + "." + ext
-        }
-        file_size = os.path.getsize("temp" + rand + "." + ext)
-        size = get_size(file_size)
-
-        # Get folder id from config
         course = Course.objects.get(id=request.data['course'])
-        folder_identifier = request.data['filetype'].lower().replace(" ", "") + str("_review")
-        folder_id = structure['study'][course.department.abbreviation][course.code][folder_identifier]
-        driveid = uploadToDrive(
-            driveinit(),
-            folder_id,
-            file_details
-        )
-        os.remove("temp" + rand + "." + ext)
-        # end of manipulation
+        file_details = get_file_details(file, name, request.data['filetype'], course, True)
         token = request.headers['Authorization'].split(' ')[1]
         username = getUserFromJWT(token)['username']
         user = User.objects.get(username=username)
         upload = Upload(
             user=user,
-            driveid=driveid,
-            size=size,
+            driveid=file_details['driveid'],
+            size=file_details['size'],
             resolved=False,
             status=request.data['status'],
             title=name,
             filetype=request.data['filetype'],
             course=course,
-            fileext=ext
+            fileext=file_details['ext']
         )
         upload.save()
         user_id = UserSerializer(user).data['id']

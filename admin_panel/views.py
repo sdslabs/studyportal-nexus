@@ -2,17 +2,16 @@ import json
 import os
 import random
 import base64
-from users.views import getUserFromJWT, uploadToDrive
+from users.views import getUserFromJWT
 from rest_framework import status
 from rest_framework.response import Response
 from users.serializers import CourseRequestSerializer, FileRequestSerializer, UploadSerializer, UserSerializer
 from users.models import CourseRequest, FileRequest, Upload, User
-from users.views import STRUCTURE_TEST, STRUCTURE
 from rest_framework.views import APIView
 from users.models import Notifications
 from users.signals import notification_handler
 from rest_api.models import Course, Department, File
-from rest_api.utils import get_fileext, get_size, get_title, add_course, add_file
+from rest_api.utils import get_fileext, get_size, get_title, add_course, add_file, get_file_details, STRUCTURE_TEST, STRUCTURE
 from rest_api.serializers import CourseSerializer
 from studyportal.drive.drive import driveinit
 
@@ -40,43 +39,14 @@ class FileRequestViewSet(APIView):
             )
         if data['status'] == "3":
             course = Course.objects.get(code=course_code)
-            # For local dev change 'STRUCTURE' to 'STRUCTURE_TEST'
-            with open(STRUCTURE_TEST) as f:
-                structure = json.load(f)
-            file = data['file']
+            file_d = data['file']
             name = data['name']
-            # File manipulation starts here
-            file_type = file.split(",")[0]
-            mime_type = file_type.split(":")[1].split(";")[0]
-            ext = file_type.split("/")[1].split(";")[0]
-            base64String = file.split(",")[1]
-
-            rand = str(random.randint(0, 100000))
-            temp = open("temp" + rand + "." + ext, "wb")
-            temp.write(base64.b64decode(base64String))
-            file_details = {
-                'name': name,
-                'mime_type': mime_type,
-                'location': "temp" + rand + "." + ext
-            }
-            file_size = os.path.getsize("temp" + rand + "." + ext)
-            size = get_size(file_size)
-
-            # Get folder id from config
-            folder_identifier = request.data['filetype'].lower().replace(" ", "")
-            folder_id = structure['study'][course.department.abbreviation][course.code][folder_identifier]
-            driveid = uploadToDrive(
-                driveinit(),
-                folder_id,
-                file_details
-            )
-            os.remove("temp" + rand + "." + ext)
-            # end of manipulation
+            file_details = get_file_details(file_d, name, data['filetype'], course, False)
             file = File(
                 title=get_title(file_request.title),
-                driveid=driveid,
+                driveid=file_details['driveid'],
                 downloads=0,
-                size=size,
+                size=file_details['size'],
                 course=course,
                 fileext=get_fileext(file_request.title),
                 filetype=file_request.filetype,
