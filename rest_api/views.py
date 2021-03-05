@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_api.serializers import DepartmentSerializer, CourseSerializer
 from rest_api.serializers import FileSerializer
-from studyportal.settings import SECRET_KEY
+from studyportal.settings import SECRET_KEY, NEXUS_URL
 from apiclient.http import MediaFileUpload
 from studyportal.drive.drive import driveinit
 from studyportal.falcon.config import config
@@ -20,8 +20,7 @@ from rest_api.documents import CourseDocument, FileDocument, DepartmentDocument
 from users.models import User, Notifications
 from users.serializers import UserSerializer
 from users.signals import notification_handler
-
-NEXUS_URL = "http://localhost:8005/api/v1"
+from rest_api.utils import add_course, add_file, get_fileext, get_size, get_title
 
 
 def sample(request):
@@ -41,9 +40,9 @@ class DepartmentViewSet(APIView):
             return Response({
                 "department": serializer,
                 "courses": serializer_course
-            })
+            }, status=status.HTTP_200_OK)
         else:
-            return Response({"department": serializer_department.data})
+            return Response({"department": serializer_department.data}, status=status.HTTP_200_OK)
 
     def post(self, request):
         data = request.data
@@ -65,7 +64,7 @@ class DepartmentViewSet(APIView):
                                      link="/departments/" + data['abbreviation'])
             return Response(department.save(), status=status.HTTP_200_OK)
         else:
-            return Response("Department already exists")
+            return Response("Department already exists", status=status.HTTP_200_OK)
 
     @classmethod
     def get_extra_actions(cls):
@@ -84,7 +83,7 @@ class CourseViewSet(APIView):
                 department=department
             ).filter(code=course)
         serializer = CourseSerializer(queryset, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
         data = request.data.copy()
@@ -99,19 +98,10 @@ class CourseViewSet(APIView):
                 department=queryset,
                 code=data['code']
             )
-            course.save()
-            user_list = User.objects.all()
-            recipient_list = UserSerializer(user_list, many=True)
-            department_code = DepartmentSerializer(queryset).data['abbreviation']
-            recipients = recipient_list.data[:]
-            for recipient in recipients:
-                notification_handler(recipient=recipient['id'], actor="Admin",
-                                     verb="added a course", action=data['code'],
-                                     notification_type="addcourse", target=queryset,
-                                     link="/departments/" + department_code + "/courses/" + data['code'])
+            add_course(course, queryset)
             return Response(course.save(), status=status.HTTP_200_OK)
         else:
-            return Response("Course already exists")
+            return Response("Course already exists", status=status.HTTP_200_OK)
 
     def delete(self, request):
         course = Course.objects.get(id=request.data.get('course')).delete()
@@ -123,33 +113,11 @@ class CourseViewSet(APIView):
                                  verb="deleted a course", action=course,
                                  notification_type="deletecourse", target=None,
                                  link="")
-        return Response(course)
+        return Response(course, status=status.HTTP_200_OK)
 
     @classmethod
     def get_extra_actions(cls):
         return []
-
-
-def get_size(size):
-    file_size = size
-    if round(file_size / (1024 * 1024), 2) == 0.00:
-        return str(round(file_size / (1024), 2)) + " KB"
-    else:
-        return str(round(file_size / (1024 * 1024), 2)) + " MB"
-
-
-def fileName(file):
-    return file.rpartition('.')[0]
-
-
-def get_title(name):
-    file_title = name
-    return fileName(file_title)
-
-
-def get_fileext(name):
-    filename = name
-    return filename.split('.')[-1]
 
 
 class FileViewSet(APIView):
@@ -170,7 +138,7 @@ class FileViewSet(APIView):
                 course=course
             ).filter(filetype=filetype).filter(finalized=True)
         serializer = FileSerializer(queryset, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
         data = request.data.copy()
@@ -187,23 +155,10 @@ class FileViewSet(APIView):
                 filetype=data['filetype'],
                 finalized=data['finalized']
             )
-            file.save()
-            user_list = User.objects.all()
-            recipient_list = UserSerializer(user_list, many=True)
-            recipients = recipient_list.data[:]
-            for recipient in recipients:
-                for course_id in recipient['courses']:
-                    if course == Course.objects.get(id=course_id):
-                        serializer_course = CourseSerializer(course)
-                        department = serializer_course.data['department']
-                        department_code = DepartmentSerializer(department).data['abbreviation']
-                        notification_handler(recipient=recipient['id'], actor="Admin",
-                                             verb="added a file", action=data['title'],
-                                             notification_type="addfile", target=course,
-                                             link="/departments/" + department_code + "/courses/" + data['code'])
+            add_file(file, course)
             return Response(file.save(), status=status.HTTP_200_OK)
         else:
-            return Response("File already exists")
+            return Response("File already exists", status=status.HTTP_200_OK)
 
     def put(self, request):
         data = request.data.copy()
@@ -220,7 +175,7 @@ class FileViewSet(APIView):
 
     def delete(self, request):
         file = File.objects.get(id=request.data.get('file')).delete()
-        return Response(file)
+        return Response(file, status=status.HTTP_200_OK)
 
     @classmethod
     def get_extra_actions(cls):

@@ -44,6 +44,7 @@ class FileRequest(models.Model):
     title = models.CharField(max_length=100)
     date = models.DateField(auto_now_add=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    files = ArrayField(models.IntegerField(), blank=True, default=list)
 
     def __str__(self):
         return self.title
@@ -67,11 +68,14 @@ class Upload(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     driveid = models.CharField(max_length=50)
     resolved = models.BooleanField(default=False)
+    size = models.CharField(max_length=20, default='0KB')
     status = models.IntegerField(choices=REQUEST_STATUS)
     title = models.CharField(max_length=100, default='')
     filetype = models.CharField(max_length=20, choices=FILE_TYPE, default='')
     date = models.DateField(auto_now_add=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    files = ArrayField(models.IntegerField(), blank=True, default=list)
+    fileext = models.CharField(max_length=10, default='')
 
     def __str__(self):
         return self.title
