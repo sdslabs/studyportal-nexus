@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rest_api', '0045_auto_20200422_0506'),
+        ("rest_api", "0045_auto_20200422_0506"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='file',
-            name='date_modified',
+            model_name="file",
+            name="date_modified",
             field=models.DateField(auto_now=True),
         ),
     ]

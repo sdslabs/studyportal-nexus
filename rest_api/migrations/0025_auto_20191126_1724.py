@@ -7,30 +7,62 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rest_api', '0024_auto_20191124_1223'),
+        ("rest_api", "0024_auto_20191124_1223"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='User',
+            name="User",
             fields=[
-                ('id', models.AutoField(editable=False, primary_key=True, serialize=False)),
-                ('falcon_id', models.IntegerField(default=0)),
-                ('username', models.CharField(default='', max_length=100)),
-                ('email', models.CharField(default='', max_length=100)),
-                ('profile_image', models.ImageField(height_field=41, upload_to='', width_field=41)),
-                ('role', models.CharField(choices=[('user', 'user'), ('moderator', 'moderator'), ('admin', 'admin')], max_length=20)),
-                ('departmennt', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='rest_api.Department')),
+                (
+                    "id",
+                    models.AutoField(editable=False, primary_key=True, serialize=False),
+                ),
+                ("falcon_id", models.IntegerField(default=0)),
+                ("username", models.CharField(default="", max_length=100)),
+                ("email", models.CharField(default="", max_length=100)),
+                (
+                    "profile_image",
+                    models.ImageField(height_field=41, upload_to="", width_field=41),
+                ),
+                (
+                    "role",
+                    models.CharField(
+                        choices=[
+                            ("user", "user"),
+                            ("moderator", "moderator"),
+                            ("admin", "admin"),
+                        ],
+                        max_length=20,
+                    ),
+                ),
+                (
+                    "departmennt",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="rest_api.Department",
+                    ),
+                ),
             ],
         ),
         migrations.AlterField(
-            model_name='request',
-            name='filetype',
-            field=models.CharField(choices=[('tutorials', 'Tutorial'), ('books', 'Books'), ('notes', 'Notes'), ('exampapers', 'Examination Papers')], max_length=4),
+            model_name="request",
+            name="filetype",
+            field=models.CharField(
+                choices=[
+                    ("tutorials", "Tutorial"),
+                    ("books", "Books"),
+                    ("notes", "Notes"),
+                    ("exampapers", "Examination Papers"),
+                ],
+                max_length=4,
+            ),
         ),
         migrations.AlterField(
-            model_name='request',
-            name='user_id',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='rest_api.User'),
+            model_name="request",
+            name="user_id",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="rest_api.User"
+            ),
         ),
     ]

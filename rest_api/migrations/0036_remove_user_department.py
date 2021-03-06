@@ -6,12 +6,12 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rest_api', '0035_upload_filetype'),
+        ("rest_api", "0035_upload_filetype"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='user',
-            name='department',
+            model_name="user",
+            name="department",
         ),
     ]

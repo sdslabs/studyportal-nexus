@@ -7,13 +7,18 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rest_api', '0018_auto_20191014_1712'),
+        ("rest_api", "0018_auto_20191014_1712"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='course',
-            name='department',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='rest_api.Department'),
+            model_name="course",
+            name="department",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="rest_api.Department",
+            ),
         ),
     ]

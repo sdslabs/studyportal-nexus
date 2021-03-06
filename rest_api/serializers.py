@@ -3,10 +3,9 @@ from rest_framework import serializers
 
 
 class DepartmentSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Department
-        fields = ('id', 'title', 'abbreviation', 'imageurl')
+        fields = ("id", "title", "abbreviation", "imageurl")
 
         def create(self, validated_data):
             return Department.objects.create(**validated_data)
@@ -17,12 +16,12 @@ class CourseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Course
-        fields = ('id', 'title', 'department', 'code')
+        fields = ("id", "title", "department", "code")
 
 
 def fileName(file):
-    filename = file.split('/')[-1]
-    return filename.split('.')[-2]
+    filename = file.split("/")[-1]
+    return filename.split(".")[-2]
 
 
 class FileSerializer(serializers.ModelSerializer):
@@ -31,13 +30,13 @@ class FileSerializer(serializers.ModelSerializer):
     class Meta:
         model = File
         fields = (
-            'id',
-            'title',
-            'driveid',
-            'downloads',
-            'size',
-            'date_modified',
-            'fileext',
-            'filetype',
-            'course'
+            "id",
+            "title",
+            "driveid",
+            "downloads",
+            "size",
+            "date_modified",
+            "fileext",
+            "filetype",
+            "course",
         )

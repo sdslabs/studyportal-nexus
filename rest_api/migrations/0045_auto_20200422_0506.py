@@ -7,13 +7,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rest_api', '0044_auto_20200407_2005'),
+        ("rest_api", "0044_auto_20200407_2005"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='file',
-            name='date_modified',
+            model_name="file",
+            name="date_modified",
             field=models.DateField(default=datetime.date.today),
         ),
     ]

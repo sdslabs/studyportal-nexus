@@ -6,13 +6,21 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rest_api', '0007_auto_20191003_1215'),
+        ("rest_api", "0007_auto_20191003_1215"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='file',
-            name='filetype',
-            field=models.CharField(choices=[('tutorials', 'Tutorial'), ('books', 'Books'), ('notes', 'Notes'), ('exampapers', 'Examination Papers')], max_length=20),
+            model_name="file",
+            name="filetype",
+            field=models.CharField(
+                choices=[
+                    ("tutorials", "Tutorial"),
+                    ("books", "Books"),
+                    ("notes", "Notes"),
+                    ("exampapers", "Examination Papers"),
+                ],
+                max_length=20,
+            ),
         ),
     ]

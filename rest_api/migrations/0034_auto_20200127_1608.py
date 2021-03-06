@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rest_api', '0033_auto_20191228_0958'),
+        ("rest_api", "0033_auto_20191228_0958"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='user',
-            name='profile_image',
+            model_name="user",
+            name="profile_image",
             field=models.URLField(max_length=500),
         ),
     ]

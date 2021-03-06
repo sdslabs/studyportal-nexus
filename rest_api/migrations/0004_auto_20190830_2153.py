@@ -7,28 +7,30 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rest_api', '0003_course'),
+        ("rest_api", "0003_course"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='course',
-            name='code',
-            field=models.CharField(default='', max_length=10),
+            model_name="course",
+            name="code",
+            field=models.CharField(default="", max_length=10),
         ),
         migrations.AlterField(
-            model_name='course',
-            name='department',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='rest_api.Department'),
+            model_name="course",
+            name="department",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="rest_api.Department"
+            ),
         ),
         migrations.AlterField(
-            model_name='course',
-            name='id',
+            model_name="course",
+            name="id",
             field=models.AutoField(editable=False, primary_key=True, serialize=False),
         ),
         migrations.AlterField(
-            model_name='department',
-            name='id',
+            model_name="department",
+            name="id",
             field=models.AutoField(editable=False, primary_key=True, serialize=False),
         ),
     ]

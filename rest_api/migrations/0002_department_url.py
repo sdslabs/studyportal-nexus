@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rest_api', '0001_initial'),
+        ("rest_api", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='department',
-            name='url',
-            field=models.CharField(default='', max_length=100),
+            model_name="department",
+            name="url",
+            field=models.CharField(default="", max_length=100),
         ),
     ]

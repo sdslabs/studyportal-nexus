@@ -30,82 +30,78 @@ DB_PARAMS = yaml.safe_load(confFile)
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 's-0n5h@4*e((tj3ll%8v=)9t$*24t*mdx6tyt&4+5k-l3x)pl='
+SECRET_KEY = "s-0n5h@4*e((tj3ll%8v=)9t$*24t*mdx6tyt&4+5k-l3x)pl="
 
 NEXUS_URL = "http://localhost:8005/api/v1"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-        'localhost',
-        'nexus.sdslabs.local',
-        '127.0.0.1'
-]
+ALLOWED_HOSTS = ["localhost", "nexus.sdslabs.local", "127.0.0.1"]
 
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'rest_api',
-    'rest_framework',
-    'corsheaders',
-    'django_elasticsearch_dsl',
-    'users',
-    'admin_panel',
-    'channels',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "rest_api",
+    "rest_framework",
+    "corsheaders",
+    "django_elasticsearch_dsl",
+    "users",
+    "admin_panel",
+    "channels",
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
-ROOT_URLCONF = 'studyportal.urls'
+ROOT_URLCONF = "studyportal.urls"
 
 CORS_ORIGIN_WHITELIST = (
-    'http://studyportal.sdslabs.local',
-    'http://nexus.sdslabs.local',
-    'http://localhost:3005',
+    "http://studyportal.sdslabs.local",
+    "http://nexus.sdslabs.local",
+    "http://localhost:3005",
 )
 
 CORS_ALLOW_CREDENTIALS = True
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'studyportal.wsgi.application'
-ASGI_APPLICATION = 'studyportal.routing.application'
+WSGI_APPLICATION = "studyportal.wsgi.application"
+ASGI_APPLICATION = "studyportal.routing.application"
 
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [('redis', 6379)],
+            "hosts": [("redis", 6379)],
         },
     },
 }
@@ -115,13 +111,13 @@ CHANNEL_LAYERS = {
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': DB_PARAMS['NAME'],
-        'USER': DB_PARAMS['USER'],
-        'PASSWORD': DB_PARAMS['PASSWORD'],
-        'HOST': DB_PARAMS['HOST'],
-        'PORT': DB_PARAMS['PORT'],
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": DB_PARAMS["NAME"],
+        "USER": DB_PARAMS["USER"],
+        "PASSWORD": DB_PARAMS["PASSWORD"],
+        "HOST": DB_PARAMS["HOST"],
+        "PORT": DB_PARAMS["PORT"],
     }
 }
 
@@ -131,16 +127,16 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -148,9 +144,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
@@ -162,10 +158,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = "/static/"
 
-ELASTICSEARCH_DSL = {
-    'default': {
-        'hosts': 'es:9200'
-    }
-}
+ELASTICSEARCH_DSL = {"default": {"hosts": "es:9200"}}

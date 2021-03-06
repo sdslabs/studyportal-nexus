@@ -7,28 +7,58 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rest_api', '0028_merge_20191226_0724'),
+        ("rest_api", "0028_merge_20191226_0724"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='file',
-            name='filetype',
-            field=models.CharField(choices=[('Tutorial', 'tutorials'), ('Book', 'books'), ('Notes', 'notes'), ('Examination Papers', 'exampapers')], max_length=20),
+            model_name="file",
+            name="filetype",
+            field=models.CharField(
+                choices=[
+                    ("Tutorial", "tutorials"),
+                    ("Book", "books"),
+                    ("Notes", "notes"),
+                    ("Examination Papers", "exampapers"),
+                ],
+                max_length=20,
+            ),
         ),
         migrations.AlterField(
-            model_name='request',
-            name='filetype',
-            field=models.CharField(choices=[('Tutorial', 'tutorials'), ('Book', 'books'), ('Notes', 'notes'), ('Examination Papers', 'exampapers')], max_length=4),
+            model_name="request",
+            name="filetype",
+            field=models.CharField(
+                choices=[
+                    ("Tutorial", "tutorials"),
+                    ("Book", "books"),
+                    ("Notes", "notes"),
+                    ("Examination Papers", "exampapers"),
+                ],
+                max_length=4,
+            ),
         ),
         migrations.CreateModel(
-            name='Upload',
+            name="Upload",
             fields=[
-                ('id', models.AutoField(editable=False, primary_key=True, serialize=False)),
-                ('driveid', models.CharField(max_length=50)),
-                ('resolved', models.BooleanField(default=False)),
-                ('course', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='rest_api.Course')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='rest_api.User')),
+                (
+                    "id",
+                    models.AutoField(editable=False, primary_key=True, serialize=False),
+                ),
+                ("driveid", models.CharField(max_length=50)),
+                ("resolved", models.BooleanField(default=False)),
+                (
+                    "course",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="rest_api.Course",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="rest_api.User"
+                    ),
+                ),
             ],
         ),
     ]
