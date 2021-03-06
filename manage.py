@@ -2,13 +2,15 @@
 import os
 import sys
 
-if __name__ == '__main__':
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'studyportal.settings')
+if __name__ == "__main__":
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "studyportal.settings")
 
     import django
+
     django.setup()
 
     from django.core.management.commands.runserver import Command as runserver
+
     runserver.default_port = "8005"
 
     try:

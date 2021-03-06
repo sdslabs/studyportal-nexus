@@ -6,20 +6,20 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rest_api', '0014_auto_20191007_1749'),
+        ("rest_api", "0014_auto_20191007_1749"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='file',
-            name='fileext',
+            model_name="file",
+            name="fileext",
         ),
         migrations.RemoveField(
-            model_name='file',
-            name='size',
+            model_name="file",
+            name="size",
         ),
         migrations.RemoveField(
-            model_name='file',
-            name='title',
+            model_name="file",
+            name="title",
         ),
     ]

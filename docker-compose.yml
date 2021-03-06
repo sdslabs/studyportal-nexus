@@ -4,6 +4,8 @@ services:
     image: postgres:10.3-alpine
     ports:
       - "5432:5432"
+    volumes:
+        - ".:/studyportal-nexus:rw"
     environment:
       POSTGRES_DB: "studyportal"
       POSTGRES_USER: "studyportal"
@@ -72,5 +74,6 @@ services:
       ELASTICSEARCH_PORT: "9200"
       DISABLE_GLOBAL_THROTTLING: "True"
       ROOT_SHORTENING_URL: "localhost:8005"
+      DEVELOPMENT_MODE: "True"
     stdin_open: true
     tty: true

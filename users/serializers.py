@@ -5,17 +5,16 @@ from rest_framework import serializers
 
 
 class UserSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = User
         fields = (
-            'id',
-            'falcon_id',
-            'username',
-            'email',
-            'profile_image',
-            'courses',
-            'role'
+            "id",
+            "falcon_id",
+            "username",
+            "email",
+            "profile_image",
+            "courses",
+            "role",
         )
 
 
@@ -26,7 +25,14 @@ class FileRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = FileRequest
         fields = (
-            'id', 'user', 'filetype', 'status', 'title', 'date', 'course', 'files'
+            "id",
+            "user",
+            "filetype",
+            "status",
+            "title",
+            "date",
+            "course",
+            "files",
         )
 
 
@@ -35,7 +41,7 @@ class CourseRequestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CourseRequest
-        fields = ('id', 'user', 'status', 'department', 'course', 'code')
+        fields = ("id", "user", "status", "department", "course", "code")
 
 
 class UploadSerializer(serializers.ModelSerializer):
@@ -45,21 +51,21 @@ class UploadSerializer(serializers.ModelSerializer):
     class Meta:
         model = Upload
         fields = (
-            'id',
-            'user',
-            'driveid',
-            'resolved',
-            'status',
-            'title',
-            'filetype',
-            'date',
-            'course',
-            'files',
-            'fileext'
+            "id",
+            "user",
+            "driveid",
+            "resolved",
+            "status",
+            "title",
+            "filetype",
+            "date",
+            "course",
+            "files",
+            "fileext",
         )
 
 
 class NotificationsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notifications
-        fields = '__all__'
+        fields = "__all__"

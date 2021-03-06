@@ -7,13 +7,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rest_api', '0036_remove_user_department'),
+        ("rest_api", "0036_remove_user_department"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='user',
-            name='courses',
-            field=django.contrib.postgres.fields.ArrayField(base_field=models.IntegerField(), blank=True, default=list, size=None),
+            model_name="user",
+            name="courses",
+            field=django.contrib.postgres.fields.ArrayField(
+                base_field=models.IntegerField(), blank=True, default=list, size=None
+            ),
         ),
     ]

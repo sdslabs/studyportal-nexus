@@ -2,18 +2,14 @@ from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from rest_api.models import Course
 
-USER_ROLE = [
-    ('user', 'user'),
-    ('moderator', 'moderator'),
-    ('admin', 'admin')
-]
+USER_ROLE = [("user", "user"), ("moderator", "moderator"), ("admin", "admin")]
 
 
 class User(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
     falcon_id = models.IntegerField(default=0)
-    username = models.CharField(max_length=100, default='')
-    email = models.CharField(max_length=100, default='')
+    username = models.CharField(max_length=100, default="")
+    email = models.CharField(max_length=100, default="")
     profile_image = models.URLField(max_length=500)
     courses = ArrayField(models.IntegerField(), blank=True, default=list)
     role = models.CharField(max_length=20, choices=USER_ROLE)
@@ -22,17 +18,13 @@ class User(models.Model):
         return self.username
 
 
-REQUEST_STATUS = [
-    (1, 1),
-    (2, 2),
-    (3, 3)
-]
+REQUEST_STATUS = [(1, 1), (2, 2), (3, 3)]
 
 FILE_TYPE = [
-    ('Tutorial', 'tutorials'),
-    ('Book', 'books'),
-    ('Notes', 'notes'),
-    ('Examination Papers', 'exampapers')
+    ("Tutorial", "tutorials"),
+    ("Book", "books"),
+    ("Notes", "notes"),
+    ("Examination Papers", "exampapers"),
 ]
 
 
@@ -68,14 +60,14 @@ class Upload(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     driveid = models.CharField(max_length=50)
     resolved = models.BooleanField(default=False)
-    size = models.CharField(max_length=20, default='0KB')
+    size = models.CharField(max_length=20, default="0KB")
     status = models.IntegerField(choices=REQUEST_STATUS)
-    title = models.CharField(max_length=100, default='')
-    filetype = models.CharField(max_length=20, choices=FILE_TYPE, default='')
+    title = models.CharField(max_length=100, default="")
+    filetype = models.CharField(max_length=20, choices=FILE_TYPE, default="")
     date = models.DateField(auto_now_add=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     files = ArrayField(models.IntegerField(), blank=True, default=list)
-    fileext = models.CharField(max_length=10, default='')
+    fileext = models.CharField(max_length=10, default="")
 
     def __str__(self):
         return self.title
