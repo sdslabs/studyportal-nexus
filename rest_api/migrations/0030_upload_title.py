@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rest_api', '0029_auto_20191226_0924'),
+        ("rest_api", "0029_auto_20191226_0924"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='upload',
-            name='title',
-            field=models.CharField(default='', max_length=100),
+            model_name="upload",
+            name="title",
+            field=models.CharField(default="", max_length=100),
         ),
     ]

@@ -1,9 +1,9 @@
 from django_elasticsearch_dsl import Document, Index
 from rest_api.models import Course, Department, File
 
-COURSES = Index('courses')
-DEPARTMENTS = Index('departments')
-FILES = Index('files')
+COURSES = Index("courses")
+DEPARTMENTS = Index("departments")
+FILES = Index("files")
 
 
 @COURSES.doc_type
@@ -12,9 +12,9 @@ class CourseDocument(Document):
         model = Course
 
         fields = [
-            'id',
-            'title',
-            'code',
+            "id",
+            "title",
+            "code",
         ]
 
 
@@ -24,9 +24,9 @@ class DepartmentDocument(Document):
         model = Department
 
         fields = [
-            'id',
-            'title',
-            'abbreviation',
+            "id",
+            "title",
+            "abbreviation",
         ]
 
 
@@ -35,9 +35,4 @@ class FileDocument(Document):
     class Django:
         model = File
 
-        fields = [
-            'id',
-            'title',
-            'fileext',
-            'filetype'
-        ]
+        fields = ["id", "title", "fileext", "filetype"]

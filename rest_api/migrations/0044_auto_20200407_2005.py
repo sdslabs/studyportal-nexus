@@ -6,36 +6,36 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rest_api', '0043_upload_status'),
+        ("rest_api", "0043_upload_status"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='filerequest',
-            name='course',
+            model_name="filerequest",
+            name="course",
         ),
         migrations.RemoveField(
-            model_name='filerequest',
-            name='user',
+            model_name="filerequest",
+            name="user",
         ),
         migrations.RemoveField(
-            model_name='upload',
-            name='course',
+            model_name="upload",
+            name="course",
         ),
         migrations.RemoveField(
-            model_name='upload',
-            name='user',
+            model_name="upload",
+            name="user",
         ),
         migrations.DeleteModel(
-            name='CourseRequest',
+            name="CourseRequest",
         ),
         migrations.DeleteModel(
-            name='FileRequest',
+            name="FileRequest",
         ),
         migrations.DeleteModel(
-            name='Upload',
+            name="Upload",
         ),
         migrations.DeleteModel(
-            name='User',
+            name="User",
         ),
     ]

@@ -7,10 +7,14 @@ import django.dispatch
 from asgiref.sync import async_to_sync
 from users.serializers import NotificationsSerializer
 
-notify = django.dispatch.Signal(providing_args=["recipient, notification, notification_data"])
+notify = django.dispatch.Signal(
+    providing_args=["recipient, notification, notification_data"]
+)
 
 
-def notification_handler(recipient, actor, verb, action, notification_type, target, link):
+def notification_handler(
+    recipient, actor, verb, action, notification_type, target, link
+):
     new_notification = Notifications(
         recipient=recipient,
         actor=actor,
@@ -18,27 +22,29 @@ def notification_handler(recipient, actor, verb, action, notification_type, targ
         verb=verb,
         notification_type=notification_type,
         target=target,
-        link=link
+        link=link,
     )
     new_notification.save()
     notification_data = NotificationsSerializer(new_notification).data
-    notify.send(sender=Notifications,
-                recipient=recipient,
-                notification=new_notification,
-                notification_data=notification_data)
+    notify.send(
+        sender=Notifications,
+        recipient=recipient,
+        notification=new_notification,
+        notification_data=notification_data,
+    )
 
 
 @receiver(notify, sender=Notifications)
 def send_notification(sender, **kwargs):
     channel_layer = get_channel_layer()
-    groupname = "user_%s" % kwargs['recipient']
-    notification = str(kwargs['notification'])
-    notification_data = kwargs['notification_data']
+    groupname = "user_%s" % kwargs["recipient"]
+    notification = str(kwargs["notification"])
+    notification_data = kwargs["notification_data"]
     async_to_sync(channel_layer.group_send)(
         groupname,
         {
-            'type': 'send.notification',
-            'notification': notification,
-            'notification_data': notification_data
-        }
+            "type": "send.notification",
+            "notification": notification,
+            "notification_data": notification_data,
+        },
     )

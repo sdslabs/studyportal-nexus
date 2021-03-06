@@ -5,12 +5,15 @@ from channels.auth import AuthMiddlewareStack
 
 from studyportal.consumers import MyConsumer
 
-application = ProtocolTypeRouter({
-
-    # WebSocket chat handler
-    "websocket": AuthMiddlewareStack(
-        URLRouter([
-            url(r"^notification/", MyConsumer),
-        ])
-    ),
-})
+application = ProtocolTypeRouter(
+    {
+        # WebSocket chat handler
+        "websocket": AuthMiddlewareStack(
+            URLRouter(
+                [
+                    url(r"^notification/", MyConsumer),
+                ]
+            )
+        ),
+    }
+)

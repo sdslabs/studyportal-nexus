@@ -10,7 +10,15 @@ class DataResponse:
 
 
 class FalconClient:
-    def __init__(self, ClientId, ClientSecret, URLAccessToken, URLResourceOwner, AccountsURL, RedirectURL):
+    def __init__(
+        self,
+        ClientId,
+        ClientSecret,
+        URLAccessToken,
+        URLResourceOwner,
+        AccountsURL,
+        RedirectURL,
+    ):
         self.ClientId = ClientId
         self.ClientSecret = ClientSecret
         self.URLAccessToken = URLAccessToken
@@ -24,8 +32,8 @@ COOKIE_NAME = "sdslabs"
 
 def make_request(url, token):
     headers = {
-        'Authorization': "Bearer {}".format(token),
-        "Content-Type": "application/json"
+        "Authorization": "Bearer {}".format(token),
+        "Content-Type": "application/json",
     }
     response = requests.get(url, headers=headers)
     return response.json()
@@ -36,13 +44,11 @@ def get_token(config):
         "client_id": config.ClientId,
         "client_secret": config.ClientSecret,
         "grant_type": "client_credentials",
-        "scope": "email image_url"
+        "scope": "email image_url",
     }
-    headers = {
-        "Content-Type": "application/x-www-form-urlencoded"
-    }
+    headers = {"Content-Type": "application/x-www-form-urlencoded"}
     response = requests.post(config.URLAccessToken, data=data, headers=headers)
-    return response.json()['access_token']
+    return response.json()["access_token"]
 
 
 def get_user_by_id(id, config):
@@ -68,12 +74,16 @@ def get_logged_in_user(config, cookies):
     if cookie == "":
         return ""
     token = get_token(config)
-    user_data = make_request(config.URLResourceOwner + "logged_in_user/" + cookie, token)
+    user_data = make_request(
+        config.URLResourceOwner + "logged_in_user/" + cookie, token
+    )
     return user_data
 
 
 def login(config, cookies):
     user_data = get_logged_in_user(config, cookies)
     if user_data is None:
-        user_data = HttpResponseRedirect(config.AccountsURL + "/login?redirect=//" + config.RedirectURL)
+        user_data = HttpResponseRedirect(
+            config.AccountsURL + "/login?redirect=//" + config.RedirectURL
+        )
     return user_data

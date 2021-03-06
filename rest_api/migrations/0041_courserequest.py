@@ -7,19 +7,27 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rest_api', '0040_auto_20200218_1534'),
+        ("rest_api", "0040_auto_20200218_1534"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='CourseRequest',
+            name="CourseRequest",
             fields=[
-                ('id', models.AutoField(editable=False, primary_key=True, serialize=False)),
-                ('status', models.IntegerField(choices=[(1, 1), (2, 2), (3, 3)])),
-                ('department', models.CharField(max_length=100)),
-                ('course', models.CharField(max_length=100)),
-                ('code', models.CharField(max_length=8)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='rest_api.User')),
+                (
+                    "id",
+                    models.AutoField(editable=False, primary_key=True, serialize=False),
+                ),
+                ("status", models.IntegerField(choices=[(1, 1), (2, 2), (3, 3)])),
+                ("department", models.CharField(max_length=100)),
+                ("course", models.CharField(max_length=100)),
+                ("code", models.CharField(max_length=8)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="rest_api.User"
+                    ),
+                ),
             ],
         ),
     ]

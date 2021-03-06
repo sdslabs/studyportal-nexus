@@ -72,5 +72,6 @@ services:
       ELASTICSEARCH_PORT: "9200"
       DISABLE_GLOBAL_THROTTLING: "True"
       ROOT_SHORTENING_URL: "localhost:8005"
+      DEVELOPMENT_MODE: "True"
     stdin_open: true
     tty: true

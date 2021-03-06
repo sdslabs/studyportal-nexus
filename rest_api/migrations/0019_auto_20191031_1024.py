@@ -6,31 +6,31 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rest_api', '0018_auto_20191014_1712'),
+        ("rest_api", "0018_auto_20191014_1712"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='file',
-            name='file',
+            model_name="file",
+            name="file",
         ),
         migrations.RemoveField(
-            model_name='file',
-            name='path',
+            model_name="file",
+            name="path",
         ),
         migrations.AddField(
-            model_name='file',
-            name='driveid',
-            field=models.URLField(default=''),
+            model_name="file",
+            name="driveid",
+            field=models.URLField(default=""),
         ),
         migrations.AddField(
-            model_name='file',
-            name='title',
-            field=models.CharField(default='', max_length=100),
+            model_name="file",
+            name="title",
+            field=models.CharField(default="", max_length=100),
         ),
         migrations.AlterField(
-            model_name='file',
-            name='downloads',
+            model_name="file",
+            name="downloads",
             field=models.IntegerField(default=0),
         ),
     ]

@@ -6,13 +6,22 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rest_api', '0034_auto_20200127_1608'),
+        ("rest_api", "0034_auto_20200127_1608"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='upload',
-            name='filetype',
-            field=models.CharField(choices=[('Tutorial', 'tutorials'), ('Book', 'books'), ('Notes', 'notes'), ('Examination Papers', 'exampapers')], default='', max_length=20),
+            model_name="upload",
+            name="filetype",
+            field=models.CharField(
+                choices=[
+                    ("Tutorial", "tutorials"),
+                    ("Book", "books"),
+                    ("Notes", "notes"),
+                    ("Examination Papers", "exampapers"),
+                ],
+                default="",
+                max_length=20,
+            ),
         ),
     ]

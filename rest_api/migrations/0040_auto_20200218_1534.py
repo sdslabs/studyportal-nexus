@@ -6,12 +6,12 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rest_api', '0039_upload_date'),
+        ("rest_api", "0039_upload_date"),
     ]
 
     operations = [
         migrations.RenameModel(
-            old_name='Request',
-            new_name='FileRequest',
+            old_name="Request",
+            new_name="FileRequest",
         ),
     ]

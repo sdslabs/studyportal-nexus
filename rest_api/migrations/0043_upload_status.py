@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rest_api', '0042_courserequest_date'),
+        ("rest_api", "0042_courserequest_date"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='upload',
-            name='status',
+            model_name="upload",
+            name="status",
             field=models.IntegerField(choices=[(1, 1), (2, 2), (3, 3)], default=1),
             preserve_default=False,
         ),
