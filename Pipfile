@@ -29,6 +29,7 @@ black = "==20.8b1"
 Django = "==2.2"
 PyYAML = "==5.1"
 PyJWT = "==1.7.1"
+Pillow = "==8.1.2"
 
 [requires]
 python_version = "3.7"
