@@ -6,7 +6,7 @@ docker exec -ti $NEXUS_CONTAINER_NAME /bin/bash -c 'python3 manage.py migrate --
 # Create a user for testing.
 docker exec -i $NEXUS_CONTAINER_NAME /bin/bash <<'EOF'
 python3 manage.py shell -c "from django.contrib.auth.models import User
-user = User.objects.create_user('studyportal', 'test@test.test', 'studyportal')
+user = User.objects.create_user('studyportal', 'test@test.test', 'studyportal', is_staff=True, is_superuser=True)
 user.save()
 "
 EOF
