@@ -16,7 +16,7 @@ from studyportal.drive.drive import driveinit
 from studyportal.falcon.config import config
 from studyportal.falcon import client
 from studyportal.settings import NEXUS_URL
-from rest_api.utils import get_size, get_file_details, STRUCTURE
+from rest_api.utils import get_size, get_file_details_and_upload, STRUCTURE
 import requests
 import random
 import base64
@@ -262,7 +262,7 @@ class UploadViewSet(APIView):
         file = request.data["file"]
         name = request.data["name"]
         course = Course.objects.get(id=request.data["course"])
-        file_details = get_file_details(
+        file_details = get_file_details_and_upload(
             file, name, request.data["filetype"], course, True
         )
         token = request.headers["Authorization"].split(" ")[1]
