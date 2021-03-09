@@ -22,7 +22,7 @@ from rest_api.utils import (
     get_title,
     add_course,
     add_file,
-    get_file_details,
+    get_file_details_and_upload,
     STRUCTURE,
 )
 from rest_api.serializers import CourseSerializer
@@ -58,7 +58,7 @@ class FileRequestViewSet(APIView):
             course = Course.objects.get(code=course_code)
             file_d = data["file"]
             name = data["name"]
-            file_details = get_file_details(
+            file_details = get_file_details_and_upload(
                 file_d, name, data["filetype"], course, False
             )
             file = File(

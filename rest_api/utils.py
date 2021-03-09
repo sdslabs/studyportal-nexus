@@ -10,6 +10,8 @@ from rest_api.models import Course
 from studyportal.drive.drive import driveinit
 from studyportal.settings import CUR_DIR
 from apiclient.http import MediaFileUpload
+from rest_framework.response import Response
+from rest_framework import status
 
 STRUCTURE = os.path.join(CUR_DIR, "drive/structure.json")
 if os.environ.get("DEVELOPMENT_MODE") == "True":
@@ -74,39 +76,43 @@ def uploadToDrive(service, folder_id, file_details):
     return file.get("id")
 
 
-def get_file_details(file, name, filetype, course, for_review):
+def get_file_details_and_upload(file, name, filetype, course, for_review):
     with open(STRUCTURE) as f:
         structure = json.load(f)
-    # File manipulation starts here
-    file_type = file.split(",")[0]
-    mime_type = file_type.split(":")[1].split(";")[0]
-    ext = file_type.split("/")[1].split(";")[0]
-    base64String = file.split(",")[1]
+    try:
+        # File manipulation starts here
+        file_type = file.split(",")[0]
+        mime_type = file_type.split(":")[1].split(";")[0]
+        ext = file_type.split("/")[1].split(";")[0]
+        base64String = file.split(",")[1]
 
-    rand = str(random.randint(0, 100000))
-    temp = open("temp" + rand + "." + ext, "wb")
-    temp.write(base64.b64decode(base64String))
-    file_details = {
-        "name": name,
-        "mime_type": mime_type,
-        "location": "temp" + rand + "." + ext,
-    }
-    file_size = os.path.getsize("temp" + rand + "." + ext)
-    size = get_size(file_size)
+        rand = str(random.randint(0, 100000))
+        temp = open("temp" + rand + "." + ext, "wb")
+        temp.write(base64.b64decode(base64String))
+        file_details = {
+            "name": name,
+            "mime_type": mime_type,
+            "location": "temp" + rand + "." + ext,
+        }
+        file_size = os.path.getsize("temp" + rand + "." + ext)
+        size = get_size(file_size)
 
-    # Get folder id from config
-    if for_review:
-        review_identifier = str("_review")
-    else:
-        review_identifier = str("")
-    folder_identifier = filetype.lower().replace(" ", "") + review_identifier
-    folder_id = structure["study"][course.department.abbreviation][course.code][
-        folder_identifier
-    ]
-    driveid = uploadToDrive(driveinit(), folder_id, file_details)
-    os.remove("temp" + rand + "." + ext)
-    # end of manipulation
-    return {"size": size, "driveid": driveid, "ext": ext}
+        # Get folder id from config
+        if for_review:
+            review_identifier = str("_review")
+        else:
+            review_identifier = str("")
+        folder_identifier = filetype.lower().replace(" ", "") + review_identifier
+        folder_id = structure["study"][course.department.abbreviation][course.code][
+            folder_identifier
+        ]
+        driveid = uploadToDrive(driveinit(), folder_id, file_details)
+        os.remove("temp" + rand + "." + ext)
+        # end of manipulation
+        return {"size": size, "driveid": driveid, "ext": ext}
+    except Exception:
+        os.remove("temp" + rand + "." + ext)
+        return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 def get_size(size):
