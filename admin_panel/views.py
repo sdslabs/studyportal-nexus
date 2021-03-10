@@ -23,6 +23,7 @@ from rest_api.utils import (
     add_course,
     add_file,
     get_file_details_and_upload,
+    get_file_details_for_file_object,
     STRUCTURE,
 )
 from rest_api.serializers import CourseSerializer
@@ -55,16 +56,16 @@ class FileRequestViewSet(APIView):
             course = Course.objects.get(code=course_code)
             file_d = data["file"]
             name = data["name"]
-            file_details = get_file_details_and_upload(
+            file_details = get_file_details_for_file_object(
                 file_d, name, data["filetype"], course, False
             )
             file = File(
-                title=get_title(file_request.title),
+                title=get_title(file_d.name),
                 driveid=file_details["driveid"],
                 downloads=0,
                 size=file_details["size"],
                 course=course,
-                fileext=get_fileext(file_request.title),
+                fileext=get_fileext(file_d.name),
                 filetype=file_request.filetype,
                 finalized=True,
             )
@@ -75,7 +76,7 @@ class FileRequestViewSet(APIView):
                 user_id,
                 "Admin",
                 "uploaded the file you requested",
-                file_request["title"],
+                file_request.title,
                 "request",
                 course_code,
                 "/activity/requests",
