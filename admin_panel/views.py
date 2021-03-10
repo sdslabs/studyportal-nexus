@@ -37,9 +37,6 @@ class FileRequestViewSet(APIView):
 
     def put(self, request):
         data = request.data
-        query = FileRequest.objects.filter(id=data["request"]).update(
-            status=data["status"]
-        )
         file_request = FileRequest.objects.get(id=data["request"])
         user = file_request.user
         course_code = file_request.course.code
@@ -83,6 +80,9 @@ class FileRequestViewSet(APIView):
                 course_code,
                 "/activity/requests",
             )
+        query = FileRequest.objects.filter(id=data["request"]).update(
+            status=data["status"]
+        )
         return Response(query, status=status.HTTP_200_OK)
 
     def delete(self, request):
@@ -116,9 +116,6 @@ class CourseRequestViewSet(APIView):
 
     def put(self, request):
         data = request.data
-        query = CourseRequest.objects.filter(id=data["request"]).update(
-            status=data["status"]
-        )
         course_object = CourseRequest.objects.get(id=data["request"])
         course_request = CourseRequestSerializer(course_object).data
         user = course_request["user"]
@@ -150,6 +147,9 @@ class CourseRequestViewSet(APIView):
                 course_request["department"],
                 "/activity/requests",
             )
+        query = CourseRequest.objects.filter(id=data["request"]).update(
+            status=data["status"]
+        )
         return Response(query, status=status.HTTP_200_OK)
 
     def delete(self, request):
@@ -185,7 +185,6 @@ class UploadViewSet(APIView):
         upload = Upload.objects.get(id=file_id)
         upload_status = request.data["status"]
         queryset = Upload.objects.filter(id=file_id)
-        query = queryset.update(status=upload_status)
         if upload_status == "2":
             notification_handler(
                 upload.user.id,
@@ -213,7 +212,6 @@ class UploadViewSet(APIView):
                 removeParents=previous_parent,
                 fields="id, parents",
             ).execute()
-            query = queryset.update(resolved=True)
             new_file = File(
                 title=upload.title,
                 filetype=upload.filetype,
@@ -254,6 +252,8 @@ class UploadViewSet(APIView):
                             + "/courses/"
                             + upload.course.code,
                         )
+            query = queryset.update(resolved=True)
+        query = queryset.update(status=upload_status)
         return Response(query, status=status.HTTP_200_OK)
 
     def delete(self, request):
