@@ -36,7 +36,7 @@ class FileRequest(models.Model):
     title = models.CharField(max_length=100)
     date = models.DateField(auto_now_add=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    files = ArrayField(models.IntegerField(), blank=True, default=list)
+    file = models.IntegerField(blank=True, default=None, null=True)
 
     def __str__(self):
         return self.title
