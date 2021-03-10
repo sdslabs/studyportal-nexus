@@ -182,25 +182,25 @@ class UploadViewSet(APIView):
 
     def put(self, request):
         file_id = request.data["file_id"]
-        file = Upload.objects.get(id=file_id)
+        upload = Upload.objects.get(id=file_id)
         upload_status = request.data["status"]
         queryset = Upload.objects.filter(id=file_id)
         query = queryset.update(status=upload_status)
         if upload_status == "2":
             notification_handler(
-                file.user.id,
+                upload.user.id,
                 "Admin",
                 "approved the file you uploaded",
-                file.title,
+                upload.title,
                 "upload",
-                file.course,
+                upload.course,
                 "activity/uploads",
             )
         elif upload_status == "3":
             with open(STRUCTURE) as f:
                 structure = json.load(f)
-            course = file.course
-            folder_identifier = file.filetype.lower().replace(" ", "")
+            course = upload.course
+            folder_identifier = upload.filetype.lower().replace(" ", "")
             folder_id = structure["study"][course.department.abbreviation][course.code][
                 folder_identifier
             ]
@@ -208,31 +208,31 @@ class UploadViewSet(APIView):
                 course.code
             ][folder_identifier + str("_review")]
             driveinit().files().update(
-                fileId=file.driveid,
+                fileId=upload.driveid,
                 addParents=folder_id,
                 removeParents=previous_parent,
                 fields="id, parents",
             ).execute()
             query = queryset.update(resolved=True)
             new_file = File(
-                title=file.title,
-                filetype=file.filetype,
-                driveid=file.driveid,
-                size=file.size,
-                fileext=file.fileext,
+                title=upload.title,
+                filetype=upload.filetype,
+                driveid=upload.driveid,
+                size=upload.size,
+                fileext=upload.fileext,
                 finalized=True,
-                course=file.course,
+                course=upload.course,
             )
             new_file.save()
-            file.files.append(new_file.id)
-            file.save()
+            upload.file = new_file.id
+            upload.save()
             notification_handler(
-                file.user.id,
+                upload.user.id,
                 "Admin",
                 "added the file you uploaded",
-                file.title,
+                upload.title,
                 "upload",
-                file.course,
+                upload.course,
                 "activity/uploads",
             )
             user_list = User.objects.all()
@@ -246,13 +246,13 @@ class UploadViewSet(APIView):
                             recipient=recipient["id"],
                             actor="Admin",
                             verb="added a file",
-                            action=file.title,
+                            action=upload.title,
                             notification_type="addfile",
                             target=course,
                             link="/departments/"
                             + department_code
                             + "/courses/"
-                            + file.course.code,
+                            + upload.course.code,
                         )
         return Response(query, status=status.HTTP_200_OK)
 
