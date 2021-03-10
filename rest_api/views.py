@@ -139,7 +139,6 @@ class FileViewSet(APIView):
         course = self.request.query_params.get("course")
         filetype = self.request.query_params.get("filetype")
         fileid = self.request.query_params.get("fileid")
-        print(fileid)
         if fileid is not None:
             queryset = File.objects.get(id=fileid)
             serializer = FileSerializer(queryset)
