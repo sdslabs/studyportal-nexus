@@ -288,7 +288,7 @@ class UploadViewSet(APIView):
             name,
             "upload",
             course,
-            "activity/uploads",
+            "/activity/uploads",
         )
         return Response(UploadSerializer(upload).data, status=status.HTTP_200_OK)
 
