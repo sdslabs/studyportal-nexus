@@ -194,7 +194,7 @@ class UploadViewSet(APIView):
                 upload.title,
                 "upload",
                 upload.course,
-                "activity/uploads",
+                "/activity/uploads",
             )
         elif upload_status == "3":
             with open(STRUCTURE) as f:
@@ -233,7 +233,7 @@ class UploadViewSet(APIView):
                 upload.title,
                 "upload",
                 upload.course,
-                "activity/uploads",
+                "/activity/uploads",
             )
             user_list = User.objects.all()
             recipient_list = UserSerializer(user_list, many=True)
@@ -265,7 +265,7 @@ class UploadViewSet(APIView):
             requests.title,
             "upload",
             requests.course,
-            "activity/uploads",
+            "/activity/uploads",
         )
         requests = requests.delete()
         return Response(requests, status=status.HTTP_200_OK)
