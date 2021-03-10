@@ -32,7 +32,7 @@ class FileRequestSerializer(serializers.ModelSerializer):
             "title",
             "date",
             "course",
-            "files",
+            "file",
         )
 
 
