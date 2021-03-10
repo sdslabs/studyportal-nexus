@@ -76,61 +76,27 @@ def uploadToDrive(service, folder_id, file_details):
     return file.get("id")
 
 
-def get_file_details_for_file_object(file, name, filetype, course, for_review):
-    # For local dev change 'STRUCTURE' to 'STRUCTURE_TEST'
-    with open(STRUCTURE) as f:
-        structure = json.load(f)
-    # File manipulation starts here
-    mime_type = file.content_type
-    ext = mime_type.split("/")[1].split(";")[0]
-    base64String = file.read()
-
-    rand = str(random.randint(0, 100000))
-    temp = open("temp" + rand + "." + ext, "wb")
-    temp.write(base64.b64decode(base64String))
-    file_details = {
-        'name': name,
-        'mime_type': mime_type,
-        'location': "temp" + rand + "." + ext
-    }
-    file_size = file.size
-    size = get_size(file_size)
-
-    # Get folder id from config
-    if for_review:
-        review_identifier = str("_review")
-    else:
-        review_identifier = str("")
-    folder_identifier = filetype.lower().replace(" ", "") + review_identifier
-    folder_id = structure['study'][course.department.abbreviation][course.code][folder_identifier]
-    driveid = uploadToDrive(
-        driveinit(),
-        folder_id,
-        file_details
-    )
-    os.remove("temp" + rand + "." + ext)
-    # end of manipulation
-    return {
-        'size': size,
-        'driveid': driveid,
-        'ext': ext
-    }
-
-
-
-def get_file_details_and_upload(file, name, filetype, course, for_review):
+def get_file_details_and_upload(file, name, filetype, course, for_review, is_file_object):
     with open(STRUCTURE) as f:
         structure = json.load(f)
     try:
         # File manipulation starts here
-        file_type = file.split(",")[0]
-        mime_type = file_type.split(":")[1].split(";")[0]
-        ext = file_type.split("/")[1].split(";")[0]
-        base64String = file.split(",")[1]
+        if is_file_object:
+            mime_type = file.content_type
+            ext = mime_type.split("/")[1].split(";")[0]
+            file_data = file.read()
+        else:
+            file_type = file.split(",")[0]
+            mime_type = file_type.split(":")[1].split(";")[0]
+            ext = file_type.split("/")[1].split(";")[0]
+            base64String = file.split(",")[1]
 
         rand = str(random.randint(0, 100000))
         temp = open("temp" + rand + "." + ext, "wb")
-        temp.write(base64.b64decode(base64String))
+        if is_file_object:
+            temp.write(file_data)
+        else:
+            temp.write(base64.b64decode(base64String))
         file_details = {
             "name": name,
             "mime_type": mime_type,
