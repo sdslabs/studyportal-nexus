@@ -1,6 +1,6 @@
 from users.models import User, FileRequest, CourseRequest, Upload, Notifications
 from rest_api.models import Course
-from rest_api.serializers import CourseSerializer
+from rest_api.serializers import CourseSerializer, FileSerializer
 from rest_framework import serializers
 
 
@@ -60,7 +60,7 @@ class UploadSerializer(serializers.ModelSerializer):
             "filetype",
             "date",
             "course",
-            "files",
+            "file",
             "fileext",
         )
 

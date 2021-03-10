@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
-from rest_api.models import Course
+from rest_api.models import Course, File
 
 USER_ROLE = [("user", "user"), ("moderator", "moderator"), ("admin", "admin")]
 
@@ -66,7 +66,7 @@ class Upload(models.Model):
     filetype = models.CharField(max_length=20, choices=FILE_TYPE, default="")
     date = models.DateField(auto_now_add=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    files = ArrayField(models.IntegerField(), blank=True, default=list)
+    file = models.IntegerField(blank=True, default=None, null=True)
     fileext = models.CharField(max_length=10, default="")
 
     def __str__(self):
