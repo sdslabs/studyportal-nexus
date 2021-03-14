@@ -263,7 +263,7 @@ class UploadViewSet(APIView):
         name = request.data["name"]
         course = Course.objects.get(id=request.data["course"])
         file_details = get_file_details_and_upload(
-            file, name, request.data["filetype"], course, True
+            file, name, request.data["filetype"], course, True, False
         )
         token = request.headers["Authorization"].split(" ")[1]
         username = getUserFromJWT(token)["username"]
