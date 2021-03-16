@@ -14,6 +14,7 @@ PICKLE = os.path.join(os.path.abspath(os.path.dirname(__file__)), "token.pickle"
 def driveinit():
     creds = None
     SCOPES = [
+        "https://www.googleapis.com/auth/drive",
         "https://www.googleapis.com/auth/drive.readonly",
         "https://www.googleapis.com/auth/drive.file",
         "https://www.googleapis.com/auth/drive.appdata",
