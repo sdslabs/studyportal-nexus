@@ -10,6 +10,7 @@ from rest_api.models import Course
 from studyportal.drive.drive import driveinit
 from studyportal.settings import CUR_DIR
 from apiclient.http import MediaFileUpload
+from apiclient import errors
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -75,6 +76,17 @@ def uploadToDrive(service, folder_id, file_details):
     )
     return file.get("id")
 
+def updatePermissions(service, fileId):
+    try:
+      new_permission = {
+        'type': 'anyone',
+        'value': 'anyone',
+        'role': 'reader'
+      }
+      service.permissions().create(fileId=fileId, body=new_permission).execute()
+    except errors.HttpError as error:
+      print('An error occurred:', error)
+
 
 def get_file_details_and_upload(file, name, filetype, course, for_review, is_file_object):
     with open(STRUCTURE) as f:
@@ -115,6 +127,7 @@ def get_file_details_and_upload(file, name, filetype, course, for_review, is_fil
             folder_identifier
         ]
         driveid = uploadToDrive(driveinit(), folder_id, file_details)
+        updatePermissions(driveinit(), driveid)
         os.remove("temp" + rand + "." + ext)
         # end of manipulation
         return {"size": size, "driveid": driveid, "ext": ext}
