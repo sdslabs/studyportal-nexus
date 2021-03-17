@@ -1,132 +1,195 @@
 {
-    "departments": [],
-    "courses": [],
-    "files": [
-        {
-            "id": 36,
-            "title": "test2",
-            "driveid": "123456789",
-            "downloads": 0,
-            "size": "0.01 MB",
-            "date_modified": "2020-04-22",
-            "fileext": "pdf",
-            "filetype": "exampapers",
-            "course": {
-                "id": 1251,
-                "title": "SEMINAR",
-                "department": {
-                    "id": 118,
-                    "title": "Applied Science and Engineering",
-                    "abbreviation": "ASED",
-                    "imageurl": "ased.png"
-                },
-                "code": "ASN-700"
-            }
-        },
-        {
-            "id": 37,
-            "title": "test1",
-            "driveid": "123456789",
-            "downloads": 0,
-            "size": "0.01 MB",
-            "date_modified": "2020-04-22",
-            "fileext": "pdf",
-            "filetype": "exampapers",
-            "course": {
-                "id": 1251,
-                "title": "SEMINAR",
-                "department": {
-                    "id": 118,
-                    "title": "Applied Science and Engineering",
-                    "abbreviation": "ASED",
-                    "imageurl": "ased.png"
-                },
-                "code": "ASN-700"
-            }
-        },
-        {
-            "id": 38,
-            "title": "test1",
-            "driveid": "123456789",
-            "downloads": 0,
-            "size": "0.01 MB",
-            "date_modified": "2019-04-21",
-            "fileext": "pdf",
-            "filetype": "exampapers",
-            "course": {
-                "id": 1251,
-                "title": "SEMINAR",
-                "department": {
-                    "id": 118,
-                    "title": "Applied Science and Engineering",
-                    "abbreviation": "ASED",
-                    "imageurl": "ased.png"
-                },
-                "code": "ASN-700"
-            }
-        },
-        {
-            "id": 39,
-            "title": "test1",
-            "driveid": "123456789",
-            "downloads": 0,
-            "size": "0.01 MB",
-            "date_modified": "2020-04-22",
-            "fileext": "pdf",
-            "filetype": "exampapers",
-            "course": {
-                "id": 1251,
-                "title": "SEMINAR",
-                "department": {
-                    "id": 118,
-                    "title": "Applied Science and Engineering",
-                    "abbreviation": "ASED",
-                    "imageurl": "ased.png"
-                },
-                "code": "ASN-700"
-            }
-        },
-        {
-            "id": 40,
-            "title": "test1",
-            "driveid": "123456789",
-            "downloads": 0,
-            "size": "0.01 MB",
-            "date_modified": "2020-04-22",
-            "fileext": "pdf",
-            "filetype": "exampapers",
-            "course": {
-                "id": 1251,
-                "title": "SEMINAR",
-                "department": {
-                    "id": 118,
-                    "title": "Applied Science and Engineering",
-                    "abbreviation": "ASED",
-                    "imageurl": "ased.png"
-                },
-                "code": "ASN-700"
-            }
-        },
-        {
-            "id": 31,
-            "title": "test",
-            "driveid": "123456789",
-            "downloads": 0,
-            "size": "0.01 MB",
-            "date_modified": "2020-04-21",
-            "fileext": "pdf",
-            "filetype": "exampapers",
-            "course": {
-                "id": 1251,
-                "title": "SEMINAR",
-                "department": {
-                    "id": 118,
-                    "title": "Applied Science and Engineering",
-                    "abbreviation": "ASED",
-                    "imageurl": "ased.png"
-                },
-                "code": "ASN-700"
-            }
-        }
-    ]
+  "departments": [],
+  "courses": [],
+  "files": [
+      {
+          "id": 4,
+          "title": "test",
+          "driveid": "123456789",
+          "downloads": 0,
+          "size": "0.12 MB",
+          "date_modified": "2021-03-17",
+          "fileext": "docx",
+          "filetype": "exampapers",
+          "course": {
+              "id": 1,
+              "title": "Data Structures",
+              "department": {
+                  "id": 1,
+                  "title": "Computer Science and Engineering",
+                  "abbreviation": "CSED",
+                  "image": null
+              },
+              "code": "CSN-101"
+          }
+      },
+      {
+          "id": 1,
+          "title": "test",
+          "driveid": "123456789",
+          "downloads": 0,
+          "size": "0.12 MB",
+          "date_modified": "2021-03-17",
+          "fileext": "pdf",
+          "filetype": "tutorials",
+          "course": {
+              "id": 1,
+              "title": "Data Structures",
+              "department": {
+                  "id": 1,
+                  "title": "Computer Science and Engineering",
+                  "abbreviation": "CSED",
+                  "image": null
+              },
+              "code": "CSN-101"
+          }
+      },
+      {
+          "id": 5,
+          "title": "test",
+          "driveid": "123456789",
+          "downloads": 0,
+          "size": "0.12 MB",
+          "date_modified": "2021-03-17",
+          "fileext": "bmp",
+          "filetype": "tutorials",
+          "course": {
+              "id": 2,
+              "title": "Engineering Analysis and Design",
+              "department": {
+                  "id": 1,
+                  "title": "Computer Science and Engineering",
+                  "abbreviation": "CSED",
+                  "image": null
+              },
+              "code": "CSN-291"
+          }
+      },
+      {
+          "id": 2,
+          "title": "test",
+          "driveid": "123456789",
+          "downloads": 0,
+          "size": "0.12 MB",
+          "date_modified": "2021-03-17",
+          "fileext": "pdf",
+          "filetype": "books",
+          "course": {
+              "id": 1,
+              "title": "Data Structures",
+              "department": {
+                  "id": 1,
+                  "title": "Computer Science and Engineering",
+                  "abbreviation": "CSED",
+                  "image": null
+              },
+              "code": "CSN-101"
+          }
+      },
+      {
+          "id": 3,
+          "title": "test",
+          "driveid": "123456789",
+          "downloads": 0,
+          "size": "0.12 MB",
+          "date_modified": "2021-03-17",
+          "fileext": "jpg",
+          "filetype": "notes",
+          "course": {
+              "id": 1,
+              "title": "Data Structures",
+              "department": {
+                  "id": 1,
+                  "title": "Computer Science and Engineering",
+                  "abbreviation": "CSED",
+                  "image": null
+              },
+              "code": "CSN-101"
+          }
+      },
+      {
+          "id": 6,
+          "title": "test",
+          "driveid": "123456789",
+          "downloads": 0,
+          "size": "0.12 MB",
+          "date_modified": "2021-03-17",
+          "fileext": "pdf",
+          "filetype": "tutorials",
+          "course": {
+              "id": 2,
+              "title": "Engineering Analysis and Design",
+              "department": {
+                  "id": 1,
+                  "title": "Computer Science and Engineering",
+                  "abbreviation": "CSED",
+                  "image": null
+              },
+              "code": "CSN-291"
+          }
+      },
+      {
+          "id": 7,
+          "title": "test",
+          "driveid": "123456789",
+          "downloads": 0,
+          "size": "0.12 MB",
+          "date_modified": "2021-03-17",
+          "fileext": "pdf",
+          "filetype": "notes",
+          "course": {
+              "id": 3,
+              "title": "Introduction to Advanced Architecture Techniques",
+              "department": {
+                  "id": 2,
+                  "title": "Architecture and Planning",
+                  "abbreviation": "ARCD",
+                  "image": null
+              },
+              "code": "ARN-401"
+          }
+      },
+      {
+          "id": 8,
+          "title": "test",
+          "driveid": "123456789",
+          "downloads": 0,
+          "size": "0.12 MB",
+          "date_modified": "2021-03-17",
+          "fileext": "pdf",
+          "filetype": "tutorials",
+          "course": {
+              "id": 3,
+              "title": "Introduction to Advanced Architecture Techniques",
+              "department": {
+                  "id": 2,
+                  "title": "Architecture and Planning",
+                  "abbreviation": "ARCD",
+                  "image": null
+              },
+              "code": "ARN-401"
+          }
+      },
+      {
+          "id": 9,
+          "title": "test",
+          "driveid": "123456789",
+          "downloads": 0,
+          "size": "0.12 MB",
+          "date_modified": "2021-03-17",
+          "fileext": "pdf",
+          "filetype": "tutorials",
+          "course": {
+              "id": 2,
+              "title": "Engineering Analysis and Design",
+              "department": {
+                  "id": 1,
+                  "title": "Computer Science and Engineering",
+                  "abbreviation": "CSED",
+                  "image": null
+              },
+              "code": "CSN-291"
+          }
+      }
+  ]
 }
