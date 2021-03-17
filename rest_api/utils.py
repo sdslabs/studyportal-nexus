@@ -76,19 +76,18 @@ def uploadToDrive(service, folder_id, file_details):
     )
     return file.get("id")
 
+
 def updatePermissions(service, fileId):
     try:
-      new_permission = {
-        'type': 'anyone',
-        'value': 'anyone',
-        'role': 'reader'
-      }
-      service.permissions().create(fileId=fileId, body=new_permission).execute()
+        new_permission = {"type": "anyone", "value": "anyone", "role": "reader"}
+        service.permissions().create(fileId=fileId, body=new_permission).execute()
     except errors.HttpError as error:
-      print('An error occurred:', error)
+        print("An error occurred:", error)
 
 
-def get_file_details_and_upload(file, name, filetype, course, for_review, is_file_object):
+def get_file_details_and_upload(
+    file, name, filetype, course, for_review, is_file_object
+):
     with open(STRUCTURE) as f:
         structure = json.load(f)
     try:
