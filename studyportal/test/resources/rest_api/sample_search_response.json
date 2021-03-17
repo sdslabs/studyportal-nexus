@@ -3,27 +3,6 @@
   "courses": [],
   "files": [
       {
-          "id": 4,
-          "title": "test",
-          "driveid": "123456789",
-          "downloads": 0,
-          "size": "0.12 MB",
-          "date_modified": "2021-03-17",
-          "fileext": "docx",
-          "filetype": "exampapers",
-          "course": {
-              "id": 1,
-              "title": "Data Structures",
-              "department": {
-                  "id": 1,
-                  "title": "Computer Science and Engineering",
-                  "abbreviation": "CSED",
-                  "image": null
-              },
-              "code": "CSN-101"
-          }
-      },
-      {
           "id": 1,
           "title": "test",
           "driveid": "123456789",
@@ -42,27 +21,6 @@
                   "image": null
               },
               "code": "CSN-101"
-          }
-      },
-      {
-          "id": 5,
-          "title": "test",
-          "driveid": "123456789",
-          "downloads": 0,
-          "size": "0.12 MB",
-          "date_modified": "2021-03-17",
-          "fileext": "bmp",
-          "filetype": "tutorials",
-          "course": {
-              "id": 2,
-              "title": "Engineering Analysis and Design",
-              "department": {
-                  "id": 1,
-                  "title": "Computer Science and Engineering",
-                  "abbreviation": "CSED",
-                  "image": null
-              },
-              "code": "CSN-291"
           }
       },
       {
@@ -105,6 +63,48 @@
                   "image": null
               },
               "code": "CSN-101"
+          }
+      },
+      {
+          "id": 4,
+          "title": "test",
+          "driveid": "123456789",
+          "downloads": 0,
+          "size": "0.12 MB",
+          "date_modified": "2021-03-17",
+          "fileext": "docx",
+          "filetype": "exampapers",
+          "course": {
+              "id": 1,
+              "title": "Data Structures",
+              "department": {
+                  "id": 1,
+                  "title": "Computer Science and Engineering",
+                  "abbreviation": "CSED",
+                  "image": null
+              },
+              "code": "CSN-101"
+          }
+      },
+      {
+          "id": 5,
+          "title": "test",
+          "driveid": "123456789",
+          "downloads": 0,
+          "size": "0.12 MB",
+          "date_modified": "2021-03-17",
+          "fileext": "bmp",
+          "filetype": "tutorials",
+          "course": {
+              "id": 2,
+              "title": "Engineering Analysis and Design",
+              "department": {
+                  "id": 1,
+                  "title": "Computer Science and Engineering",
+                  "abbreviation": "CSED",
+                  "image": null
+              },
+              "code": "CSN-291"
           }
       },
       {
