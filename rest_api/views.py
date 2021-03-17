@@ -60,7 +60,6 @@ class DepartmentViewSet(APIView):
             department = Department(
                 title=data["title"],
                 abbreviation=data["abbreviation"],
-                imageurl=data["imageurl"],
             )
             department.save()
             users_list = User.objects.all()

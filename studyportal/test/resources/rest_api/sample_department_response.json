@@ -1,32 +1,32 @@
 {
-    "department": {
-        "id": 118,
-        "title": "Applied Science and Engineering",
-        "abbreviation": "ASED",
-        "imageurl": "ased.png"
+  "department": {
+      "id": 1,
+      "title": "Computer Science and Engineering",
+      "abbreviation": "CSED",
+      "image": null
+  },
+  "courses": [
+    {
+      "id": 2,
+      "title": "Engineering Analysis and Design",
+      "department": {
+          "id": 1,
+          "title": "Computer Science and Engineering",
+          "abbreviation": "CSED",
+          "image": null
+      },
+      "code": "CSN-291"
     },
-    "courses": [
-        {
-            "id": 1251,
-            "title": "SEMINAR",
-            "department": {
-                "id": 118,
-                "title": "Applied Science and Engineering",
-                "abbreviation": "ASED",
-                "imageurl": "ased.png"
-            },
-            "code": "ASN-700"
+    {
+        "id": 1,
+        "title": "Data Structures",
+        "department": {
+            "id": 1,
+            "title": "Computer Science and Engineering",
+            "abbreviation": "CSED",
+            "image": null
         },
-        {
-            "id": 1250,
-            "title": "Advanced Characterization Techniques",
-            "department": {
-                "id": 118,
-                "title": "Applied Science and Engineering",
-                "abbreviation": "ASED",
-                "imageurl": "ased.png"
-            },
-            "code": "AS-901"
-        }
-    ]
+        "code": "CSN-101"
+    }
+  ]
 }
