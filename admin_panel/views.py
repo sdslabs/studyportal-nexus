@@ -26,15 +26,18 @@ from rest_api.utils import (
     STRUCTURE,
 )
 from rest_api.serializers import CourseSerializer
+from admin_panel.decorators import admin_only
 from studyportal.drive.drive import driveinit
 
 
 class FileRequestViewSet(APIView):
+    @admin_only
     def get(self, request):
         queryset = FileRequest.objects.exclude(status=3)
         serializer = FileRequestSerializer(queryset, many=True)
         return Response({"filerequest": serializer.data}, status=status.HTTP_200_OK)
 
+    @admin_only
     def put(self, request):
         data = request.data
         file_request = FileRequest.objects.get(id=data["request"])
@@ -85,6 +88,7 @@ class FileRequestViewSet(APIView):
         )
         return Response(query, status=status.HTTP_200_OK)
 
+    @admin_only
     def delete(self, request):
         requests = FileRequest.objects.get(id=request.data.get("request"))
         file_request = FileRequestSerializer(requests).data
@@ -109,11 +113,13 @@ class FileRequestViewSet(APIView):
 
 
 class CourseRequestViewSet(APIView):
+    @admin_only
     def get(self, request):
         queryset = CourseRequest.objects.exclude(status=3)
         serializer = CourseRequestSerializer(queryset, many=True)
         return Response({"courserequest": serializer.data}, status=status.HTTP_200_OK)
 
+    @admin_only
     def put(self, request):
         data = request.data
         course_object = CourseRequest.objects.get(id=data["request"])
@@ -152,6 +158,7 @@ class CourseRequestViewSet(APIView):
         )
         return Response(query, status=status.HTTP_200_OK)
 
+    @admin_only
     def delete(self, request):
         requests = CourseRequest.objects.get(id=request.data.get("request"))
         course_request = CourseRequestSerializer(requests).data
@@ -175,11 +182,13 @@ class CourseRequestViewSet(APIView):
 
 
 class UploadViewSet(APIView):
+    @admin_only
     def get(self, request):
         queryset = Upload.objects.exclude(status=3)
         serializer = UploadSerializer(queryset, many=True)
         return Response({"upload": serializer.data}, status=status.HTTP_200_OK)
 
+    @admin_only
     def put(self, request):
         file_id = request.data["file_id"]
         upload = Upload.objects.get(id=file_id)
@@ -256,6 +265,7 @@ class UploadViewSet(APIView):
         query = queryset.update(status=upload_status)
         return Response(query, status=status.HTTP_200_OK)
 
+    @admin_only
     def delete(self, request):
         requests = Upload.objects.get(id=request.data.get("request"))
         notification_handler(
