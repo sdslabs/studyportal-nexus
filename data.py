@@ -1,3 +1,4 @@
+from studyportal.settings import SECRET_KEY
 import requests
 
 URL = "http://localhost:8005/api/v1"
@@ -117,21 +118,26 @@ files = [
 ]
 
 user = {
-    "falcon_id": 123456,
+    "auth_id": 123456,
     "username": "darkrider",
     "email": "darkrider251099@gmail.com",
     "profile_image": "http://www.newdesignfile.com/postpic/2009/09/generic-user-profile_354184.png",
     "role": "admin",
 }
 
-requests.post(URL + "/users", user)
+requests.post(URL + "/users", user, headers={"Authorization": "Bearer " + SECRET_KEY})
 for department in departments:
     requests.post(
         URL + "/departments",
         {"title": department["title"], "abbreviation": department["abbreviation"]},
+        headers={"Authorization": "Bearer " + SECRET_KEY},
     )
     for course in department["courses"]:
-        requests.post(URL + "/courses", course)
+        requests.post(
+            URL + "/courses", course, headers={"Authorization": "Bearer " + SECRET_KEY}
+        )
 
 for file in files:
-    requests.post(URL + "/files", file)
+    requests.post(
+        URL + "/files", file, headers={"Authorization": "Bearer " + SECRET_KEY}
+    )

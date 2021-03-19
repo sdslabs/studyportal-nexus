@@ -1,4 +1,5 @@
 {
+  "message": "Departments fetched successfully",
   "department": {
       "id": 1,
       "title": "Computer Science and Engineering",
@@ -6,27 +7,27 @@
       "image": null
   },
   "courses": [
-    {
-      "id": 2,
-      "title": "Engineering Analysis and Design",
-      "department": {
-          "id": 1,
-          "title": "Computer Science and Engineering",
-          "abbreviation": "CSED",
-          "image": null
+      {
+          "id": 2,
+          "title": "Engineering Analysis and Design",
+          "department": {
+              "id": 1,
+              "title": "Computer Science and Engineering",
+              "abbreviation": "CSED",
+              "image": null
+          },
+          "code": "CSN-291"
       },
-      "code": "CSN-291"
-    },
-    {
-        "id": 1,
-        "title": "Data Structures",
-        "department": {
-            "id": 1,
-            "title": "Computer Science and Engineering",
-            "abbreviation": "CSED",
-            "image": null
-        },
-        "code": "CSN-101"
-    }
+      {
+          "id": 1,
+          "title": "Data Structures",
+          "department": {
+              "id": 1,
+              "title": "Computer Science and Engineering",
+              "abbreviation": "CSED",
+              "image": null
+          },
+          "code": "CSN-101"
+      }
   ]
 }

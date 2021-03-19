@@ -2,7 +2,7 @@ import os
 import json
 import pytest
 import requests
-from studyportal.settings import CUR_DIR
+from studyportal.settings import CUR_DIR, SECRET_KEY
 
 NEXUS_URL = "http://localhost:8005/api/v1/"
 RESOURCES = os.path.join(CUR_DIR, "test/resources/rest_api")
@@ -18,7 +18,11 @@ class TestRestApi:
 
     def test_post_department(self):
         data = {"title": "dep", "abbreviation": "DEP", "imageurl": "DEP.svg"}
-        r = requests.post(url=NEXUS_URL + "departments", data=data)
+        r = requests.post(
+            url=NEXUS_URL + "departments",
+            headers={"Authorization": "Bearer " + SECRET_KEY},
+            data=data,
+        )
         assert r.status_code == 200
 
     def test_get_courses_by_department(self):
@@ -39,7 +43,11 @@ class TestRestApi:
 
     def test_post_course(self):
         data = {"title": "course", "department": "1", "code": "COU-000"}
-        r = requests.post(url=NEXUS_URL + "courses", data=data)
+        r = requests.post(
+            url=NEXUS_URL + "courses",
+            headers={"Authorization": "Bearer " + SECRET_KEY},
+            data=data,
+        )
         assert r.status_code == 200
 
     def test_get_files_by_course(self):
@@ -68,7 +76,11 @@ class TestRestApi:
             "filetype": "tutorials",
             "finalized": "True",
         }
-        r = requests.post(url=NEXUS_URL + "files", data=data)
+        r = requests.post(
+            url=NEXUS_URL + "files",
+            headers={"Authorization": "Bearer " + SECRET_KEY},
+            data=data,
+        )
         assert r.status_code == 200
 
     def test_search(self):

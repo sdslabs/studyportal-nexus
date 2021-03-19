@@ -1,5 +1,5 @@
 from django_elasticsearch_dsl import Document, Index
-from rest_api.models import Course, Department, File
+from resources.models import Course, Department, File
 
 COURSES = Index("courses")
 DEPARTMENTS = Index("departments")

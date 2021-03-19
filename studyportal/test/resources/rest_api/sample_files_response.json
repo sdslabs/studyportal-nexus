@@ -1,86 +1,89 @@
-[
-  {
-      "id": 4,
-      "title": "test",
-      "driveid": "123456789",
-      "downloads": 0,
-      "size": "0.12 MB",
-      "date_modified": "2021-03-17",
-      "fileext": "docx",
-      "filetype": "exampapers",
-      "course": {
-          "id": 1,
-          "title": "Data Structures",
-          "department": {
+{
+  "message": "Files fetched successfully",
+  "files": [
+      {
+          "id": 4,
+          "title": "test",
+          "driveid": "123456789",
+          "downloads": 0,
+          "size": "0.12 MB",
+          "date_modified": "2021-03-19",
+          "fileext": "docx",
+          "filetype": "exampapers",
+          "course": {
               "id": 1,
-              "title": "Computer Science and Engineering",
-              "abbreviation": "CSED",
-              "image": null
-          },
-          "code": "CSN-101"
-      }
-  },
-  {
-      "id": 3,
-      "title": "test",
-      "driveid": "123456789",
-      "downloads": 0,
-      "size": "0.12 MB",
-      "date_modified": "2021-03-17",
-      "fileext": "jpg",
-      "filetype": "notes",
-      "course": {
-          "id": 1,
-          "title": "Data Structures",
-          "department": {
+              "title": "Data Structures",
+              "department": {
+                  "id": 1,
+                  "title": "Computer Science and Engineering",
+                  "abbreviation": "CSED",
+                  "image": null
+              },
+              "code": "CSN-101"
+          }
+      },
+      {
+          "id": 3,
+          "title": "test",
+          "driveid": "123456789",
+          "downloads": 0,
+          "size": "0.12 MB",
+          "date_modified": "2021-03-19",
+          "fileext": "jpg",
+          "filetype": "notes",
+          "course": {
               "id": 1,
-              "title": "Computer Science and Engineering",
-              "abbreviation": "CSED",
-              "image": null
-          },
-          "code": "CSN-101"
-      }
-  },
-  {
-      "id": 2,
-      "title": "test",
-      "driveid": "123456789",
-      "downloads": 0,
-      "size": "0.12 MB",
-      "date_modified": "2021-03-17",
-      "fileext": "pdf",
-      "filetype": "books",
-      "course": {
-          "id": 1,
-          "title": "Data Structures",
-          "department": {
+              "title": "Data Structures",
+              "department": {
+                  "id": 1,
+                  "title": "Computer Science and Engineering",
+                  "abbreviation": "CSED",
+                  "image": null
+              },
+              "code": "CSN-101"
+          }
+      },
+      {
+          "id": 2,
+          "title": "test",
+          "driveid": "123456789",
+          "downloads": 0,
+          "size": "0.12 MB",
+          "date_modified": "2021-03-19",
+          "fileext": "pdf",
+          "filetype": "books",
+          "course": {
               "id": 1,
-              "title": "Computer Science and Engineering",
-              "abbreviation": "CSED",
-              "image": null
-          },
-          "code": "CSN-101"
-      }
-  },
-  {
-      "id": 1,
-      "title": "test",
-      "driveid": "123456789",
-      "downloads": 0,
-      "size": "0.12 MB",
-      "date_modified": "2021-03-17",
-      "fileext": "pdf",
-      "filetype": "tutorials",
-      "course": {
+              "title": "Data Structures",
+              "department": {
+                  "id": 1,
+                  "title": "Computer Science and Engineering",
+                  "abbreviation": "CSED",
+                  "image": null
+              },
+              "code": "CSN-101"
+          }
+      },
+      {
           "id": 1,
-          "title": "Data Structures",
-          "department": {
+          "title": "test",
+          "driveid": "123456789",
+          "downloads": 0,
+          "size": "0.12 MB",
+          "date_modified": "2021-03-19",
+          "fileext": "pdf",
+          "filetype": "tutorials",
+          "course": {
               "id": 1,
-              "title": "Computer Science and Engineering",
-              "abbreviation": "CSED",
-              "image": null
-          },
-          "code": "CSN-101"
+              "title": "Data Structures",
+              "department": {
+                  "id": 1,
+                  "title": "Computer Science and Engineering",
+                  "abbreviation": "CSED",
+                  "image": null
+              },
+              "code": "CSN-101"
+          }
       }
-  }
-]
+  ]
+}
