@@ -4,9 +4,9 @@ import random
 import base64
 from users.models import User
 from users.serializers import UserSerializer
-from rest_api.serializers import DepartmentSerializer, CourseSerializer, FileSerializer
+from resources.serializers import DepartmentSerializer, CourseSerializer, FileSerializer
 from users.signals import notification_handler
-from rest_api.models import Course
+from resources.models import Course
 from studyportal.drive.drive import driveinit
 from studyportal.settings import CUR_DIR
 from apiclient.http import MediaFileUpload

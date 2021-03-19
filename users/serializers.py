@@ -1,6 +1,6 @@
 from users.models import User, FileRequest, CourseRequest, Upload, Notifications
-from rest_api.models import Course
-from rest_api.serializers import CourseSerializer, FileSerializer
+from resources.models import Course
+from resources.serializers import CourseSerializer, FileSerializer
 from rest_framework import serializers
 
 

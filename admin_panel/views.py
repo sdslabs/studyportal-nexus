@@ -1,6 +1,6 @@
 from users.models import CourseRequest, FileRequest, Upload, User
-from rest_api.models import Course, Department, File
-from rest_api.serializers import CourseSerializer
+from resources.models import Course, Department, File
+from resources.serializers import CourseSerializer
 from users.signals import notification_handler
 from studyportal.drive.drive import driveinit
 from admin_panel.decorators import admin_only
@@ -15,7 +15,7 @@ from users.serializers import (
     UploadSerializer,
     UserSerializer,
 )
-from rest_api.utils import (
+from resources.utils import (
     get_file_details_and_upload,
     get_fileext,
     get_size,
