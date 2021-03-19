@@ -1,13 +1,16 @@
-[
-  {
-      "id": 1,
-      "title": "Data Structures",
-      "department": {
+{
+  "message": "Courses fetched successfully",
+  "courses": [
+      {
           "id": 1,
-          "title": "Computer Science and Engineering",
-          "abbreviation": "CSED",
-          "image": null
-      },
-      "code": "CSN-101"
-  }
-]
+          "title": "Data Structures",
+          "department": {
+              "id": 1,
+              "title": "Computer Science and Engineering",
+              "abbreviation": "CSED",
+              "image": null
+          },
+          "code": "CSN-101"
+      }
+  ]
+}
