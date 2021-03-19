@@ -1,29 +1,29 @@
-from rest_api.models import Course
 from users.models import User, FileRequest, CourseRequest, Upload, Notifications
+from rest_api.utils import get_size, get_file_details_and_upload, STRUCTURE
+from studyportal.settings import NEXUS_URL, SECRET_KEY
+from rest_api.serializers import CourseSerializer
+from users.signals import notification_handler
+from rest_framework.response import Response
+from users.serializers import UserSerializer
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_api.serializers import CourseSerializer
-from users.serializers import UserSerializer
+
 from users.serializers import (
     FileRequestSerializer,
     CourseRequestSerializer,
     NotificationsSerializer,
 )
 from users.serializers import UploadSerializer
-from studyportal.settings import SECRET_KEY
 from studyportal.drive.drive import driveinit
 from studyportal.falcon.config import config
 from studyportal.falcon import client
-from studyportal.settings import NEXUS_URL
-from rest_api.utils import get_size, get_file_details_and_upload, STRUCTURE
+from rest_api.models import Course
 import requests
 import random
 import base64
 import json
 import jwt
 import os
-from users.signals import notification_handler
 
 
 def getUserFromJWT(token):
