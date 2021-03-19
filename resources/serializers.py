@@ -1,4 +1,4 @@
-from rest_api.models import Department, Course, File
+from resources.models import Department, Course, File
 from rest_framework import serializers
 
 

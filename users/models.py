@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
-from rest_api.models import Course, File
+from resources.models import Course, File
 
 USER_ROLE = [("user", "user"), ("moderator", "moderator"), ("admin", "admin")]
 

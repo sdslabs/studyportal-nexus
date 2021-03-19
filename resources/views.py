@@ -1,9 +1,9 @@
-from rest_api.documents import CourseDocument, FileDocument, DepartmentDocument
-from rest_api.serializers import DepartmentSerializer, CourseSerializer
-from rest_api.models import Department, Course, File
-from rest_api.serializers import FileSerializer
+from resources.documents import CourseDocument, FileDocument, DepartmentDocument
+from resources.serializers import DepartmentSerializer, CourseSerializer
+from resources.models import Department, Course, File
+from resources.serializers import FileSerializer
 from users.signals import notification_handler
-from rest_api.decorators import post_permitted
+from resources.decorators import post_permitted
 from studyportal.drive.drive import driveinit
 from studyportal.falcon.config import config
 from users.models import User, Notifications
@@ -15,7 +15,7 @@ from apiclient.http import MediaFileUpload
 from rest_framework.views import APIView
 from studyportal.falcon import client
 from django.http import HttpResponse
-from rest_api.utils import (
+from resources.utils import (
     add_course,
     add_file,
     get_fileext,
