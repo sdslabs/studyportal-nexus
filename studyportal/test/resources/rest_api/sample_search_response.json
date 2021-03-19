@@ -1,4 +1,5 @@
 {
+  "message": "Search completed successfully",
   "departments": [],
   "courses": [],
   "files": [
@@ -8,7 +9,7 @@
           "driveid": "123456789",
           "downloads": 0,
           "size": "0.12 MB",
-          "date_modified": "2021-03-18",
+          "date_modified": "2021-03-19",
           "fileext": "pdf",
           "filetype": "tutorials",
           "course": {
@@ -29,7 +30,7 @@
           "driveid": "123456789",
           "downloads": 0,
           "size": "0.12 MB",
-          "date_modified": "2021-03-18",
+          "date_modified": "2021-03-19",
           "fileext": "pdf",
           "filetype": "books",
           "course": {
@@ -50,7 +51,7 @@
           "driveid": "123456789",
           "downloads": 0,
           "size": "0.12 MB",
-          "date_modified": "2021-03-18",
+          "date_modified": "2021-03-19",
           "fileext": "jpg",
           "filetype": "notes",
           "course": {
@@ -71,7 +72,7 @@
           "driveid": "123456789",
           "downloads": 0,
           "size": "0.12 MB",
-          "date_modified": "2021-03-18",
+          "date_modified": "2021-03-19",
           "fileext": "docx",
           "filetype": "exampapers",
           "course": {
@@ -92,7 +93,7 @@
           "driveid": "123456789",
           "downloads": 0,
           "size": "0.12 MB",
-          "date_modified": "2021-03-18",
+          "date_modified": "2021-03-19",
           "fileext": "bmp",
           "filetype": "tutorials",
           "course": {
@@ -113,7 +114,7 @@
           "driveid": "123456789",
           "downloads": 0,
           "size": "0.12 MB",
-          "date_modified": "2021-03-18",
+          "date_modified": "2021-03-19",
           "fileext": "pdf",
           "filetype": "tutorials",
           "course": {
@@ -134,7 +135,7 @@
           "driveid": "123456789",
           "downloads": 0,
           "size": "0.12 MB",
-          "date_modified": "2021-03-18",
+          "date_modified": "2021-03-19",
           "fileext": "pdf",
           "filetype": "notes",
           "course": {
@@ -155,7 +156,7 @@
           "driveid": "123456789",
           "downloads": 0,
           "size": "0.12 MB",
-          "date_modified": "2021-03-18",
+          "date_modified": "2021-03-19",
           "fileext": "pdf",
           "filetype": "tutorials",
           "course": {
@@ -176,7 +177,7 @@
           "driveid": "123456789",
           "downloads": 0,
           "size": "0.12 MB",
-          "date_modified": "2021-03-18",
+          "date_modified": "2021-03-19",
           "fileext": "pdf",
           "filetype": "tutorials",
           "course": {

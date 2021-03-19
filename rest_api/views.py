@@ -20,6 +20,7 @@ from rest_api.documents import CourseDocument, FileDocument, DepartmentDocument
 from users.models import User, Notifications
 from users.serializers import UserSerializer
 from users.signals import notification_handler
+from rest_api.decorators import post_permitted
 from rest_api.utils import (
     add_course,
     add_file,
@@ -53,6 +54,7 @@ class DepartmentViewSet(APIView):
                 {"message": "Departments fetched successfully", "department": serializer_department.data}, status=status.HTTP_200_OK
             )
 
+    @post_permitted
     def post(self, request):
         data = request.data
         query = Department.objects.filter(abbreviation=data["abbreviation"])
@@ -99,6 +101,7 @@ class CourseViewSet(APIView):
         serializer = CourseSerializer(queryset, many=True)
         return Response({"message": "Courses fetched successfully", "courses": serializer.data}, status=status.HTTP_200_OK)
 
+    @post_permitted
     def post(self, request):
         data = request.data.copy()
         if request.data["department"].isdigit():
@@ -113,6 +116,7 @@ class CourseViewSet(APIView):
         else:
             return Response({"message": "Course already exists"}, status=status.HTTP_200_OK)
 
+    @post_permitted
     def delete(self, request):
         course = Course.objects.get(id=request.data.get("course")).delete()
         user_list = User.objects.all()
@@ -161,6 +165,7 @@ class FileViewSet(APIView):
         serializer = FileSerializer(queryset, many=True)
         return Response({"message": "Files fetched successfully", "files": serializer.data}, status=status.HTTP_200_OK)
 
+    @post_permitted
     def post(self, request):
         data = request.data.copy()
         course = Course.objects.get(code=data["code"])
@@ -181,6 +186,7 @@ class FileViewSet(APIView):
         else:
             return Response({"message": "File already exists"}, status=status.HTTP_200_OK)
 
+    @post_permitted
     def put(self, request):
         data = request.data.copy()
         queryset = File.objects.filter(id=data["id"])

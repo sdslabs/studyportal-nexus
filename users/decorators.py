@@ -6,7 +6,7 @@ from users.models import User
 from functools import wraps
 import jwt
 
-def auth_user(function):
+def check_user(function):
   @wraps(function)
   def wrap(self, request, *args, **kwargs):
       try:
@@ -24,11 +24,6 @@ def auth_user(function):
           { "message": "The token is corrupt or the user does not exist" },
           status=status.HTTP_403_FORBIDDEN
         )
-      if user["role"] is "admin" or user["role"] is "moderator":
-          return function(self, request, *args, **kwargs)
-      else:
-          return Response(
-            { "message": "You must be an admin to access this route" },
-            status=status.HTTP_403_FORBIDDEN
-          )
+
+      return function(self, request, user, *args, **kwargs)
   return wrap

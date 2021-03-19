@@ -7,16 +7,15 @@ from rest_framework.response import Response
 from users.serializers import UserSerializer
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
-
 from users.serializers import (
     FileRequestSerializer,
     CourseRequestSerializer,
     NotificationsSerializer,
 )
+from rest_api.decorators import post_permitted
 from users.serializers import UploadSerializer
 from studyportal.drive.drive import driveinit
-from studyportal.falcon.config import config
-from studyportal.falcon import client
+from users.auth import authorize_user
 from rest_api.models import Course
 import requests
 import random
@@ -31,7 +30,8 @@ def getUserFromJWT(token):
         decoded_jwt = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
         user = User.objects.get(username=decoded_jwt["username"])
         return UserSerializer(user).data
-    except Exception:
+    except Exception as error:
+        print("Error occurred while parsing user token", error)
         return None
 
 
@@ -40,17 +40,10 @@ class UserViewSet(APIView):
         queryset = None
         token = request.headers["Authorization"].split(" ")[1]
         if token == "None":
-            # cookie manipulation starts here
-            cookies = {}
-            separateCookies = request.headers["Cookie"].split("; ")
-            for cookie in separateCookies:
-                array = cookie.split("=")
-                cookies[array[0]] = array[1]
-            # end of cookie manipulation
-            user = client.get_logged_in_user(config, {"sdslabs": cookies["sdslabs"]})
-            for key in user:
-                if key == "error":
-                    return Response(status=status.HTTP_404_NOT_FOUND)
+            """
+            This following section handles the external auth flow
+            """
+            user = authorize_user(request)
             if user is not None:
                 queryset = User.objects.filter(falcon_id=user["id"])
                 serializer = UserSerializer(queryset, many=True)
@@ -72,7 +65,7 @@ class UserViewSet(APIView):
                 algorithm="HS256",
             )
             return Response(
-                {"token": encoded_jwt, "user": user, "courses": ""},
+                {"message": "Successfully fetched user data", "token": encoded_jwt, "user": user, "courses": ""},
                 status=status.HTTP_200_OK,
             )
         else:
@@ -86,11 +79,12 @@ class UserViewSet(APIView):
                         coursedata = CourseSerializer(course_object, many=True).data[0]
                         courses.append(coursedata)
                 return Response(
-                    {"user": user, "courses": courses}, status=status.HTTP_200_OK
+                    {"message": "Successfully fetched user data", "user": user, "courses": courses}, status=status.HTTP_200_OK
                 )
             else:
-                return Response(status=status.HTTP_404_NOT_FOUND)
+                return Response({"message": "User does not exist"}, status=status.HTTP_404_NOT_FOUND)
 
+    @post_permitted
     def post(self, request):
         data = request.data
         query = User.objects.filter(falcon_id=data["falcon_id"])
@@ -103,7 +97,7 @@ class UserViewSet(APIView):
                 role=data["role"],
             )
             user.save()
-            return Response(user.save(), status=status.HTTP_201_CREATED)
+            return Response({"message": "User created successfully"}, status=status.HTTP_201_CREATED)
         else:
             return Response("User already exists", status=status.HTTP_200_OK)
 
@@ -119,20 +113,20 @@ class UserViewSet(APIView):
                 query.courses.append(new_course)
                 query.save()
                 return Response(
-                    "Course added successfully", status=status.HTTP_201_CREATED
+                    {"message": "Course added successfully"}, status=status.HTTP_201_CREATED
                 )
             else:
-                return Response("Course already added", status=status.HTTP_200_OK)
+                return Response({"message": "Course already added"}, status=status.HTTP_200_OK)
         else:
             if int(new_course) in user["courses"]:
                 query.courses.remove(int(new_course))
                 query.save()
                 return Response(
-                    "Course removed successfully", status=status.HTTP_200_OK
+                    {"message": "Course removed successfully"}, status=status.HTTP_200_OK
                 )
             else:
                 return Response(
-                    "Course does not exist", status=status.HTTP_404_NOT_FOUND
+                    {"message": "Course does not exist"}, status=status.HTTP_404_NOT_FOUND
                 )
 
     @classmethod
@@ -143,16 +137,14 @@ class UserViewSet(APIView):
 class FileRequestViewSet(APIView):
     def get(self, request):
         queryset = FileRequest.objects.filter()
-        user = self.request.query_params.get("user")
-        if user is not None:
-            queryset = FileRequest.objects.filter(user=user)
+        token = request.headers["Authorization"].split(" ")[1]
+        if token != "None":
+          user = getUserFromJWT(token)
+          queryset = FileRequest.objects.filter(user=user["id"])
+          serializer = FileRequestSerializer(queryset, many=True)
+          return Response({"message": "Requests fetched successfully", "requests": serializer.data}, status=status.HTTP_200_OK)
         else:
-            token = request.headers["Authorization"].split(" ")[1]
-            if token != "None":
-                user = getUserFromJWT(token)
-                queryset = FileRequest.objects.filter(user=user["id"])
-        serializer = FileRequestSerializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+          return Response({"message": "User is not authenticated"}, status=status.HTTP_404_NOT_FOUND)
 
     def post(self, request):
         data = request.data
@@ -182,10 +174,10 @@ class FileRequestViewSet(APIView):
                 "/activity/requests",
             )
             return Response(
-                FileRequestSerializer(request).data, status=status.HTTP_201_CREATED
+                {"message": "File requested successfully"}, status=status.HTTP_201_CREATED
             )
         else:
-            return Response("Request already exists", status=status.HTTP_200_OK)
+            return Response({"message": "Request already exists"}, status=status.HTTP_200_OK)
 
     @classmethod
     def get_extra_actions(cls):
@@ -194,17 +186,16 @@ class FileRequestViewSet(APIView):
 
 class CourseRequestViewSet(APIView):
     def get(self, request):
-        queryset = CourseRequest.objects.filter()
-        user = self.request.query_params.get("user")
-        if user is not None:
-            queryset = CourseRequest.objects.filter(user=user)
-        else:
-            token = request.headers["Authorization"].split(" ")[1]
-            if token != "None":
-                user = getUserFromJWT(token)
-                queryset = CourseRequest.objects.filter(user=user["id"])
-        serializer = CourseRequestSerializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+      queryset = CourseRequest.objects.filter()
+      token = request.headers["Authorization"].split(" ")[1]
+      if token != "None":
+          user = getUserFromJWT(token)
+          queryset = CourseRequest.objects.filter(user=user["id"])
+          serializer = CourseRequestSerializer(queryset, many=True)
+          return Response({"message": "Requests fetched successfully", "requests": serializer.data}, status=status.HTTP_200_OK)
+      else:
+          return Response({"message": "User is not authenticated"}, status=status.HTTP_404_NOT_FOUND)
+
 
     def post(self, request):
         data = request.data
@@ -234,10 +225,10 @@ class CourseRequestViewSet(APIView):
                 "/activity/requests",
             )
             return Response(
-                CourseRequestSerializer(request).data, status=status.HTTP_201_CREATED
+                {"message": "Course requested successfully"}, status=status.HTTP_201_CREATED
             )
         else:
-            return Response("Request already exists", status=status.HTTP_200_OK)
+            return Response({"message": "Request already exists"}, status=status.HTTP_200_OK)
 
     @classmethod
     def get_extra_actions(cls):
@@ -246,17 +237,14 @@ class CourseRequestViewSet(APIView):
 
 class UploadViewSet(APIView):
     def get(self, request):
-        user = self.request.query_params.get("user")
-        queryset = Upload.objects.filter(resolved=False)
-        if user is not None:
-            queryset = Upload.objects.filter(user=user, resolved=False)
-        else:
-            token = request.headers["Authorization"].split(" ")[1]
-            if token != "None":
-                user = getUserFromJWT(token)
-                queryset = Upload.objects.filter(user=user["id"])
-        serializer = UploadSerializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+      token = request.headers["Authorization"].split(" ")[1]
+      if token != "None":
+          user = getUserFromJWT(token)
+          queryset = Upload.objects.filter(user=user["id"])
+          serializer = UploadSerializer(queryset, many=True)
+          return Response({"message": "Uploads fetched successfully", "uploads": serializer.data}, status=status.HTTP_200_OK)
+      else:
+          return Response({"message": "User is not authenticated"}, status=status.HTTP_404_NOT_FOUND)
 
     def post(self, request):
         file = request.data["file"]
@@ -290,7 +278,7 @@ class UploadViewSet(APIView):
             course,
             "/activity/uploads",
         )
-        return Response(UploadSerializer(upload).data, status=status.HTTP_200_OK)
+        return Response({"message": "File uploaded successfully"}, status=status.HTTP_200_OK)
 
     @classmethod
     def get_extra_actions(cls):
@@ -303,11 +291,13 @@ class NotificationViewSet(APIView):
         if token != "None":
             user = getUserFromJWT(token)
             queryset = Notifications.objects.filter(recipient=user["id"])
-        serializer = NotificationsSerializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+            serializer = NotificationsSerializer(queryset, many=True)
+            return Response({"message": "Notifications fetched successfully", "notifications": serializer.data}, status=status.HTTP_200_OK)
+        else:
+            return Response({"message": "User is not authenticated"}, status=status.HTTP_404_NOT_FOUND)
 
     def put(self, request):
         notification = Notifications.objects.get(
             id=request.data.get("notification")
         ).delete()
-        return Response(notification, status=status.HTTP_200_OK)
+        return Response({"message": "Notification deleted successfully"}, status=status.HTTP_200_OK)
