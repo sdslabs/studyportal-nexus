@@ -27,18 +27,18 @@ def add_course(course, department):
     course_code = CourseSerializer(course).data["code"]
     recipients = recipient_list.data[:]
     try:
-      for recipient in recipients:
-          notification_handler(
-              recipient=recipient["id"],
-              actor="Admin",
-              verb="added a course",
-              action=course_code,
-              notification_type="addcourse",
-              target=department,
-              link="/departments/" + department_code + "/courses/" + course_code,
-          )
+        for recipient in recipients:
+            notification_handler(
+                recipient=recipient["id"],
+                actor="Admin",
+                verb="added a course",
+                action=course_code,
+                notification_type="addcourse",
+                target=department,
+                link="/departments/" + department_code + "/courses/" + course_code,
+            )
     except Exception as error:
-      print("An error occurred while sending notifications", error)
+        print("An error occurred while sending notifications", error)
 
 
 def add_file(file, course):
@@ -48,42 +48,44 @@ def add_file(file, course):
     recipient_list = UserSerializer(user_list, many=True)
     recipients = recipient_list.data[:]
     try:
-      for recipient in recipients:
-          for course_id in recipient["courses"]:
-              if course == Course.objects.get(id=course_id):
-                  serializer_course = CourseSerializer(course)
-                  department = serializer_course.data["department"]
-                  department_code = DepartmentSerializer(department).data["abbreviation"]
-                  notification_handler(
-                      recipient=recipient["id"],
-                      actor="Admin",
-                      verb="added a file",
-                      action=file_data["title"],
-                      notification_type="addfile",
-                      target=course,
-                      link="/departments/"
-                      + department_code
-                      + "/courses/"
-                      + file_data["course"]["code"],
-                  )
+        for recipient in recipients:
+            for course_id in recipient["courses"]:
+                if course == Course.objects.get(id=course_id):
+                    serializer_course = CourseSerializer(course)
+                    department = serializer_course.data["department"]
+                    department_code = DepartmentSerializer(department).data[
+                        "abbreviation"
+                    ]
+                    notification_handler(
+                        recipient=recipient["id"],
+                        actor="Admin",
+                        verb="added a file",
+                        action=file_data["title"],
+                        notification_type="addfile",
+                        target=course,
+                        link="/departments/"
+                        + department_code
+                        + "/courses/"
+                        + file_data["course"]["code"],
+                    )
     except Exception as error:
-      print("An error occurred while sending notifications", error)
+        print("An error occurred while sending notifications", error)
 
 
 def uploadToDrive(service, folder_id, file_details):
-  try:
-    file_metadata = {"name": file_details["name"], "parents": [folder_id]}
-    media = MediaFileUpload(
-        file_details["location"], mimetype=file_details["mime_type"]
-    )
-    file = (
-        service.files()
-        .create(body=file_metadata, media_body=media, fields="id")
-        .execute()
-    )
-    return file.get("id")
-  except errors.HttpError as error:
-    print("An error occurred:", error)
+    try:
+        file_metadata = {"name": file_details["name"], "parents": [folder_id]}
+        media = MediaFileUpload(
+            file_details["location"], mimetype=file_details["mime_type"]
+        )
+        file = (
+            service.files()
+            .create(body=file_metadata, media_body=media, fields="id")
+            .execute()
+        )
+        return file.get("id")
+    except errors.HttpError as error:
+        print("An error occurred:", error)
 
 
 def updatePermissions(service, fileId):

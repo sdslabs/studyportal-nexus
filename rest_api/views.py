@@ -1,26 +1,20 @@
-from django.http import HttpResponse
-from rest_api.models import Department, Course, File
-from rest_framework import viewsets, status
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_api.serializers import DepartmentSerializer, CourseSerializer
-from rest_api.serializers import FileSerializer
-from studyportal.settings import SECRET_KEY
-from apiclient.http import MediaFileUpload
-from studyportal.drive.drive import driveinit
-from studyportal.falcon.config import config
-from studyportal.falcon import client
-import requests
-import random
-import base64
-import jwt
-import os
-import itertools
 from rest_api.documents import CourseDocument, FileDocument, DepartmentDocument
-from users.models import User, Notifications
-from users.serializers import UserSerializer
+from rest_api.serializers import DepartmentSerializer, CourseSerializer
+from rest_api.models import Department, Course, File
+from rest_api.serializers import FileSerializer
 from users.signals import notification_handler
 from rest_api.decorators import post_permitted
+from studyportal.drive.drive import driveinit
+from studyportal.falcon.config import config
+from users.models import User, Notifications
+from users.serializers import UserSerializer
+from rest_framework.response import Response
+from studyportal.settings import SECRET_KEY
+from rest_framework import viewsets, status
+from apiclient.http import MediaFileUpload
+from rest_framework.views import APIView
+from studyportal.falcon import client
+from django.http import HttpResponse
 from rest_api.utils import (
     add_course,
     add_file,
@@ -29,6 +23,12 @@ from rest_api.utils import (
     get_title,
     STRUCTURE,
 )
+import itertools
+import requests
+import random
+import base64
+import jwt
+import os
 
 
 def sample(request):
@@ -46,12 +46,20 @@ class DepartmentViewSet(APIView):
             course = Course.objects.filter(department=serializer["id"])
             serializer_course = CourseSerializer(course, many=True).data
             return Response(
-                {"message": "Departments fetched successfully", "department": serializer, "courses": serializer_course},
+                {
+                    "message": "Departments fetched successfully",
+                    "department": serializer,
+                    "courses": serializer_course,
+                },
                 status=status.HTTP_200_OK,
             )
         else:
             return Response(
-                {"message": "Departments fetched successfully", "department": serializer_department.data}, status=status.HTTP_200_OK
+                {
+                    "message": "Departments fetched successfully",
+                    "department": serializer_department.data,
+                },
+                status=status.HTTP_200_OK,
             )
 
     @post_permitted
@@ -68,21 +76,25 @@ class DepartmentViewSet(APIView):
             recipients_list = UserSerializer(users_list, many=True)
             recipients = recipients_list.data[:]
             try:
-              for recipient in recipients:
-                  notification_handler(
-                      recipient=recipient["id"],
-                      actor="Admin",
-                      verb="added a department",
-                      action=data["abbreviation"],
-                      notification_type="adddepaartment",
-                      target="",
-                      link="/departments/" + data["abbreviation"],
-                  )
+                for recipient in recipients:
+                    notification_handler(
+                        recipient=recipient["id"],
+                        actor="Admin",
+                        verb="added a department",
+                        action=data["abbreviation"],
+                        notification_type="adddepaartment",
+                        target="",
+                        link="/departments/" + data["abbreviation"],
+                    )
             except Exception as error:
                 print("An error occurred while sending notifications", error)
-            return Response({"message": "Department successfully added"}, status=status.HTTP_200_OK)
+            return Response(
+                {"message": "Department successfully added"}, status=status.HTTP_200_OK
+            )
         else:
-            return Response({"message": "Department already exists"}, status=status.HTTP_200_OK)
+            return Response(
+                {"message": "Department already exists"}, status=status.HTTP_200_OK
+            )
 
     @classmethod
     def get_extra_actions(cls):
@@ -99,7 +111,10 @@ class CourseViewSet(APIView):
         elif department is not None and course is not None:
             queryset = Course.objects.filter(department=department).filter(code=course)
         serializer = CourseSerializer(queryset, many=True)
-        return Response({"message": "Courses fetched successfully", "courses": serializer.data}, status=status.HTTP_200_OK)
+        return Response(
+            {"message": "Courses fetched successfully", "courses": serializer.data},
+            status=status.HTTP_200_OK,
+        )
 
     @post_permitted
     def post(self, request):
@@ -112,9 +127,13 @@ class CourseViewSet(APIView):
         if not query:
             course = Course(title=data["title"], department=queryset, code=data["code"])
             add_course(course, queryset)
-            return Response({"message": "Course successfully added"}, status=status.HTTP_200_OK)
+            return Response(
+                {"message": "Course successfully added"}, status=status.HTTP_200_OK
+            )
         else:
-            return Response({"message": "Course already exists"}, status=status.HTTP_200_OK)
+            return Response(
+                {"message": "Course already exists"}, status=status.HTTP_200_OK
+            )
 
     @post_permitted
     def delete(self, request):
@@ -123,19 +142,21 @@ class CourseViewSet(APIView):
         recipient_list = UserSerializer(user_list, many=True)
         recipients = recipient_list.data[:]
         try:
-          for recipient in recipients:
-              notification_handler(
-                  recipient=recipient["id"],
-                  actor="Admin",
-                  verb="deleted a course",
-                  action=course,
-                  notification_type="deletecourse",
-                  target=None,
-                  link="",
-              )
+            for recipient in recipients:
+                notification_handler(
+                    recipient=recipient["id"],
+                    actor="Admin",
+                    verb="deleted a course",
+                    action=course,
+                    notification_type="deletecourse",
+                    target=None,
+                    link="",
+                )
         except Exception as error:
-          print("An error occurred while sending notifications", error)
-        return Response({"message": "Course deleted successfully"}, status=status.HTTP_200_OK)
+            print("An error occurred while sending notifications", error)
+        return Response(
+            {"message": "Course deleted successfully"}, status=status.HTTP_200_OK
+        )
 
     @classmethod
     def get_extra_actions(cls):
@@ -163,7 +184,10 @@ class FileViewSet(APIView):
                 .filter(finalized=True)
             )
         serializer = FileSerializer(queryset, many=True)
-        return Response({"message": "Files fetched successfully", "files": serializer.data}, status=status.HTTP_200_OK)
+        return Response(
+            {"message": "Files fetched successfully", "files": serializer.data},
+            status=status.HTTP_200_OK,
+        )
 
     @post_permitted
     def post(self, request):
@@ -182,9 +206,13 @@ class FileViewSet(APIView):
                 finalized=data["finalized"],
             )
             add_file(file, course)
-            return Response({"message": "File saved successfully"}, status=status.HTTP_200_OK)
+            return Response(
+                {"message": "File saved successfully"}, status=status.HTTP_200_OK
+            )
         else:
-            return Response({"message": "File already exists"}, status=status.HTTP_200_OK)
+            return Response(
+                {"message": "File already exists"}, status=status.HTTP_200_OK
+            )
 
     @post_permitted
     def put(self, request):
@@ -192,17 +220,23 @@ class FileViewSet(APIView):
         queryset = File.objects.filter(id=data["id"])
         download = data.get("downloads")
         if not queryset:
-            return Response({"message": "File does not exist"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"message": "File does not exist"}, status=status.HTTP_404_NOT_FOUND
+            )
         if download == "true":
             queryset.update(downloads=queryset[0].downloads + 1)
         else:
             queryset.update(**data)
         serializer = FileSerializer(queryset, many=True)
-        return Response({"message": "File update successfully"}, status=status.HTTP_200_OK)
+        return Response(
+            {"message": "File update successfully"}, status=status.HTTP_200_OK
+        )
 
     def delete(self, request):
         file = File.objects.get(id=request.data.get("file")).delete()
-        return Response({"message": "File deleted successfully"}, status=status.HTTP_200_OK)
+        return Response(
+            {"message": "File deleted successfully"}, status=status.HTTP_200_OK
+        )
 
     @classmethod
     def get_extra_actions(cls):
@@ -269,7 +303,10 @@ class SearchViewSet(APIView):
                 status=status.HTTP_200_OK,
             )
         else:
-            return Response({"message": "Search for the query term failed"}, status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"message": "Search for the query term failed"},
+                status.HTTP_400_BAD_REQUEST,
+            )
 
     @classmethod
     def get_extra_actions(cls):
