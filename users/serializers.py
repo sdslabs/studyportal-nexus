@@ -9,7 +9,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = (
             "id",
-            "falcon_id",
+            "auth_id",
             "username",
             "email",
             "profile_image",
