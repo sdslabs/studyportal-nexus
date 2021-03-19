@@ -214,7 +214,6 @@ class FileViewSet(APIView):
                 {"message": "File already exists"}, status=status.HTTP_200_OK
             )
 
-    @post_permitted
     def put(self, request):
         data = request.data.copy()
         queryset = File.objects.filter(id=data["id"])
@@ -232,6 +231,7 @@ class FileViewSet(APIView):
             {"message": "File update successfully"}, status=status.HTTP_200_OK
         )
 
+    @post_permitted
     def delete(self, request):
         file = File.objects.get(id=request.data.get("file")).delete()
         return Response(
