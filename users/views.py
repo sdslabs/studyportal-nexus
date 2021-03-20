@@ -12,7 +12,7 @@ from users.serializers import (
     CourseRequestSerializer,
     NotificationsSerializer,
 )
-from resources.decorators import post_permitted
+from resources.decorators import action_permitted
 from users.serializers import UploadSerializer
 from studyportal.drive.drive import driveinit
 from users.auth import authorize_user
@@ -107,7 +107,7 @@ class UserViewSet(APIView):
                     {"message": "User does not exist"}, status=status.HTTP_404_NOT_FOUND
                 )
 
-    @post_permitted
+    @action_permitted
     def post(self, request):
         data = request.data
         query = User.objects.filter(auth_id=data["auth_id"])
