@@ -1,6 +1,6 @@
 from users.models import User, FileRequest, CourseRequest, Upload, Notifications
-from resources.models import Course
-from resources.serializers import CourseSerializer, FileSerializer
+from resources.models import Department, Course
+from resources.serializers import  DepartmentSerializer, CourseSerializer, FileSerializer
 from rest_framework import serializers
 
 
@@ -38,6 +38,7 @@ class FileRequestSerializer(serializers.ModelSerializer):
 
 class CourseRequestSerializer(serializers.ModelSerializer):
     user = UserSerializer(User.objects.all())
+    department = DepartmentSerializer(Department.objects.all())
 
     class Meta:
         model = CourseRequest
