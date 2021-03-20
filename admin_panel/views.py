@@ -86,9 +86,7 @@ class FileRequestViewSet(APIView):
                 course_code,
                 "/activity/requests",
             )
-        FileRequest.objects.filter(id=data["request"]).update(
-            status=data["status"]
-        )
+        FileRequest.objects.filter(id=data["request"]).update(status=data["status"])
         return Response(
             {"message": "Request status updated successfully"},
             status=status.HTTP_200_OK,
@@ -164,9 +162,7 @@ class CourseRequestViewSet(APIView):
                 course_request["department"],
                 "/activity/requests",
             )
-        CourseRequest.objects.filter(id=data["request"]).update(
-            status=data["status"]
-        )
+        CourseRequest.objects.filter(id=data["request"]).update(status=data["status"])
         return Response(
             {"message": "Request status updated successfully"},
             status=status.HTTP_200_OK,

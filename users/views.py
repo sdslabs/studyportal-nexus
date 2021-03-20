@@ -328,14 +328,16 @@ class NotificationViewSet(APIView):
         )
 
     def delete(self, request):
-      try:
-        Notifications.objects.get(
-            id=request.query_params.get("notification")
-        ).delete()
-        return Response(
-            {"message": "Notification deleted successfully"}, status=status.HTTP_200_OK
-        )
-      except Notifications.DoesNotExist:
-        return Response(
-          { "message": "Notification was already deleted" }, status=status.HTTP_404_NOT_FOUND
-        )
+        try:
+            Notifications.objects.get(
+                id=request.query_params.get("notification")
+            ).delete()
+            return Response(
+                {"message": "Notification deleted successfully"},
+                status=status.HTTP_200_OK,
+            )
+        except Notifications.DoesNotExist:
+            return Response(
+                {"message": "Notification was already deleted"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
