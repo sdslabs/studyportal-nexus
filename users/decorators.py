@@ -26,7 +26,6 @@ def check_user(function):
                 {"message": "The token is corrupt or the user does not exist"},
                 status=status.HTTP_403_FORBIDDEN,
             )
-
         return function(self, request, user, *args, **kwargs)
 
     return wrap

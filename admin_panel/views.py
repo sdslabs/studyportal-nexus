@@ -62,7 +62,7 @@ class FileRequestViewSet(APIView):
             file_d = data["file"]
             name = data["name"]
             file_details = get_file_details_and_upload(
-                file_d, name, data["filetype"], course, False, True
+                file_d, name, file_request.filetype, course, False, True
             )
             file = File(
                 title=get_title(file_d.name),
@@ -86,7 +86,7 @@ class FileRequestViewSet(APIView):
                 course_code,
                 "/activity/requests",
             )
-        query = FileRequest.objects.filter(id=data["request"]).update(
+        FileRequest.objects.filter(id=data["request"]).update(
             status=data["status"]
         )
         return Response(
@@ -148,7 +148,7 @@ class CourseRequestViewSet(APIView):
                 "/activity/requests",
             )
         if data["status"] == "3":
-            queryset = Department.objects.get(abbreviation=course_request["department"])
+            queryset = Department.objects.get(id=course_request["department"]["id"])
             course = Course(
                 title=course_request["course"],
                 code=course_request["code"],
@@ -164,7 +164,7 @@ class CourseRequestViewSet(APIView):
                 course_request["department"],
                 "/activity/requests",
             )
-        query = CourseRequest.objects.filter(id=data["request"]).update(
+        CourseRequest.objects.filter(id=data["request"]).update(
             status=data["status"]
         )
         return Response(
@@ -209,7 +209,7 @@ class UploadViewSet(APIView):
 
     @admin_only
     def put(self, request):
-        file_id = request.data["file_id"]
+        file_id = request.data["upload"]
         upload = Upload.objects.get(id=file_id)
         upload_status = request.data["status"]
         queryset = Upload.objects.filter(id=file_id)
@@ -280,15 +280,15 @@ class UploadViewSet(APIView):
                             + "/courses/"
                             + upload.course.code,
                         )
-            query = queryset.update(resolved=True)
-        query = queryset.update(status=upload_status)
+            queryset.update(resolved=True)
+        queryset.update(status=upload_status)
         return Response(
             {"message": "Upload status updated successfully"}, status=status.HTTP_200_OK
         )
 
     @admin_only
     def delete(self, request):
-        requests = Upload.objects.get(id=request.data.get("request"))
+        requests = Upload.objects.get(id=request.data.get("upload"))
         notification_handler(
             requests.user.id,
             "Admin",
@@ -298,7 +298,7 @@ class UploadViewSet(APIView):
             requests.course,
             "/activity/uploads",
         )
-        requests = requests.delete()
+        requests.delete()
         return Response(
             {"message": "Upload deleted successfully"}, status=status.HTTP_200_OK
         )

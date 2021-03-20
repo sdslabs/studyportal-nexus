@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
-from resources.models import Course, File
+from resources.models import Department, Course, File
 
 USER_ROLE = [("user", "user"), ("moderator", "moderator"), ("admin", "admin")]
 
@@ -46,7 +46,7 @@ class CourseRequest(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     status = models.IntegerField(choices=REQUEST_STATUS)
-    department = models.CharField(max_length=100)
+    department = models.ForeignKey(Department, on_delete=models.CASCADE)
     course = models.CharField(max_length=100)
     code = models.CharField(max_length=8)
     date = models.DateField(auto_now_add=True)
@@ -82,7 +82,7 @@ class Notifications(models.Model):
     action = models.CharField(max_length=255, blank=False)
     timestamp = models.DateField(auto_now_add=True)
     notification_type = models.CharField(max_length=255)
-    target = models.CharField(max_length=100, blank=True)
+    target = models.CharField(max_length=255, blank=True)
     link = models.CharField(max_length=255, blank=True)
 
     def __str__(self):

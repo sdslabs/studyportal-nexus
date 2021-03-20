@@ -172,7 +172,7 @@ class FileViewSet(APIView):
         if fileid is not None:
             queryset = File.objects.get(id=fileid)
             serializer = FileSerializer(queryset)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response({"message": "Files fetched successfully", "files": serializer.data}, status=status.HTTP_200_OK)
         if course is not None and filetype == "null":
             queryset = File.objects.filter(course=course).filter(finalized=True)
         elif course is not None and filetype == "all":
@@ -226,14 +226,13 @@ class FileViewSet(APIView):
             queryset.update(downloads=queryset[0].downloads + 1)
         else:
             queryset.update(**data)
-        serializer = FileSerializer(queryset, many=True)
         return Response(
             {"message": "File update successfully"}, status=status.HTTP_200_OK
         )
 
     @action_permitted
     def delete(self, request):
-        file = File.objects.get(id=request.data.get("file")).delete()
+        File.objects.get(id=request.data.get("file")).delete()
         return Response(
             {"message": "File deleted successfully"}, status=status.HTTP_200_OK
         )
