@@ -1,9 +1,9 @@
 from resources.documents import CourseDocument, FileDocument, DepartmentDocument
 from resources.serializers import DepartmentSerializer, CourseSerializer
 from resources.models import Department, Course, File
+from resources.decorators import action_permitted
 from resources.serializers import FileSerializer
 from users.signals import notification_handler
-from resources.decorators import post_permitted
 from studyportal.drive.drive import driveinit
 from studyportal.falcon.config import config
 from users.models import User, Notifications
@@ -62,7 +62,7 @@ class DepartmentViewSet(APIView):
                 status=status.HTTP_200_OK,
             )
 
-    @post_permitted
+    @action_permitted
     def post(self, request):
         data = request.data
         query = Department.objects.filter(abbreviation=data["abbreviation"])
@@ -116,7 +116,7 @@ class CourseViewSet(APIView):
             status=status.HTTP_200_OK,
         )
 
-    @post_permitted
+    @action_permitted
     def post(self, request):
         data = request.data.copy()
         if request.data["department"].isdigit():
@@ -135,7 +135,7 @@ class CourseViewSet(APIView):
                 {"message": "Course already exists"}, status=status.HTTP_200_OK
             )
 
-    @post_permitted
+    @action_permitted
     def delete(self, request):
         course = Course.objects.get(id=request.data.get("course")).delete()
         user_list = User.objects.all()
@@ -172,7 +172,10 @@ class FileViewSet(APIView):
         if fileid is not None:
             queryset = File.objects.get(id=fileid)
             serializer = FileSerializer(queryset)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(
+                {"message": "Files fetched successfully", "files": serializer.data},
+                status=status.HTTP_200_OK,
+            )
         if course is not None and filetype == "null":
             queryset = File.objects.filter(course=course).filter(finalized=True)
         elif course is not None and filetype == "all":
@@ -189,7 +192,7 @@ class FileViewSet(APIView):
             status=status.HTTP_200_OK,
         )
 
-    @post_permitted
+    @action_permitted
     def post(self, request):
         data = request.data.copy()
         course = Course.objects.get(code=data["code"])
@@ -226,14 +229,13 @@ class FileViewSet(APIView):
             queryset.update(downloads=queryset[0].downloads + 1)
         else:
             queryset.update(**data)
-        serializer = FileSerializer(queryset, many=True)
         return Response(
             {"message": "File update successfully"}, status=status.HTTP_200_OK
         )
 
-    @post_permitted
+    @action_permitted
     def delete(self, request):
-        file = File.objects.get(id=request.data.get("file")).delete()
+        File.objects.get(id=request.data.get("file")).delete()
         return Response(
             {"message": "File deleted successfully"}, status=status.HTTP_200_OK
         )

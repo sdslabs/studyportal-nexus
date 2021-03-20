@@ -8,45 +8,75 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Course',
+            name="Course",
             fields=[
-                ('id', models.AutoField(editable=False, primary_key=True, serialize=False)),
-                ('title', models.CharField(max_length=200)),
-                ('code', models.CharField(default='', max_length=10)),
+                (
+                    "id",
+                    models.AutoField(editable=False, primary_key=True, serialize=False),
+                ),
+                ("title", models.CharField(max_length=200)),
+                ("code", models.CharField(default="", max_length=10)),
             ],
         ),
         migrations.CreateModel(
-            name='Department',
+            name="Department",
             fields=[
-                ('id', models.AutoField(editable=False, primary_key=True, serialize=False)),
-                ('title', models.CharField(max_length=100)),
-                ('abbreviation', models.CharField(max_length=10)),
-                ('image', models.ImageField(blank=True, upload_to='thumbnail')),
+                (
+                    "id",
+                    models.AutoField(editable=False, primary_key=True, serialize=False),
+                ),
+                ("title", models.CharField(max_length=100)),
+                ("abbreviation", models.CharField(max_length=10)),
+                ("image", models.ImageField(blank=True, upload_to="thumbnail")),
             ],
         ),
         migrations.CreateModel(
-            name='File',
+            name="File",
             fields=[
-                ('id', models.AutoField(editable=False, primary_key=True, serialize=False)),
-                ('title', models.CharField(default='', max_length=100)),
-                ('driveid', models.CharField(default='', max_length=50)),
-                ('downloads', models.IntegerField(default=0)),
-                ('size', models.CharField(default='', max_length=10)),
-                ('date_modified', models.DateField(auto_now=True)),
-                ('fileext', models.CharField(default='', max_length=10)),
-                ('filetype', models.CharField(choices=[('tutorials', 'Tutorial'), ('books', 'Book'), ('notes', 'Notes'), ('exampapers', 'Examination Papers')], max_length=20)),
-                ('finalized', models.BooleanField(default=False)),
-                ('course', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='resources.Course')),
+                (
+                    "id",
+                    models.AutoField(editable=False, primary_key=True, serialize=False),
+                ),
+                ("title", models.CharField(default="", max_length=100)),
+                ("driveid", models.CharField(default="", max_length=50)),
+                ("downloads", models.IntegerField(default=0)),
+                ("size", models.CharField(default="", max_length=10)),
+                ("date_modified", models.DateField(auto_now=True)),
+                ("fileext", models.CharField(default="", max_length=10)),
+                (
+                    "filetype",
+                    models.CharField(
+                        choices=[
+                            ("tutorials", "Tutorial"),
+                            ("books", "Book"),
+                            ("notes", "Notes"),
+                            ("exampapers", "Examination Papers"),
+                        ],
+                        max_length=20,
+                    ),
+                ),
+                ("finalized", models.BooleanField(default=False)),
+                (
+                    "course",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="resources.Course",
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='course',
-            name='department',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='resources.Department'),
+            model_name="course",
+            name="department",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="resources.Department",
+            ),
         ),
     ]

@@ -4,7 +4,7 @@ from rest_framework import status
 from functools import wraps
 
 
-def post_permitted(function):
+def action_permitted(function):
     @wraps(function)
     def wrap(self, request, *args, **kwargs):
         try:

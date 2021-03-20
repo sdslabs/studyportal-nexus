@@ -12,11 +12,12 @@ from users.serializers import (
     CourseRequestSerializer,
     NotificationsSerializer,
 )
-from resources.decorators import post_permitted
+from resources.decorators import action_permitted
+from resources.models import Department, Course
 from users.serializers import UploadSerializer
 from studyportal.drive.drive import driveinit
+from users.decorators import check_user
 from users.auth import authorize_user
-from resources.models import Course
 import requests
 import random
 import base64
@@ -48,7 +49,6 @@ def create_user(user_details):
 
 class UserViewSet(APIView):
     def get(self, request):
-        queryset = None
         token = request.headers["Authorization"].split(" ")[1]
         if token == "None":
             """
@@ -107,7 +107,7 @@ class UserViewSet(APIView):
                     {"message": "User does not exist"}, status=status.HTTP_404_NOT_FOUND
                 )
 
-    @post_permitted
+    @action_permitted
     def post(self, request):
         data = request.data
         query = User.objects.filter(auth_id=data["auth_id"])
@@ -158,31 +158,23 @@ class UserViewSet(APIView):
 
 
 class FileRequestViewSet(APIView):
-    def get(self, request):
-        queryset = FileRequest.objects.filter()
-        token = request.headers["Authorization"].split(" ")[1]
-        if token != "None":
-            user = getUserFromJWT(token)
-            queryset = FileRequest.objects.filter(user=user["id"])
-            serializer = FileRequestSerializer(queryset, many=True)
-            return Response(
-                {
-                    "message": "Requests fetched successfully",
-                    "requests": serializer.data,
-                },
-                status=status.HTTP_200_OK,
-            )
-        else:
-            return Response(
-                {"message": "User is not authenticated"},
-                status=status.HTTP_404_NOT_FOUND,
-            )
+    @check_user
+    def get(self, request, user):
+        queryset = FileRequest.objects.filter(user=user["id"])
+        serializer = FileRequestSerializer(queryset, many=True)
+        return Response(
+            {
+                "message": "Requests fetched successfully",
+                "requests": serializer.data,
+            },
+            status=status.HTTP_200_OK,
+        )
 
-    def post(self, request):
+    @check_user
+    def post(self, request, user):
         data = request.data
-        token = request.headers["Authorization"].split(" ")[1]
-        decoded_jwt = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
-        user = User.objects.get(username=decoded_jwt["username"])
+        user_id = user["id"]
+        user = User.objects.get(id=user_id)
         course = Course.objects.get(id=data["course"])
         query = FileRequest.objects.filter(title=data["title"])
         if not query:
@@ -194,7 +186,6 @@ class FileRequestViewSet(APIView):
                 course=course,
             )
             request.save()
-            user_id = UserSerializer(user).data["id"]
             course_code = CourseSerializer(course).data["code"]
             notification_handler(
                 user_id,
@@ -220,44 +211,36 @@ class FileRequestViewSet(APIView):
 
 
 class CourseRequestViewSet(APIView):
-    def get(self, request):
-        queryset = CourseRequest.objects.filter()
-        token = request.headers["Authorization"].split(" ")[1]
-        if token != "None":
-            user = getUserFromJWT(token)
-            queryset = CourseRequest.objects.filter(user=user["id"])
-            serializer = CourseRequestSerializer(queryset, many=True)
-            return Response(
-                {
-                    "message": "Requests fetched successfully",
-                    "requests": serializer.data,
-                },
-                status=status.HTTP_200_OK,
-            )
-        else:
-            return Response(
-                {"message": "User is not authenticated"},
-                status=status.HTTP_404_NOT_FOUND,
-            )
+    @check_user
+    def get(self, request, user):
+        queryset = CourseRequest.objects.filter(user=user["id"])
+        serializer = CourseRequestSerializer(queryset, many=True)
+        return Response(
+            {
+                "message": "Requests fetched successfully",
+                "requests": serializer.data,
+            },
+            status=status.HTTP_200_OK,
+        )
 
-    def post(self, request):
+    @check_user
+    def post(self, request, user):
         data = request.data
-        token = request.headers["Authorization"].split(" ")[1]
-        decoded_jwt = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
-        user = User.objects.get(username=decoded_jwt["username"])
+        user_id = user["id"]
+        user = User.objects.get(id=user_id)
         query = CourseRequest.objects.filter(
             department=data["department"], course=data["course"], code=data["code"]
         )
         if not query:
+            department = Department.objects.get(id=data["department"])
             request = CourseRequest(
                 user=user,
                 status=data["status"],
-                department=data["department"],
+                department=department,
                 course=data["course"],
                 code=data["code"],
             )
             request.save()
-            user_id = UserSerializer(user).data["id"]
             notification_handler(
                 user_id,
                 "You",
@@ -282,32 +265,25 @@ class CourseRequestViewSet(APIView):
 
 
 class UploadViewSet(APIView):
-    def get(self, request):
-        token = request.headers["Authorization"].split(" ")[1]
-        if token != "None":
-            user = getUserFromJWT(token)
-            queryset = Upload.objects.filter(user=user["id"])
-            serializer = UploadSerializer(queryset, many=True)
-            return Response(
-                {"message": "Uploads fetched successfully", "uploads": serializer.data},
-                status=status.HTTP_200_OK,
-            )
-        else:
-            return Response(
-                {"message": "User is not authenticated"},
-                status=status.HTTP_404_NOT_FOUND,
-            )
+    @check_user
+    def get(self, request, user):
+        queryset = Upload.objects.filter(user=user["id"])
+        serializer = UploadSerializer(queryset, many=True)
+        return Response(
+            {"message": "Uploads fetched successfully", "uploads": serializer.data},
+            status=status.HTTP_200_OK,
+        )
 
-    def post(self, request):
+    @check_user
+    def post(self, request, user):
         file = request.data["file"]
         name = request.data["name"]
         course = Course.objects.get(id=request.data["course"])
         file_details = get_file_details_and_upload(
             file, name, request.data["filetype"], course, True, False
         )
-        token = request.headers["Authorization"].split(" ")[1]
-        username = getUserFromJWT(token)["username"]
-        user = User.objects.get(username=username)
+        user_id = user["id"]
+        user = User.objects.get(id=user_id)
         upload = Upload(
             user=user,
             driveid=file_details["driveid"],
@@ -320,7 +296,6 @@ class UploadViewSet(APIView):
             fileext=file_details["ext"],
         )
         upload.save()
-        user_id = UserSerializer(user).data["id"]
         notification_handler(
             user_id,
             "You",
@@ -340,29 +315,29 @@ class UploadViewSet(APIView):
 
 
 class NotificationViewSet(APIView):
-    def get(self, request):
-        token = request.headers["Authorization"].split(" ")[1]
-        if token != "None":
-            user = getUserFromJWT(token)
-            queryset = Notifications.objects.filter(recipient=user["id"])
-            serializer = NotificationsSerializer(queryset, many=True)
+    @check_user
+    def get(self, request, user):
+        queryset = Notifications.objects.filter(recipient=user["id"])
+        serializer = NotificationsSerializer(queryset, many=True)
+        return Response(
+            {
+                "message": "Notifications fetched successfully",
+                "notifications": serializer.data,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+    def delete(self, request):
+        try:
+            Notifications.objects.get(
+                id=request.query_params.get("notification")
+            ).delete()
             return Response(
-                {
-                    "message": "Notifications fetched successfully",
-                    "notifications": serializer.data,
-                },
+                {"message": "Notification deleted successfully"},
                 status=status.HTTP_200_OK,
             )
-        else:
+        except Notifications.DoesNotExist:
             return Response(
-                {"message": "User is not authenticated"},
+                {"message": "Notification was already deleted"},
                 status=status.HTTP_404_NOT_FOUND,
             )
-
-    def put(self, request):
-        notification = Notifications.objects.get(
-            id=request.data.get("notification")
-        ).delete()
-        return Response(
-            {"message": "Notification deleted successfully"}, status=status.HTTP_200_OK
-        )
