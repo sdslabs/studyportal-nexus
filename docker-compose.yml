@@ -60,9 +60,8 @@ services:
       - es
       - redis
     extra_hosts:
-      - "arceus.sdslabs.local:127.0.0.1"
-      - "falcon.sdslabs.local:127.0.0.1"
-      - "localhost:127.0.0.1"
+      - "arceus.sdslabs.local:172.25.158.16"
+      - "falcon.sdslabs.local:172.25.158.16"
     environment:
       DJANGO_DATABASE_NAME: "studyportal"
       DJANGO_DATABASE_USER: "studyportal"
