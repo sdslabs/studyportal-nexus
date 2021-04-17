@@ -13,7 +13,6 @@ EOF
 # Create database
 docker exec $POSTGRES_CONTAINER_NAME /bin/bash -c 'PGPASSWORD=studyportal createdb -h localhost -U studyportal studyportal'
 # Ingest mock data
-PGPASSWORD=studyportal psql -h localhost -d studyportal -U studyportal < dump.sql
-PGPASSWORD=studyportal psql -h localhost -d studyportal -U studyportal < dump.sql
+docker exec $NEXUS_CONTAINER_NAME /bin/bash -c 'python3 data.py'
 # Rebuild indexes
 docker exec $NEXUS_CONTAINER_NAME /bin/bash -c 'python3 manage.py search_index --rebuild -f'

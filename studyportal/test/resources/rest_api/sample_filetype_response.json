@@ -1,0 +1,26 @@
+{
+  "message": "Files fetched successfully",
+  "files": [
+      {
+          "id": 4,
+          "title": "test",
+          "driveid": "123456789",
+          "downloads": 0,
+          "size": "0.12 MB",
+          "date_modified": "2021-03-19",
+          "fileext": "docx",
+          "filetype": "exampapers",
+          "course": {
+              "id": 1,
+              "title": "Data Structures",
+              "department": {
+                  "id": 1,
+                  "title": "Computer Science and Engineering",
+                  "abbreviation": "CSED",
+                  "image": null
+              },
+              "code": "CSN-101"
+          }
+      }
+  ]
+}

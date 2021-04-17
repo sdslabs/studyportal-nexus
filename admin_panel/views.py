@@ -1,45 +1,48 @@
-import json
-import os
-import random
-import base64
-from users.views import getUserFromJWT
-from rest_framework import status
+from users.models import CourseRequest, FileRequest, Upload, User
+from resources.models import Course, Department, File
+from resources.serializers import CourseSerializer
+from users.signals import notification_handler
+from studyportal.drive.drive import driveinit
+from admin_panel.decorators import admin_only
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from users.views import getUserFromJWT
+from users.models import Notifications
+from rest_framework import status
 from users.serializers import (
     CourseRequestSerializer,
     FileRequestSerializer,
     UploadSerializer,
     UserSerializer,
 )
-from users.models import CourseRequest, FileRequest, Upload, User
-from rest_framework.views import APIView
-from users.models import Notifications
-from users.signals import notification_handler
-from rest_api.models import Course, Department, File
-from rest_api.utils import (
+from resources.utils import (
+    get_file_details_and_upload,
     get_fileext,
     get_size,
     get_title,
     add_course,
     add_file,
-    get_file_details,
     STRUCTURE,
 )
-from rest_api.serializers import CourseSerializer
-from studyportal.drive.drive import driveinit
+import random
+import base64
+import json
+import os
 
 
 class FileRequestViewSet(APIView):
+    @admin_only
     def get(self, request):
         queryset = FileRequest.objects.exclude(status=3)
         serializer = FileRequestSerializer(queryset, many=True)
-        return Response({"filerequest": serializer.data}, status=status.HTTP_200_OK)
+        return Response(
+            {"message": "Requests fetched successfully", "requests": serializer.data},
+            status=status.HTTP_200_OK,
+        )
 
+    @admin_only
     def put(self, request):
         data = request.data
-        query = FileRequest.objects.filter(id=data["request"]).update(
-            status=data["status"]
-        )
         file_request = FileRequest.objects.get(id=data["request"])
         user = file_request.user
         course_code = file_request.course.code
@@ -58,33 +61,38 @@ class FileRequestViewSet(APIView):
             course = Course.objects.get(code=course_code)
             file_d = data["file"]
             name = data["name"]
-            file_details = get_file_details(
-                file_d, name, data["filetype"], course, False
+            file_details = get_file_details_and_upload(
+                file_d, name, file_request.filetype, course, False, True
             )
             file = File(
-                title=get_title(file_request.title),
+                title=get_title(file_d.name),
                 driveid=file_details["driveid"],
                 downloads=0,
                 size=file_details["size"],
                 course=course,
-                fileext=get_fileext(file_request.title),
+                fileext=get_fileext(file_d.name),
                 filetype=file_request.filetype,
                 finalized=True,
             )
             add_file(file, course)
-            file_request.files.append(file.id)
+            file_request.file = file.id
             file_request.save()
             notification_handler(
                 user_id,
                 "Admin",
                 "uploaded the file you requested",
-                file_request["title"],
+                file_request.title,
                 "request",
                 course_code,
                 "/activity/requests",
             )
-        return Response(query, status=status.HTTP_200_OK)
+        FileRequest.objects.filter(id=data["request"]).update(status=data["status"])
+        return Response(
+            {"message": "Request status updated successfully"},
+            status=status.HTTP_200_OK,
+        )
 
+    @admin_only
     def delete(self, request):
         requests = FileRequest.objects.get(id=request.data.get("request"))
         file_request = FileRequestSerializer(requests).data
@@ -101,7 +109,9 @@ class FileRequestViewSet(APIView):
             "/activity/requests",
         )
         requests = requests.delete()
-        return Response(requests, status=status.HTTP_200_OK)
+        return Response(
+            {"message": "Request deleted successfully"}, status=status.HTTP_200_OK
+        )
 
     @classmethod
     def get_extra_actions(cls):
@@ -109,16 +119,18 @@ class FileRequestViewSet(APIView):
 
 
 class CourseRequestViewSet(APIView):
+    @admin_only
     def get(self, request):
         queryset = CourseRequest.objects.exclude(status=3)
         serializer = CourseRequestSerializer(queryset, many=True)
-        return Response({"courserequest": serializer.data}, status=status.HTTP_200_OK)
+        return Response(
+            {"message": "Requests fetched successfully", "requests": serializer.data},
+            status=status.HTTP_200_OK,
+        )
 
+    @admin_only
     def put(self, request):
         data = request.data
-        query = CourseRequest.objects.filter(id=data["request"]).update(
-            status=data["status"]
-        )
         course_object = CourseRequest.objects.get(id=data["request"])
         course_request = CourseRequestSerializer(course_object).data
         user = course_request["user"]
@@ -134,7 +146,7 @@ class CourseRequestViewSet(APIView):
                 "/activity/requests",
             )
         if data["status"] == "3":
-            queryset = Department.objects.get(abbreviation=course_request["department"])
+            queryset = Department.objects.get(id=course_request["department"]["id"])
             course = Course(
                 title=course_request["course"],
                 code=course_request["code"],
@@ -150,8 +162,13 @@ class CourseRequestViewSet(APIView):
                 course_request["department"],
                 "/activity/requests",
             )
-        return Response(query, status=status.HTTP_200_OK)
+        CourseRequest.objects.filter(id=data["request"]).update(status=data["status"])
+        return Response(
+            {"message": "Request status updated successfully"},
+            status=status.HTTP_200_OK,
+        )
 
+    @admin_only
     def delete(self, request):
         requests = CourseRequest.objects.get(id=request.data.get("request"))
         course_request = CourseRequestSerializer(requests).data
@@ -167,7 +184,9 @@ class CourseRequestViewSet(APIView):
             "/activity/requests",
         )
         requests = requests.delete()
-        return Response(requests, status=status.HTTP_200_OK)
+        return Response(
+            {"message": "Request deleted successfully"}, status=status.HTTP_200_OK
+        )
 
     @classmethod
     def get_extra_actions(cls):
@@ -175,32 +194,36 @@ class CourseRequestViewSet(APIView):
 
 
 class UploadViewSet(APIView):
+    @admin_only
     def get(self, request):
         queryset = Upload.objects.exclude(status=3)
         serializer = UploadSerializer(queryset, many=True)
-        return Response({"upload": serializer.data}, status=status.HTTP_200_OK)
+        return Response(
+            {"message": "Uploads fetched successfully", "uploads": serializer.data},
+            status=status.HTTP_200_OK,
+        )
 
+    @admin_only
     def put(self, request):
-        file_id = request.data["file_id"]
-        file = Upload.objects.get(id=file_id)
+        file_id = request.data["upload"]
+        upload = Upload.objects.get(id=file_id)
         upload_status = request.data["status"]
         queryset = Upload.objects.filter(id=file_id)
-        query = queryset.update(status=upload_status)
         if upload_status == "2":
             notification_handler(
-                file.user.id,
+                upload.user.id,
                 "Admin",
                 "approved the file you uploaded",
-                file.title,
+                upload.title,
                 "upload",
-                file.course,
-                "activity/uploads",
+                upload.course,
+                "/activity/uploads",
             )
         elif upload_status == "3":
             with open(STRUCTURE) as f:
                 structure = json.load(f)
-            course = file.course
-            folder_identifier = file.filetype.lower().replace(" ", "")
+            course = upload.course
+            folder_identifier = upload.filetype.lower().replace(" ", "")
             folder_id = structure["study"][course.department.abbreviation][course.code][
                 folder_identifier
             ]
@@ -208,32 +231,31 @@ class UploadViewSet(APIView):
                 course.code
             ][folder_identifier + str("_review")]
             driveinit().files().update(
-                fileId=file.driveid,
+                fileId=upload.driveid,
                 addParents=folder_id,
                 removeParents=previous_parent,
                 fields="id, parents",
             ).execute()
-            query = queryset.update(resolved=True)
             new_file = File(
-                title=file.title,
-                filetype=file.filetype,
-                driveid=file.driveid,
-                size=file.size,
-                fileext=file.fileext,
+                title=upload.title,
+                filetype=upload.filetype,
+                driveid=upload.driveid,
+                size=upload.size,
+                fileext=upload.fileext,
                 finalized=True,
-                course=file.course,
+                course=upload.course,
             )
             new_file.save()
-            file.files.append(new_file.id)
-            file.save()
+            upload.file = new_file.id
+            upload.save()
             notification_handler(
-                file.user.id,
+                upload.user.id,
                 "Admin",
                 "added the file you uploaded",
-                file.title,
+                upload.title,
                 "upload",
-                file.course,
-                "activity/uploads",
+                upload.course,
+                "/activity/uploads",
             )
             user_list = User.objects.all()
             recipient_list = UserSerializer(user_list, many=True)
@@ -246,18 +268,23 @@ class UploadViewSet(APIView):
                             recipient=recipient["id"],
                             actor="Admin",
                             verb="added a file",
-                            action=file.title,
+                            action=upload.title,
                             notification_type="addfile",
                             target=course,
                             link="/departments/"
                             + department_code
                             + "/courses/"
-                            + file.course.code,
+                            + upload.course.code,
                         )
-        return Response(query, status=status.HTTP_200_OK)
+            queryset.update(resolved=True)
+        queryset.update(status=upload_status)
+        return Response(
+            {"message": "Upload status updated successfully"}, status=status.HTTP_200_OK
+        )
 
+    @admin_only
     def delete(self, request):
-        requests = Upload.objects.get(id=request.data.get("request"))
+        requests = Upload.objects.get(id=request.data.get("upload"))
         notification_handler(
             requests.user.id,
             "Admin",
@@ -265,10 +292,12 @@ class UploadViewSet(APIView):
             requests.title,
             "upload",
             requests.course,
-            "activity/uploads",
+            "/activity/uploads",
         )
-        requests = requests.delete()
-        return Response(requests, status=status.HTTP_200_OK)
+        requests.delete()
+        return Response(
+            {"message": "Upload deleted successfully"}, status=status.HTTP_200_OK
+        )
 
     @classmethod
     def get_extra_actions(cls):

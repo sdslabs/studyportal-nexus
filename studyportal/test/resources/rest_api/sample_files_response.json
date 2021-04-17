@@ -1,212 +1,89 @@
-[
-    {
-        "id": 40,
-        "title": "test1",
-        "driveid": "123456789",
-        "downloads": 0,
-        "size": "0.01 MB",
-        "date_modified": "2020-04-22",
-        "fileext": "pdf",
-        "filetype": "exampapers",
-        "course": {
-            "id": 1251,
-            "title": "SEMINAR",
-            "department": {
-                "id": 118,
-                "title": "Applied Science and Engineering",
-                "abbreviation": "ASED",
-                "imageurl": "ased.png"
-            },
-            "code": "ASN-700"
-        }
-    },
-    {
-        "id": 39,
-        "title": "test1",
-        "driveid": "123456789",
-        "downloads": 0,
-        "size": "0.01 MB",
-        "date_modified": "2020-04-22",
-        "fileext": "pdf",
-        "filetype": "exampapers",
-        "course": {
-            "id": 1251,
-            "title": "SEMINAR",
-            "department": {
-                "id": 118,
-                "title": "Applied Science and Engineering",
-                "abbreviation": "ASED",
-                "imageurl": "ased.png"
-            },
-            "code": "ASN-700"
-        }
-    },
-    {
-        "id": 38,
-        "title": "test1",
-        "driveid": "123456789",
-        "downloads": 0,
-        "size": "0.01 MB",
-        "date_modified": "2019-04-21",
-        "fileext": "pdf",
-        "filetype": "exampapers",
-        "course": {
-            "id": 1251,
-            "title": "SEMINAR",
-            "department": {
-                "id": 118,
-                "title": "Applied Science and Engineering",
-                "abbreviation": "ASED",
-                "imageurl": "ased.png"
-            },
-            "code": "ASN-700"
-        }
-    },
-    {
-        "id": 37,
-        "title": "test1",
-        "driveid": "123456789",
-        "downloads": 0,
-        "size": "0.01 MB",
-        "date_modified": "2020-04-22",
-        "fileext": "pdf",
-        "filetype": "exampapers",
-        "course": {
-            "id": 1251,
-            "title": "SEMINAR",
-            "department": {
-                "id": 118,
-                "title": "Applied Science and Engineering",
-                "abbreviation": "ASED",
-                "imageurl": "ased.png"
-            },
-            "code": "ASN-700"
-        }
-    },
-    {
-        "id": 36,
-        "title": "test2",
-        "driveid": "123456789",
-        "downloads": 0,
-        "size": "0.01 MB",
-        "date_modified": "2020-04-22",
-        "fileext": "pdf",
-        "filetype": "exampapers",
-        "course": {
-            "id": 1251,
-            "title": "SEMINAR",
-            "department": {
-                "id": 118,
-                "title": "Applied Science and Engineering",
-                "abbreviation": "ASED",
-                "imageurl": "ased.png"
-            },
-            "code": "ASN-700"
-        }
-    },
-    {
-        "id": 35,
-        "title": "test",
-        "driveid": "123456789",
-        "downloads": 0,
-        "size": "0.01 MB",
-        "date_modified": "2020-04-21",
-        "fileext": "png",
-        "filetype": "exampapers",
-        "course": {
-            "id": 1251,
-            "title": "SEMINAR",
-            "department": {
-                "id": 118,
-                "title": "Applied Science and Engineering",
-                "abbreviation": "ASED",
-                "imageurl": "ased.png"
-            },
-            "code": "ASN-700"
-        }
-    },
-    {
-        "id": 34,
-        "title": "test",
-        "driveid": "123456789",
-        "downloads": 0,
-        "size": "0.01 MB",
-        "date_modified": "2020-04-21",
-        "fileext": "jpeg",
-        "filetype": "exampapers",
-        "course": {
-            "id": 1251,
-            "title": "SEMINAR",
-            "department": {
-                "id": 118,
-                "title": "Applied Science and Engineering",
-                "abbreviation": "ASED",
-                "imageurl": "ased.png"
-            },
-            "code": "ASN-700"
-        }
-    },
-    {
-        "id": 33,
-        "title": "test",
-        "driveid": "123456789",
-        "downloads": 0,
-        "size": "0.01 MB",
-        "date_modified": "2020-04-21",
-        "fileext": "ppt",
-        "filetype": "exampapers",
-        "course": {
-            "id": 1251,
-            "title": "SEMINAR",
-            "department": {
-                "id": 118,
-                "title": "Applied Science and Engineering",
-                "abbreviation": "ASED",
-                "imageurl": "ased.png"
-            },
-            "code": "ASN-700"
-        }
-    },
-    {
-        "id": 32,
-        "title": "test",
-        "driveid": "123456789",
-        "downloads": 0,
-        "size": "0.01 MB",
-        "date_modified": "2020-04-21",
-        "fileext": "docx",
-        "filetype": "exampapers",
-        "course": {
-            "id": 1251,
-            "title": "SEMINAR",
-            "department": {
-                "id": 118,
-                "title": "Applied Science and Engineering",
-                "abbreviation": "ASED",
-                "imageurl": "ased.png"
-            },
-            "code": "ASN-700"
-        }
-    },
-    {
-        "id": 31,
-        "title": "test",
-        "driveid": "123456789",
-        "downloads": 0,
-        "size": "0.01 MB",
-        "date_modified": "2020-04-21",
-        "fileext": "pdf",
-        "filetype": "exampapers",
-        "course": {
-            "id": 1251,
-            "title": "SEMINAR",
-            "department": {
-                "id": 118,
-                "title": "Applied Science and Engineering",
-                "abbreviation": "ASED",
-                "imageurl": "ased.png"
-            },
-            "code": "ASN-700"
-        }
-    }
-]
+{
+  "message": "Files fetched successfully",
+  "files": [
+      {
+          "id": 4,
+          "title": "test",
+          "driveid": "123456789",
+          "downloads": 0,
+          "size": "0.12 MB",
+          "date_modified": "2021-03-19",
+          "fileext": "docx",
+          "filetype": "exampapers",
+          "course": {
+              "id": 1,
+              "title": "Data Structures",
+              "department": {
+                  "id": 1,
+                  "title": "Computer Science and Engineering",
+                  "abbreviation": "CSED",
+                  "image": null
+              },
+              "code": "CSN-101"
+          }
+      },
+      {
+          "id": 3,
+          "title": "test",
+          "driveid": "123456789",
+          "downloads": 0,
+          "size": "0.12 MB",
+          "date_modified": "2021-03-19",
+          "fileext": "jpg",
+          "filetype": "notes",
+          "course": {
+              "id": 1,
+              "title": "Data Structures",
+              "department": {
+                  "id": 1,
+                  "title": "Computer Science and Engineering",
+                  "abbreviation": "CSED",
+                  "image": null
+              },
+              "code": "CSN-101"
+          }
+      },
+      {
+          "id": 2,
+          "title": "test",
+          "driveid": "123456789",
+          "downloads": 0,
+          "size": "0.12 MB",
+          "date_modified": "2021-03-19",
+          "fileext": "pdf",
+          "filetype": "books",
+          "course": {
+              "id": 1,
+              "title": "Data Structures",
+              "department": {
+                  "id": 1,
+                  "title": "Computer Science and Engineering",
+                  "abbreviation": "CSED",
+                  "image": null
+              },
+              "code": "CSN-101"
+          }
+      },
+      {
+          "id": 1,
+          "title": "test",
+          "driveid": "123456789",
+          "downloads": 0,
+          "size": "0.12 MB",
+          "date_modified": "2021-03-19",
+          "fileext": "pdf",
+          "filetype": "tutorials",
+          "course": {
+              "id": 1,
+              "title": "Data Structures",
+              "department": {
+                  "id": 1,
+                  "title": "Computer Science and Engineering",
+                  "abbreviation": "CSED",
+                  "image": null
+              },
+              "code": "CSN-101"
+          }
+      }
+  ]
+}

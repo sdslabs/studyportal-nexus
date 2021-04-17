@@ -48,13 +48,13 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "rest_api",
     "rest_framework",
     "corsheaders",
     "django_elasticsearch_dsl",
+    "channels",
+    "resources",
     "users",
     "admin_panel",
-    "channels",
 ]
 
 MIDDLEWARE = [
