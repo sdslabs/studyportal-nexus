@@ -35,8 +35,20 @@ class FileRequestViewSet(APIView):
     def get(self, request):
         queryset = FileRequest.objects.exclude(status=3)
         serializer = FileRequestSerializer(queryset, many=True)
-        return Response(
-            {"message": "Requests fetched successfully", "requests": serializer.data},
+        requests = serializer.data
+        table = {}
+        courses = []
+        for request in requests:
+            if request["course"]["code"] not in table:
+                table[request["course"]["code"]] = [request]
+                courses.append(request["course"])
+            else:
+                table[request["course"]["code"]].append(request)
+        return Response({
+                "message": "Requests fetched successfully",
+                "requests": table,
+                "courses": courses
+            },
             status=status.HTTP_200_OK,
         )
 
@@ -123,8 +135,20 @@ class CourseRequestViewSet(APIView):
     def get(self, request):
         queryset = CourseRequest.objects.exclude(status=3)
         serializer = CourseRequestSerializer(queryset, many=True)
-        return Response(
-            {"message": "Requests fetched successfully", "requests": serializer.data},
+        requests = serializer.data
+        table = {}
+        depts = []
+        for request in requests:
+            if request["department"]["abbreviation"] not in table:
+                table[request["department"]["abbreviation"]] = [request]
+                depts.append(request["department"])
+            else:
+                table[request["department"]["abbreviation"]].append(request)
+        return Response({
+                "message": "Requests fetched successfully",
+                "requests": table,
+                "departments": depts
+            },
             status=status.HTTP_200_OK,
         )
 
@@ -198,8 +222,20 @@ class UploadViewSet(APIView):
     def get(self, request):
         queryset = Upload.objects.exclude(status=3)
         serializer = UploadSerializer(queryset, many=True)
-        return Response(
-            {"message": "Uploads fetched successfully", "uploads": serializer.data},
+        uploads = serializer.data
+        table = {}
+        courses = []
+        for upload in uploads:
+            if upload["course"]["code"] not in table:
+                table[upload["course"]["code"]] = [upload]
+                courses.append(upload["course"])
+            else:
+                table[upload["course"]["code"]].append(upload)
+        return Response({
+                "message": "Uploads fetched successfully",
+                "uploads": table,
+                "courses": courses
+            },
             status=status.HTTP_200_OK,
         )
 
