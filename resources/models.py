@@ -25,8 +25,8 @@ class Course(models.Model):
 
 
 FILE_TYPE = [
-    ("tutorials", "Tutorial"),
-    ("books", "Book"),
+    ("tutorials", "Tutorials"),
+    ("books", "Books"),
     ("notes", "Notes"),
     ("exampapers", "Examination Papers"),
 ]
