@@ -21,10 +21,10 @@ class User(models.Model):
 REQUEST_STATUS = [(1, 1), (2, 2), (3, 3)]
 
 FILE_TYPE = [
-    ("Tutorial", "tutorials"),
-    ("Book", "books"),
-    ("Notes", "notes"),
-    ("Examination Papers", "exampapers"),
+    ("tutorials", "Tutorials"),
+    ("books", "Books"),
+    ("notes", "Notes"),
+    ("exampapers", "Examination Papers"),
 ]
 
 

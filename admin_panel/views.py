@@ -245,7 +245,7 @@ class UploadViewSet(APIView):
         upload = Upload.objects.get(id=file_id)
         upload_status = request.data["status"]
         queryset = Upload.objects.filter(id=file_id)
-        if upload_status == "2":
+        if upload_status == 2:
             notification_handler(
                 upload.user.id,
                 "Admin",
@@ -255,7 +255,7 @@ class UploadViewSet(APIView):
                 upload.course,
                 "/activity/uploads",
             )
-        elif upload_status == "3":
+        elif upload_status == 3:
             with open(STRUCTURE) as f:
                 structure = json.load(f)
             course = upload.course
