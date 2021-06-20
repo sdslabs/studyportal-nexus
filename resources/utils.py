@@ -19,6 +19,14 @@ if os.environ.get("DEVELOPMENT_MODE") == "True":
     STRUCTURE = os.path.join(CUR_DIR, "test/resources/structure.json")
 
 
+FILE_TYPE = [
+    ("tutorials", "Tutorials"),
+    ("books", "Books"),
+    ("notes", "Notes"),
+    ("exampapers", "Examination Papers"),
+]
+
+
 def add_course(course, department):
     course.save()
     user_list = User.objects.all()
