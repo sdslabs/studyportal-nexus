@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
+from utils import FILE_TYPE
 
 
 class Department(models.Model):
@@ -22,14 +23,6 @@ class Course(models.Model):
 
     def __str__(self):
         return self.title
-
-
-FILE_TYPE = [
-    ("tutorials", "Tutorials"),
-    ("books", "Books"),
-    ("notes", "Notes"),
-    ("exampapers", "Examination Papers"),
-]
 
 
 def fileLocation(instance, filename):
