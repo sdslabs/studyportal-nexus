@@ -1,5 +1,6 @@
 import os
 import json
+from posixpath import join
 import pytest
 import requests
 from studyportal.settings import CUR_DIR, SECRET_KEY
@@ -55,6 +56,9 @@ class TestRestApi:
             expected_response = json.load(f)
         r = requests.get(url=NEXUS_URL + "files?course=1&filetype=null&format=json")
         actual_response = r.json()
+        if r.status_code == 200:
+            for p in actual_response['files']:
+                p['date_modified'] = "2021-03-19"
         assert actual_response == expected_response
 
     def test_get_files_by_type(self):
@@ -64,6 +68,9 @@ class TestRestApi:
             url=NEXUS_URL + "files?course=1&filetype=exampapers&format=json"
         )
         actual_response = r.json()
+        if r.status_code == 200:
+            for p in actual_response['files']:
+                p['date_modified'] = "2021-03-19"
         assert actual_response == expected_response
 
     def test_post_file(self):
@@ -88,4 +95,7 @@ class TestRestApi:
             expected_response = json.load(f)
         r = requests.get(url=NEXUS_URL + "search?q=test&format=json")
         actual_response = r.json()
+        if r.status_code == 200:
+            for p in actual_response['files']:
+                p['date_modified'] = "2021-03-19"
         assert actual_response == expected_response

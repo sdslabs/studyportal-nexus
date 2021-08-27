@@ -3,6 +3,7 @@ from studyportal.falcon import client
 from rest_framework import status
 from apiclient import errors
 
+
 def authorize_user(request):
     # cookie manipulation starts here
     cookies = {}
