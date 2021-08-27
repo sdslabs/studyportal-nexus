@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
-from resources.models import Department, Course, File
+from resources.models import Department, Course, FILE_TYPE
 
 USER_ROLE = [("user", "user"), ("moderator", "moderator"), ("admin", "admin")]
 
@@ -19,13 +19,6 @@ class User(models.Model):
 
 
 REQUEST_STATUS = [(1, 1), (2, 2), (3, 3)]
-
-FILE_TYPE = [
-    ("Tutorial", "tutorials"),
-    ("Book", "books"),
-    ("Notes", "notes"),
-    ("Examination Papers", "exampapers"),
-]
 
 
 class FileRequest(models.Model):

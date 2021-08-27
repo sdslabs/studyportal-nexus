@@ -6,7 +6,7 @@ from users.models import User
 from users.serializers import UserSerializer
 from resources.serializers import DepartmentSerializer, CourseSerializer, FileSerializer
 from users.signals import notification_handler
-from resources.models import Course
+from resources.models import Course, FILE_TYPE
 from studyportal.drive.drive import driveinit
 from studyportal.settings import CUR_DIR
 from apiclient.http import MediaFileUpload

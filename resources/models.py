@@ -24,14 +24,6 @@ class Course(models.Model):
         return self.title
 
 
-FILE_TYPE = [
-    ("tutorials", "Tutorial"),
-    ("books", "Book"),
-    ("notes", "Notes"),
-    ("exampapers", "Examination Papers"),
-]
-
-
 def fileLocation(instance, filename):
     return "/".join(["./files", instance.filetype, filename])
 
@@ -39,6 +31,14 @@ def fileLocation(instance, filename):
 def fileName(file):
     filename = file.split("/")[-1]
     return filename.split(".")[-2]
+
+
+FILE_TYPE = [
+    ("tutorials", "Tutorials"),
+    ("books", "Books"),
+    ("notes", "Notes"),
+    ("exampapers", "Examination Papers"),
+]
 
 
 class File(models.Model):
