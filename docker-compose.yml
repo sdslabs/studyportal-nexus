@@ -4,6 +4,8 @@ services:
     image: postgres:10.3-alpine
     ports:
       - "5432:5432"
+    volumes:
+        - ".:/studyportal-nexus:rw"
     environment:
       POSTGRES_DB: "studyportal"
       POSTGRES_USER: "studyportal"
@@ -31,6 +33,16 @@ services:
         soft: 65536
         hard: 65536
 
+  redis:
+    container_name: redis
+    image: redis
+    ports:
+      - "6389:6389"
+    volumes:
+      - ../data/redis:/data
+    entrypoint: redis-server --appendonly yes
+    restart: always
+
   web:
     build: ./
     image: studyportal-nexus
@@ -46,10 +58,10 @@ services:
     depends_on:
       - db
       - es
+      - redis
     extra_hosts:
-      - "arceus.sdslabs.local:127.0.0.1"
-      - "falcon.sdslabs.local:127.0.0.1"
-      - "localhost:127.0.0.1"
+      - "arceus.sdslabs.local:172.25.158.16"
+      - "falcon.sdslabs.local:172.25.158.16"
     environment:
       DJANGO_DATABASE_NAME: "studyportal"
       DJANGO_DATABASE_USER: "studyportal"
@@ -61,5 +73,6 @@ services:
       ELASTICSEARCH_PORT: "9200"
       DISABLE_GLOBAL_THROTTLING: "True"
       ROOT_SHORTENING_URL: "localhost:8005"
+      DEVELOPMENT_MODE: "True"
     stdin_open: true
     tty: true

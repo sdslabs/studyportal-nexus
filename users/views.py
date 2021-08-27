@@ -1,18 +1,23 @@
-from rest_api.models import Course
-from users.models import User, FileRequest, CourseRequest, Upload
+from users.models import User, FileRequest, CourseRequest, Upload, Notifications
+from resources.utils import get_size, get_file_details_and_upload, STRUCTURE
+from studyportal.settings import NEXUS_URL, SECRET_KEY
+from resources.serializers import CourseSerializer
+from users.signals import notification_handler
+from rest_framework.response import Response
+from users.serializers import UserSerializer
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_api.serializers import CourseSerializer
-from users.serializers import UserSerializer
-from users.serializers import FileRequestSerializer, CourseRequestSerializer
+from users.serializers import (
+    FileRequestSerializer,
+    CourseRequestSerializer,
+    NotificationsSerializer,
+)
+from resources.decorators import action_permitted
+from resources.models import Department, Course
 from users.serializers import UploadSerializer
-from studyportal.settings import SECRET_KEY
-from apiclient.http import MediaFileUpload
 from studyportal.drive.drive import driveinit
-from studyportal.falcon.config import config
-from studyportal.falcon import client
-from studyportal.settings import CUR_DIR
+from users.decorators import check_user
+from users.auth import authorize_user
 import requests
 import random
 import base64
@@ -20,113 +25,132 @@ import json
 import jwt
 import os
 
-NEXUS_URL = "http://localhost:8005/api/v1"
-STRUCTURE = os.path.join(
-    CUR_DIR,
-    'drive/structure.json'
-)
-STRUCTURE_TEST = os.path.join(
-    CUR_DIR,
-    'test/resources/structure.json'
-)
-
 
 def getUserFromJWT(token):
-    decoded_jwt = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
-    user = User.objects.get(username=decoded_jwt['username'])
-    return UserSerializer(user).data
+    try:
+        decoded_jwt = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        user = User.objects.get(username=decoded_jwt["username"])
+        return UserSerializer(user).data
+    except Exception as error:
+        print("Error occurred while parsing user token", error)
+        return None
+
+
+def create_user(user_details):
+    user = User(
+        auth_id=user_details["auth_id"],
+        username=user_details["username"],
+        email=user_details["email"],
+        profile_image=user_details["profile_image"],
+        role=user_details["role"],
+    )
+    user.save()
 
 
 class UserViewSet(APIView):
     def get(self, request):
-        queryset = None
-        token = request.headers['Authorization'].split(' ')[1]
-        if token == 'None':
-            # user = client.get_logged_in_user(config,{'sdslabs': ''})
-            user = client.get_user_by_username('darkrider', config)
+        token = request.headers["Authorization"].split(" ")[1]
+        if token == "None":
+            """
+            This following section handles the external auth flow
+            """
+            user = authorize_user(request)
             if user is not None:
-                queryset = User.objects.filter(falcon_id=user['id'])
+                queryset = User.objects.filter(auth_id=user["id"])
                 serializer = UserSerializer(queryset, many=True)
                 if serializer.data == []:
                     data = {
-                        'falcon_id': user['id'],
-                        'username': user['username'],
-                        'email': user['email'],
-                        'profile_image': user['image_url'],
-                        'role': 'user'
+                        "auth_id": user["id"],
+                        "username": user["username"],
+                        "email": user["email"],
+                        "profile_image": user["image_url"],
+                        "role": "user",
                     }
-                    requests.post(NEXUS_URL + '/users', data=data)
-            queryset = User.objects.filter(falcon_id=user['id'])
+                    create_user(data)
+            queryset = User.objects.filter(auth_id=user["id"])
             serializer = UserSerializer(queryset, many=True)
             user = serializer.data[0]
             encoded_jwt = jwt.encode(
-                {
-                    'username': user['username'],
-                    'email': user['email']
-                },
+                {"username": user["username"], "email": user["email"]},
                 SECRET_KEY,
-                algorithm='HS256'
+                algorithm="HS256",
             )
             return Response(
                 {
-                    'token': encoded_jwt,
-                    'user': user,
-                    'courses': ''
+                    "message": "Successfully fetched user data",
+                    "token": encoded_jwt,
+                    "user": user,
+                    "courses": "",
                 },
-                status=status.HTTP_200_OK
+                status=status.HTTP_200_OK,
             )
         else:
             user = getUserFromJWT(token)
-            courselist = user['courses']
-            courses = []
-            for course in courselist:
-                course_object = Course.objects.filter(id=course)
-                if course_object:
-                    coursedata = CourseSerializer(
-                        course_object,
-                        many=True
-                    ).data[0]
-                    courses.append(coursedata)
-            return Response({'user': user, 'courses': courses})
+            if user is not None:
+                courselist = user["courses"]
+                courses = []
+                for course in courselist:
+                    course_object = Course.objects.filter(id=course)
+                    if course_object:
+                        coursedata = CourseSerializer(course_object, many=True).data[0]
+                        courses.append(coursedata)
+                return Response(
+                    {
+                        "message": "Successfully fetched user data",
+                        "user": user,
+                        "courses": courses,
+                    },
+                    status=status.HTTP_200_OK,
+                )
+            else:
+                return Response(
+                    {"message": "User does not exist"}, status=status.HTTP_404_NOT_FOUND
+                )
 
+    @action_permitted
     def post(self, request):
         data = request.data
-        query = User.objects.filter(falcon_id=data['falcon_id'])
+        query = User.objects.filter(auth_id=data["auth_id"])
         if not query:
-            user = User(
-                falcon_id=data['falcon_id'],
-                username=data['username'],
-                email=data['email'],
-                profile_image=data['profile_image'],
-                role=data['role']
+            create_user(data)
+            return Response(
+                {"message": "User created successfully"}, status=status.HTTP_201_CREATED
             )
-            user.save()
-            return Response(user.save(), status=status.HTTP_201_CREATED)
         else:
-            return Response("User already exists")
+            return Response("User already exists", status=status.HTTP_200_OK)
 
     def put(self, request):
         data = request.data
-        new_course = data['course']
-        token = request.headers['Authorization'].split(' ')[1]
-        decoded_jwt = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
-        query = User.objects.get(username=decoded_jwt['username'])
+        new_course = data["course"]
+        token = request.headers["Authorization"].split(" ")[1]
+        decoded_jwt = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        query = User.objects.get(username=decoded_jwt["username"])
         user = UserSerializer(query).data
-        if data['action'] == 'add':
-            if int(new_course) not in user['courses']:
+        if data["action"] == "add":
+            if int(new_course) not in user["courses"]:
                 query.courses.append(new_course)
                 query.save()
-                return Response('Course added successfully')
+                return Response(
+                    {"message": "Course added successfully"},
+                    status=status.HTTP_201_CREATED,
+                )
             else:
-                return Response('Course already added')
+                return Response(
+                    {"message": "Course already added"}, status=status.HTTP_200_OK
+                )
         else:
-            if int(new_course) in user['courses']:
-                print(int(new_course) in user['courses'])
+            if int(new_course) in user["courses"]:
                 query.courses.remove(int(new_course))
                 query.save()
-                return Response('Course removed successfully')
+                return Response(
+                    {"message": "Course removed successfully"},
+                    status=status.HTTP_200_OK,
+                )
             else:
-                return Response('Course does not exist')
+                return Response(
+                    {"message": "Course does not exist"},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
 
     @classmethod
     def get_extra_actions(cls):
@@ -134,54 +158,52 @@ class UserViewSet(APIView):
 
 
 class FileRequestViewSet(APIView):
-    def get(self, request):
-        queryset = FileRequest.objects.filter()
-        user = self.request.query_params.get('user')
-        if user is not None:
-            queryset = FileRequest.objects.filter(user=user)
-        else:
-            token = request.headers['Authorization'].split(' ')[1]
-            if token != 'None':
-                user = getUserFromJWT(token)
-                queryset = FileRequest.objects.filter(user=user['id'])
+    @check_user
+    def get(self, request, user):
+        queryset = FileRequest.objects.filter(user=user["id"])
         serializer = FileRequestSerializer(queryset, many=True)
-        return Response(serializer.data)
+        return Response(
+            {
+                "message": "Requests fetched successfully",
+                "requests": serializer.data,
+            },
+            status=status.HTTP_200_OK,
+        )
 
-    def post(self, request):
+    @check_user
+    def post(self, request, user):
         data = request.data
-        token = request.headers['Authorization'].split(' ')[1]
-        decoded_jwt = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
-        user = User.objects.get(username=decoded_jwt['username'])
-        course = Course.objects.get(id=data['course'])
-        query = FileRequest.objects.filter(title=data['title'])
+        user_id = user["id"]
+        user = User.objects.get(id=user_id)
+        course = Course.objects.get(id=data["course"])
+        query = FileRequest.objects.filter(title=data["title"])
         if not query:
             request = FileRequest(
                 user=user,
-                filetype=data['filetype'],
-                status=data['status'],
-                title=data['title'],
-                course=course
+                filetype=data["filetype"],
+                status=data["status"],
+                title=data["title"],
+                course=course,
             )
             request.save()
+            course_code = CourseSerializer(course).data["code"]
+            notification_handler(
+                user_id,
+                "You",
+                "placed a request for",
+                data["title"],
+                "request",
+                course_code,
+                "/activity/requests",
+            )
             return Response(
-                FileRequestSerializer(request).data,
-                status=status.HTTP_201_CREATED
+                {"message": "File requested successfully"},
+                status=status.HTTP_201_CREATED,
             )
         else:
-            return Response("Request already exists")
-
-    def put(self, request):
-        data = request.data
-        query = FileRequest.objects.filter(
-            id=data['request']
-        ).update(status=data['status'])
-        return Response(query, status=status.HTTP_200_OK)
-
-    def delete(self, request):
-        requests = FileRequest.objects.get(
-            id=request.data.get('request')
-        ).delete()
-        return Response(requests)
+            return Response(
+                {"message": "Request already exists"}, status=status.HTTP_200_OK
+            )
 
     @classmethod
     def get_extra_actions(cls):
@@ -189,142 +211,133 @@ class FileRequestViewSet(APIView):
 
 
 class CourseRequestViewSet(APIView):
-    def get(self, request):
-        queryset = CourseRequest.objects.filter()
-        user = self.request.query_params.get('user')
-        if user is not None:
-            queryset = CourseRequest.objects.filter(user=user)
-        else:
-            token = request.headers['Authorization'].split(' ')[1]
-            if token != 'None':
-                user = getUserFromJWT(token)
-                queryset = CourseRequest.objects.filter(user=user['id'])
+    @check_user
+    def get(self, request, user):
+        queryset = CourseRequest.objects.filter(user=user["id"])
         serializer = CourseRequestSerializer(queryset, many=True)
-        return Response(serializer.data)
+        return Response(
+            {
+                "message": "Requests fetched successfully",
+                "requests": serializer.data,
+            },
+            status=status.HTTP_200_OK,
+        )
 
-    def post(self, request):
+    @check_user
+    def post(self, request, user):
         data = request.data
-        token = request.headers['Authorization'].split(' ')[1]
-        decoded_jwt = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
-        user = User.objects.get(username=decoded_jwt['username'])
+        user_id = user["id"]
+        user = User.objects.get(id=user_id)
         query = CourseRequest.objects.filter(
-            department=data['department'],
-            course=data['course'],
-            code=data['code']
+            department=data["department"], course=data["course"], code=data["code"]
         )
         if not query:
+            department = Department.objects.get(id=data["department"])
             request = CourseRequest(
                 user=user,
-                status=data['status'],
-                department=data['department'],
-                course=data['course'],
-                code=data['code']
+                status=data["status"],
+                department=department,
+                course=data["course"],
+                code=data["code"],
             )
             request.save()
+            notification_handler(
+                user_id,
+                "You",
+                "placed a request for",
+                data["course"],
+                "request",
+                data["department"],
+                "/activity/requests",
+            )
             return Response(
-                CourseRequestSerializer(request).data,
-                status=status.HTTP_201_CREATED
+                {"message": "Course requested successfully"},
+                status=status.HTTP_201_CREATED,
             )
         else:
-            return Response("Request already exists")
-
-    def put(self, request):
-        data = request.data
-        query = CourseRequest.objects.filter(
-            id=data['request']
-        ).update(status=data['status'])
-        return Response(query, status=status.HTTP_200_OK)
-
-    def delete(self, request):
-        requests = CourseRequest.objects.get(
-            id=request.data.get('request')
-        ).delete()
-        return Response(requests)
+            return Response(
+                {"message": "Request already exists"}, status=status.HTTP_200_OK
+            )
 
     @classmethod
     def get_extra_actions(cls):
         return []
-
-
-def uploadToDrive(service, folder_id, file_details):
-    file_metadata = {
-        'name': file_details['name'],
-        'parents': [folder_id]
-    }
-    media = MediaFileUpload(
-        file_details['location'],
-        mimetype=file_details['mime_type']
-    )
-    file = service.files().create(
-        body=file_metadata,
-        media_body=media,
-        fields='id'
-    ).execute()
-    return file.get('id')
 
 
 class UploadViewSet(APIView):
-    def get(self, request):
-        user = self.request.query_params.get('user')
-        queryset = Upload.objects.filter(resolved=False)
-        if user is not None:
-            queryset = Upload.objects.filter(user=user, resolved=False)
-        else:
-            token = request.headers['Authorization'].split(' ')[1]
-            if token != 'None':
-                user = getUserFromJWT(token)
-                queryset = Upload.objects.filter(user=user['id'])
+    @check_user
+    def get(self, request, user):
+        queryset = Upload.objects.filter(user=user["id"])
         serializer = UploadSerializer(queryset, many=True)
-        return Response(serializer.data)
-
-    def post(self, request):
-        # For local dev change 'STRUCTURE' to 'STRUCTURE_TEST'
-        with open(STRUCTURE) as f:
-            structure = json.load(f)
-        file = request.data['file']
-        name = request.data['name']
-        # File manipulation starts here
-        type = file.split(",")[0]
-        mime_type = type.split(":")[1].split(";")[0]
-        ext = type.split("/")[1].split(";")[0]
-        base64String = file.split(",")[1]
-        rand = str(random.randint(0, 100000))
-        temp = open("temp" + rand + "." + ext, "wb")
-        temp.write(base64.b64decode(base64String))
-        file_details = {
-            'name': name,
-            'mime_type': mime_type,
-            'location': "temp" + rand + "." + ext
-        }
-        # Get folder id from config
-        course = Course.objects.get(id=request.data['course'])
-        folder_identifier = request.data['filetype'].lower().replace(" ", "") + "_review"
-        folder_id = structure['study'][course.department.abbreviation][course.code][folder_identifier]
-        driveid = uploadToDrive(
-            driveinit(),
-            folder_id,
-            file_details
+        return Response(
+            {"message": "Uploads fetched successfully", "uploads": serializer.data},
+            status=status.HTTP_200_OK,
         )
-        os.remove("temp" + rand + "." + ext)
-        # end of manipulation
-        token = request.headers['Authorization'].split(' ')[1]
-        username = getUserFromJWT(token)['username']
-        user = User.objects.get(username=username)
+
+    @check_user
+    def post(self, request, user):
+        file = request.data["file"]
+        name = request.data["name"]
+        course = Course.objects.get(id=request.data["course"])
+        file_details = get_file_details_and_upload(
+            file, name, request.data["filetype"], course, True, False
+        )
+        user_id = user["id"]
+        user = User.objects.get(id=user_id)
         upload = Upload(
             user=user,
-            driveid=driveid,
+            driveid=file_details["driveid"],
+            size=file_details["size"],
             resolved=False,
-            status=request.data['status'],
+            status=request.data["status"],
             title=name,
-            filetype=request.data['filetype'],
-            course=course
+            filetype=request.data["filetype"],
+            course=course,
+            fileext=file_details["ext"],
         )
         upload.save()
+        notification_handler(
+            user_id,
+            "You",
+            "placed a request to upload",
+            name,
+            "upload",
+            course,
+            "/activity/uploads",
+        )
         return Response(
-            UploadSerializer(upload).data,
-            status=status.HTTP_200_OK
+            {"message": "File uploaded successfully"}, status=status.HTTP_200_OK
         )
 
     @classmethod
     def get_extra_actions(cls):
         return []
+
+
+class NotificationViewSet(APIView):
+    @check_user
+    def get(self, request, user):
+        queryset = Notifications.objects.filter(recipient=user["id"])
+        serializer = NotificationsSerializer(queryset, many=True)
+        return Response(
+            {
+                "message": "Notifications fetched successfully",
+                "notifications": serializer.data,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+    def delete(self, request):
+        try:
+            Notifications.objects.get(
+                id=request.query_params.get("notification")
+            ).delete()
+            return Response(
+                {"message": "Notification deleted successfully"},
+                status=status.HTTP_200_OK,
+            )
+        except Notifications.DoesNotExist:
+            return Response(
+                {"message": "Notification was already deleted"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
