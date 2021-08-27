@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
-from utils import FILE_TYPE
 
 
 class Department(models.Model):
@@ -32,6 +31,14 @@ def fileLocation(instance, filename):
 def fileName(file):
     filename = file.split("/")[-1]
     return filename.split(".")[-2]
+
+
+FILE_TYPE = [
+    ("tutorials", "Tutorials"),
+    ("books", "Books"),
+    ("notes", "Notes"),
+    ("exampapers", "Examination Papers"),
+]
 
 
 class File(models.Model):

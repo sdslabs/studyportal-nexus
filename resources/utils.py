@@ -6,7 +6,7 @@ from users.models import User
 from users.serializers import UserSerializer
 from resources.serializers import DepartmentSerializer, CourseSerializer, FileSerializer
 from users.signals import notification_handler
-from resources.models import Course
+from resources.models import Course, FILE_TYPE
 from studyportal.drive.drive import driveinit
 from studyportal.settings import CUR_DIR
 from apiclient.http import MediaFileUpload
@@ -17,14 +17,6 @@ from rest_framework import status
 STRUCTURE = os.path.join(CUR_DIR, "drive/structure.json")
 if os.environ.get("DEVELOPMENT_MODE") == "True":
     STRUCTURE = os.path.join(CUR_DIR, "test/resources/structure.json")
-
-
-FILE_TYPE = [
-    ("tutorials", "Tutorials"),
-    ("books", "Books"),
-    ("notes", "Notes"),
-    ("exampapers", "Examination Papers"),
-]
 
 
 def add_course(course, department):
