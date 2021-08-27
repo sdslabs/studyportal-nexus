@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
-from resources.models import Department, Course, File
-from resources.utils import FILE_TYPE
+from resources.models import Department, Course, FILE_TYPE
 
 USER_ROLE = [("user", "user"), ("moderator", "moderator"), ("admin", "admin")]
 

@@ -44,7 +44,8 @@ class FileRequestViewSet(APIView):
                 courses.append(request["course"])
             else:
                 table[request["course"]["code"]].append(request)
-        return Response({
+        return Response(
+            {
                 "message": "Requests fetched successfully",
                 "requests": table,
                 "courses": courses
@@ -144,7 +145,8 @@ class CourseRequestViewSet(APIView):
                 depts.append(request["department"])
             else:
                 table[request["department"]["abbreviation"]].append(request)
-        return Response({
+        return Response(
+            {
                 "message": "Requests fetched successfully",
                 "requests": table,
                 "departments": depts
@@ -231,7 +233,8 @@ class UploadViewSet(APIView):
                 courses.append(upload["course"])
             else:
                 table[upload["course"]["code"]].append(upload)
-        return Response({
+        return Response(
+            {
                 "message": "Uploads fetched successfully",
                 "uploads": table,
                 "courses": courses
