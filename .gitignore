@@ -121,3 +121,4 @@ credentials.json
 venv/
 studyportal/drive/structure.json
 assets/
+test/resources/structure.json
