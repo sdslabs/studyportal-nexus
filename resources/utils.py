@@ -1,5 +1,5 @@
-import json
 import os
+import json
 import random
 import base64
 from users.models import User
@@ -94,6 +94,51 @@ def updatePermissions(service, fileId):
         service.permissions().create(fileId=fileId, body=new_permission).execute()
     except errors.HttpError as error:
         print("An error occurred:", error)
+
+
+FOLDER_LIST = ["exampapers", "tutorials_review", "notes", "exampapers_review", "books", "notes_review", "tutorials", "books_review"]
+
+
+def createFolder(service, folderName, parentFolder):
+    folder_metadata = {
+        'name': folderName,
+        'parents': [parentFolder],
+        'mimeType': 'application/vnd.google-apps.folder'
+    }
+    folder = service.files().create(body=folder_metadata,
+                                    fields='id').execute()
+    return folder.get('id')
+
+
+def add_course_to_drive(course):
+    with open(STRUCTURE) as f:
+        structure = json.load(f)
+    try:
+        service = driveinit()
+        course_data = CourseSerializer(course).data
+        department = course_data["department"]
+        structure_department = structure["study"][department["abbreviation"]]
+        folder_struct = {
+            "exampapers": "",
+            "tutorials_review": "",
+            "notes": "",
+            "exampapers_review": "",
+            "books": "",
+            "notes_review": "",
+            "tutorials": "",
+            "books_review": "",
+            "id": ""
+        }
+        course_folder_id = createFolder(service, course_data["code"], structure_department["id"])
+        folder_struct["id"] = course_folder_id
+        for folder in FOLDER_LIST:
+            course_subfolder_id = createFolder(service, folder, course_folder_id)
+            folder_struct[folder] = course_subfolder_id
+        structure_department[course_data["code"]] = folder_struct
+        with open(STRUCTURE, 'w') as wf:
+            json.dump(structure, wf, indent=4)
+    except Exception:
+        return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 def get_file_details_and_upload(

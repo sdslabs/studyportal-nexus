@@ -17,6 +17,7 @@ from users.serializers import (
 )
 from resources.utils import (
     get_file_details_and_upload,
+    add_course_to_drive,
     get_fileext,
     get_size,
     get_title,
@@ -178,6 +179,7 @@ class CourseRequestViewSet(APIView):
                 code=course_request["code"],
                 department=queryset,
             )
+            add_course_to_drive(course)
             add_course(course, queryset)
             notification_handler(
                 user_id,

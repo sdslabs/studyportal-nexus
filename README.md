@@ -6,25 +6,25 @@ This is the backend API repository for Study Portal intended to be used by Study
 
 # Prerequisites
 
-1. Install[PostgreSQL service](https: // www.digitalocean.com / community / tutorials / how - to - install - and-use - postgresql - on - ubuntu - 18 - 04).
+1. Install [PostgreSQL service](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-18-04).
 2. Setup Arceus and Falcon locally or get a remote instance for development / testing.
-3. Register study as an app in Arceus and make changes to `studyportal / falcon / config.py`.
-4. Obtain a credentials.json from the author / generate one yourself and place it in `studyportal / drive`.
+3. Register study as an app in Arceus and make changes to `studyportal/falcon/config.py`.
+4. Obtain a credentials.json from the author/generate one yourself and place it in `studyportal/drive`.
 
 # Setup Instructions
 
-Ensure that you have installed [Docker](https: // docs.docker.com / install /) (with [Docker Compose](https: // docs.docker.com / compose / install /) ) and that the [Docker daemon is running](https: // docs.docker.com/config/daemon/).
+Ensure that you have installed [Docker](https://docs.docker.com/install/) (with [Docker Compose](https://docs.docker.com/compose/install/) ) and that the [Docker daemon is running](https://docs.docker.com/config/daemon/).
 
 1. Clone the repository
 
 ```bash
-git @ github.com: sdslabs / studyportal - nexus.git
+git@github.com:sdslabs/studyportal-nexus.git
 ```
 
 2. Setup and start docker containers
 
 ```bash
-docker - compose up
+docker-compose up
 ```
 
 After executing `docker - compose up`, you will be running:
@@ -40,7 +40,7 @@ Once everything has initialized, with `docker - compose` still running in the ba
 ```
 
 You are now ready to start sending the API server requests. Hit the API with a request to make sure it is working:
-`curl localhost: 8005 / api / v1 / courses`
+`curl localhost:8005/api/v1/departments`
 
 # Diagnosing local Elasticsearch issues
 
@@ -64,8 +64,8 @@ You can setup the local dev in a virtualenv:
 * Using virtualenv
 
 ```bash
-virtualenv - p python3 venv
-source venv / bin / activate
+virtualenv -p python3 venv
+source venv/bin/activate
 ```
 
 * Using virtualenvwrapper
@@ -78,12 +78,12 @@ workon studyportal
 2. Install packages in virtual environment.
 
 ```bash
-pip install - r requirements.txt
+pip install -r requirements.txt
 ```
 
 3. Edit config file.
 
-Change `host` in `studyportal / config / postgresql.yml` to `localhost` and in `studyportal / settings.py` change the elasticsearch host from `es` to `localhost`.
+Change `host` in `studyportal/config/postgresql.yml` to `localhost` and in `studyportal/settings.py` change the elasticsearch host from `es` to `localhost`.
 
 # DO NOT COMMIT THESE FILE CHANGES.
 
