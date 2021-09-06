@@ -313,3 +313,36 @@ class SearchViewSet(APIView):
     @classmethod
     def get_extra_actions(cls):
         return []
+    
+
+class SearchCoursesViewSet(APIView):
+    def get(self, request):
+        q = request.query_params.get('q')
+        dept = request.query_params.get('dept')
+        if q and dept:
+            courses = CourseDocument.search().query(
+                "multi_match", query=q, type="phrase_prefix", fields=["title", "code"]
+            )
+            response_courses = courses.execute()
+            queryset_courses = Course.objects.none()
+            for hit in response_courses.hits.hits:
+                courseId = hit["_source"]["id"]
+                query = Course.objects.filter(id=courseId, department=dept)
+                queryset_courses = list(itertools.chain(queryset_courses, query))
+            serializer_courses = CourseSerializer(queryset_courses, many=True).data
+            return Response(
+                {
+                    "message": "Search completed successfully",
+                    "courses": serializer_courses,
+                },
+                status=status.HTTP_200_OK,
+            )
+        else:
+            return Response(
+                {"message": "Search for the query term failed"},
+                status.HTTP_400_BAD_REQUEST,
+            )
+    
+    @classmethod
+    def get_extra_actions(cls):
+        return []
