@@ -176,7 +176,11 @@ class FileRequestViewSet(APIView):
         user_id = user["id"]
         user = User.objects.get(id=user_id)
         course = Course.objects.get(id=data["course"])
-        query = FileRequest.objects.filter(title=data["title"])
+        query = FileRequest.objects.filter(
+            title=data["title"],
+            course=course,
+            filetype=data["filetype"],
+        )
         if not query:
             request = FileRequest(
                 user=user,
@@ -228,10 +232,13 @@ class CourseRequestViewSet(APIView):
         data = request.data
         user_id = user["id"]
         user = User.objects.get(id=user_id)
-        query = CourseRequest.objects.filter(
-            department=data["department"], course=data["course"], code=data["code"]
+        query_request = CourseRequest.objects.filter(
+            department=data["department"], code=data["code"]
         )
-        if not query:
+        query_courses = Course.objects.filter(
+            department=data["department"], code=data["code"]
+        )
+        if not (query_request and query_courses):
             department = Department.objects.get(id=data["department"])
             request = CourseRequest(
                 user=user,
@@ -254,9 +261,13 @@ class CourseRequestViewSet(APIView):
                 {"message": "Course requested successfully"},
                 status=status.HTTP_201_CREATED,
             )
-        else:
+        elif query_request:
             return Response(
                 {"message": "Request already exists"}, status=status.HTTP_200_OK
+            )
+        else:
+            return Response(
+                {"message": "Course already exists"}, status=status.HTTP_200_OK
             )
 
     @classmethod
