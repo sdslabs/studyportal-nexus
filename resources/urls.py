@@ -13,5 +13,5 @@ urlpatterns = [
     url(r"^courses", views.CourseViewSet.as_view()),
     url(r"^files", views.FileViewSet.as_view()),
     url(r"^search", views.SearchViewSet.as_view()),
-    url(r"^searchcourse", views.SearchCoursesViewSet.as_view()),
+    url(r"^filtercourse", views.SearchCoursesViewSet.as_view()),
 ]
