@@ -329,9 +329,16 @@ class NotificationViewSet(APIView):
 
     def delete(self, request):
         try:
-            Notifications.objects.get(
-                id=request.query_params.get("notification")
-            ).delete()
+            id = request.query_params.get("notification")
+            userid = request.query_params.get("userid")
+            if id != "null":
+                Notifications.objects.get(
+                    id=id
+                ).delete()
+            elif userid != "null":
+                Notifications.objects.filter(
+                    recipient=userid
+                ).delete()
             return Response(
                 {"message": "Notification deleted successfully"},
                 status=status.HTTP_200_OK,
