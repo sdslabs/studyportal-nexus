@@ -331,10 +331,9 @@ class NotificationViewSet(APIView):
         try:
             id = request.query_params.get("notification")
             userid = request.query_params.get("userid")
-            print(id, userid)
             if id != "null":
                 Notifications.objects.get(
-                    id=request.query_params.get("notification")
+                    id=id
                 ).delete()
             elif userid != "null":
                 Notifications.objects.filter(
