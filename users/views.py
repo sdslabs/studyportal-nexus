@@ -328,7 +328,7 @@ class UploadViewSet(APIView):
 class NotificationViewSet(APIView):
     @check_user
     def get(self, request, user):
-        queryset = Notifications.objects.filter(recipient=user["id"])
+        queryset = reversed(Notifications.objects.filter(recipient=user["id"]))
         serializer = NotificationsSerializer(queryset, many=True)
         return Response(
             {
