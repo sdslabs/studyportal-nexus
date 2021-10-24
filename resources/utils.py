@@ -157,7 +157,8 @@ def get_file_details_and_upload(
             mime_type = file_type.split(":")[1].split(";")[0]
             ext = file_type.split("/")[1].split(";")[0]
             base64String = file.split(",")[1]
-
+        if ext == "vnd.openxmlformats-officedocument.wordprocessingml.document":
+            ext = "docx"
         rand = str(random.randint(0, 100000))
         temp = open("temp" + rand + "." + ext, "wb")
         if is_file_object:
