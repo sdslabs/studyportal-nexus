@@ -35,9 +35,11 @@ SECRET_KEY = "s-0n5h@4*e((tj3ll%8v=)9t$*24t*mdx6tyt&4+5k-l3x)pl="
 NEXUS_URL = "http://localhost:8005/api/v1"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = (os.environ.get("DEVELOPMENT_MODE") == "True")
 
-ALLOWED_HOSTS = ["localhost", "nexus.sdslabs.local", "127.0.0.1"]
+ALLOWED_HOSTS = []
+if DEBUG:
+      ALLOWED_HOSTS.append("*")
 
 # Application definition
 
@@ -71,10 +73,15 @@ MIDDLEWARE = [
 ROOT_URLCONF = "studyportal.urls"
 
 CORS_ORIGIN_WHITELIST = (
-    "http://studyportal.sdslabs.local",
-    "http://nexus.sdslabs.local",
-    "http://localhost:3005",
+    "https://study.sdslabs.co",
 )
+
+if DEBUG:
+      whitelist = list(CORS_ORIGIN_WHITELIST)
+      whitelist.append("http://studyportal.sdslabs.local")
+      whitelist.append("http://localhost:3005")
+      whitelist.append("http://127.0.0.1:3005")
+      CORS_ORIGIN_WHITELIST = tuple(whitelist)
 
 CORS_ALLOW_CREDENTIALS = True
 
