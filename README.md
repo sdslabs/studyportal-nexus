@@ -7,9 +7,19 @@ This is the backend API repository for Study Portal intended to be used by Study
 # Prerequisites
 
 1. Install [PostgreSQL service](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-18-04).
-2. Setup Arceus and Falcon locally or get a remote instance for development / testing.
-3. Register study as an app in Arceus and make changes to `studyportal/falcon/config.py`.
-4. Obtain a credentials.json from the author/generate one yourself and place it in `studyportal/drive`.
+1. Obtain a credentials.json from the author/generate one yourself and place it in `studyportal/drive`.
+
+## Optional Prerequisites:
+> These are required to get the auth running for development setup.
+
+1. Setup Arceus and Falcon locally or get a remote instance for development/testing.
+1. Register study as an app in Arceus and make changes to `studyportal/falcon/config.py`.
+
+If you want to skip these steps you can just add a cookie in the browser with the following description:
+```bash
+key: token,
+value: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImRhcmtyaWRlciIsImVtYWlsIjoiZGFya3JpZGVyMjUxMDk5QGdtYWlsLmNvbSJ9.xBwh-abNBZTlxWDRjEs33DN2AjXlf21JkSwlez6dvGM
+```
 
 # Setup Instructions
 
@@ -36,7 +46,7 @@ After executing `docker-compose up`, you will be running:
 Once everything has initialized, with `docker-compose` still running in the background, load the sample data. You will need to install PostgreSQL client tools to perform this step. On Debian, the package is called `postgresql-client-common`.
 
 ```bash
-. / ingest.sh
+./ingest.sh
 ```
 
 You are now ready to start sending the API server requests. Hit the API with a request to make sure it is working:
@@ -44,7 +54,7 @@ You are now ready to start sending the API server requests. Hit the API with a r
 
 # Diagnosing local Elasticsearch issues
 
-If the API server container failed to start, there's a good chance that Elasticsearch failed to start on your machine. Ensure that you have allocated enough memory to Docker applications, otherwise the container will instantly exit with an error. Also, if the logs mention "insufficient max map count", increase the number of open files allowed on your system. For most Linux machines, you can fix this by adding the following line to `/ etc / sysctl.conf`:
+If the API server container failed to start, there's a good chance that Elasticsearch failed to start on your machine. Ensure that you have allocated enough memory to Docker applications, otherwise the container will instantly exit with an error. Also, if the logs mention "insufficient max map count", increase the number of open files allowed on your system. For most Linux machines, you can fix this by adding the following line to `/etc/sysctl.conf`:
 
 ```bash
 vm.max_map_count = 262144
@@ -100,7 +110,7 @@ python manage.py migrate
 python manage.py createsuperuser
 ```
 
-6. Run production server
+6. Run development server
 
 ```bash
 python manage.py runserver
