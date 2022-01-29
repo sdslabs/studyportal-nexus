@@ -22,3 +22,4 @@ channels==2.4.0
 channels_redis==2.4.2
 black==20.8b1
 Pillow==8.1.2
+gunicorn==20.1.0

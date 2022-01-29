@@ -1,12 +1,10 @@
 FROM python:3.7-stretch
 
-ENV PYTHONBUFFERED 1
-
 RUN apt-get update \
     && apt-get install libexempi3 \
     && mkdir -p /var/log/studyportal.log
 
-WORKDIR /studyportal-nexus
+WORKDIR /usr/app
 
 # Install Python dependency management tools
 RUN pip install --upgrade pip \
@@ -14,7 +12,11 @@ RUN pip install --upgrade pip \
     && pip install --upgrade pipenv
 
 # Copy the requirements.txt into the container
-COPY requirements.txt /studyportal-nexus/
+COPY requirements.txt .
+
+# Add the entrypoint script into the container and make it executable
+ADD run.sh .
+RUN chmod +x run.sh
 
 # Install the dependencies system-wide
 # TODO: Use build args to avoid installing dev dependencies in production
