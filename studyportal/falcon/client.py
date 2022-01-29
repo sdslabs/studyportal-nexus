@@ -48,7 +48,6 @@ def get_token(config):
     }
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
     response = requests.post(config.URLAccessToken, data=data, headers=headers)
-    print(response)
     return response.json()["access_token"]
 
 

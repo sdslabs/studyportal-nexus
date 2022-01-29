@@ -3,6 +3,8 @@ services:
   study-db:
     image: postgres:10.3-alpine
     container_name: study-db
+    volumes:
+      - db-data:/var/lib/postgresql/data
     ports:
       - ${POSTGRES_PORT:-5432}:5432
     environment:
@@ -56,13 +58,12 @@ services:
       dockerfile: ./docker/production/Dockerfile.prod
     ports:
       - ${STUDY_BE_PORT:-8005}:8005
+    volumes:
+      - media:/usr/app/media
     depends_on:
       - study-db
       - study-es
       - study-redis
-    extra_hosts:
-      - "arceus.sdslabs.local:172.25.158.16"
-      - "falcon.sdslabs.local:172.25.158.16"
     environment:
       DATABASE_NAME: ${DATABASE_NAME}
       DATABASE_USER: ${DATABASE_USER}
@@ -78,6 +79,18 @@ services:
       DISABLE_GLOBAL_THROTTLING: ${DISABLE_GLOBAL_THROTTLING}
       ROOT_SHORTENING_URL: ${ROOT_SHORTENING_URL}
       DEVELOPMENT_MODE: ${DEVELOPMENT_MODE}
+      CLIENT_ID: ${CLIENT_ID}
+      CLIENT_SECRET: ${CLIENT_SECRET}
+      ACCESS_URL: ${ACCESS_URL}
+      USER_URL: ${USER_URL}
+      ACCOUNTS_URL: ${ACCOUNTS_URL}
+      REDIRECT_URL: ${REDIRECT_URL}
+
+volumes:
+  db-data:
+    name: study-db-data
+  media:
+    name: study-media
 
 networks:
   default:
