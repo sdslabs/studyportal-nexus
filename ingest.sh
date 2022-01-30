@@ -1,5 +1,5 @@
 #!/bin/bash
-NEXUS_CONTAINER_NAME="${NEXUS_CONTAINER_NAME:-study-backend-dev}"
+NEXUS_CONTAINER_NAME="${NEXUS_CONTAINER_NAME:-study-backend}"
 POSTGRES_CONTAINER_NAME="${POSTGRES_CONTAINER_NAME:-study-db}"
 # Set up API database
 docker exec -ti $NEXUS_CONTAINER_NAME /bin/bash -c 'python3 manage.py migrate --noinput'

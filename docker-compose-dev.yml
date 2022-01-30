@@ -46,7 +46,7 @@ services:
     restart: always
 
   study-backend:
-    container_name: study-backend-dev
+    container_name: study-backend
     build:
       context: .
       dockerfile: ./docker/development/Dockerfile.dev
