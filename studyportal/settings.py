@@ -104,14 +104,27 @@ TEMPLATES = [
 WSGI_APPLICATION = "studyportal.wsgi.application"
 ASGI_APPLICATION = "studyportal.routing.application"
 
+REDIS_HOST = os.environ.get("REDIS_HOST")
+REDIS_PORT = os.environ.get("REDIS_PORT")
+
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("redis", 6379)],
+            "hosts": [(REDIS_HOST, REDIS_PORT)],
         },
     },
 }
+
+ELASTICSEARCH_HOST = os.environ.get("ELASTICSEARCH_HOST")
+ELASTICSEARCH_PORT = os.environ.get("ELASTICSEARCH_PORT")
+
+ELASTICSEARCH_DSL = {
+  "default": {
+    "hosts": "{}:{}".format(ELASTICSEARCH_HOST, ELASTICSEARCH_PORT)
+    }
+}
+
 
 
 # Database
@@ -120,11 +133,11 @@ CHANNEL_LAYERS = {
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": DB_PARAMS["NAME"],
-        "USER": DB_PARAMS["USER"],
-        "PASSWORD": DB_PARAMS["PASSWORD"],
-        "HOST": DB_PARAMS["HOST"],
-        "PORT": DB_PARAMS["PORT"],
+        "NAME": os.environ.get("DATABASE_NAME") if os.environ.get("DATABASE_NAME") else DB_PARAMS["NAME"],
+        "USER": os.environ.get("DATABASE_USER") if os.environ.get("DATABASE_USER") else DB_PARAMS["USER"],
+        "PASSWORD": os.environ.get("DATABASE_PASSWORD") if os.environ.get("DATABASE_PASSWORD") else DB_PARAMS["PASSWORD"],
+        "HOST": os.environ.get("DATABASE_HOST") if os.environ.get("DATABASE_HOST") else DB_PARAMS["HOST"],
+        "PORT": os.environ.get("DATABASE_PORT") if os.environ.get("DATABASE_PORT") else DB_PARAMS["PORT"],
     }
 }
 
@@ -165,8 +178,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = "/static/"
+
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
-
-ELASTICSEARCH_DSL = {"default": {"hosts": "es:9200"}}

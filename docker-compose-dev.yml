@@ -3,17 +3,15 @@ services:
   study-db:
     image: postgres:10.3-alpine
     container_name: study-db
-    volumes:
-      - db-data:/var/lib/postgresql/data
     ports:
       - ${POSTGRES_PORT:-5432}:5432
+    volumes:
+        - ".:/studyportal-nexus:rw"
     environment:
       POSTGRES_DB: ${DATABASE_NAME}
       POSTGRES_USER: ${DATABASE_USER}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
       POSTGRES_HOST: ${POSTGRES_HOST}
-    logging:
-      driver: "none"
     healthcheck:
       test: "pg_isready -U studyportal -d studyportal"
 
@@ -36,30 +34,31 @@ services:
       nofile:
         soft: 65536
         hard: 65536
-    logging:
-      driver: "none"
 
   study-redis:
-    image: redis
     container_name: study-redis
+    image: redis
     ports:
-      - ${REDIS_PORT:-6379}:6379
+      - "${REDIS_PORT:-6379}:6379"
     volumes:
       - ../data/redis:/data
     entrypoint: redis-server --appendonly yes
     restart: always
-    logging:
-      driver: "none"
 
   study-backend:
     container_name: study-backend
     build:
       context: .
-      dockerfile: ./docker/production/Dockerfile.prod
+      dockerfile: ./docker/development/Dockerfile.dev
+    command: bash -c '
+      python manage.py makemigrations;
+      python manage.py migrate;
+      python manage.py search_index --rebuild -f;
+      python manage.py runserver 0.0.0.0:8005'
+    volumes:
+        - ".:/usr/app:rw"
     ports:
       - ${STUDY_BE_PORT:-8005}:8005
-    volumes:
-      - media:/usr/app/media
     depends_on:
       - study-db
       - study-es
@@ -85,12 +84,8 @@ services:
       USER_URL: ${USER_URL}
       ACCOUNTS_URL: ${ACCOUNTS_URL}
       REDIRECT_URL: ${REDIRECT_URL}
-
-volumes:
-  db-data:
-    name: study-db-data
-  media:
-    name: study-media
+    stdin_open: true
+    tty: true
 
 networks:
   default:

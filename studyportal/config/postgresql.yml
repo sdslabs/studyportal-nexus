@@ -1,5 +1,5 @@
 NAME: studyportal
 USER: studyportal
 PASSWORD: studyportal
-HOST: db
+HOST: study-db
 PORT: 5432

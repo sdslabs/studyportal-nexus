@@ -1,6 +1,6 @@
 #!/bin/bash
-NEXUS_CONTAINER_NAME="${NEXUS_CONTAINER_NAME:-studyportal-nexus}"
-POSTGRES_CONTAINER_NAME="${POSTGRES_CONTAINER_NAME:-studyportal-nexus_db_1}"
+NEXUS_CONTAINER_NAME="${NEXUS_CONTAINER_NAME:-study-backend}"
+POSTGRES_CONTAINER_NAME="${POSTGRES_CONTAINER_NAME:-study-db}"
 # Set up API database
 docker exec -ti $NEXUS_CONTAINER_NAME /bin/bash -c 'python3 manage.py migrate --noinput'
 # Create a user for testing.

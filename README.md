@@ -8,12 +8,13 @@ This is the backend API repository for Study Portal intended to be used by Study
 
 1. Install [PostgreSQL service](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-18-04).
 1. Obtain a credentials.json from the author/generate one yourself and place it in `studyportal/drive`.
+1. Create a `.env` file from `.env.sample` and change the fields as appropriate.
 
 ## Optional Prerequisites:
 > These are required to get the auth running for development setup.
 
 1. Setup Arceus and Falcon locally or get a remote instance for development/testing.
-1. Register study as an app in Arceus and make changes to `studyportal/falcon/config.py`.
+1. Register study as an app in Arceus and make changes to `.env`.
 
 If you want to skip these steps you can just add a cookie in the browser with the following description:
 ```bash
@@ -28,20 +29,21 @@ Ensure that you have installed [Docker](https://docs.docker.com/install/) (with 
 1. Clone the repository
 
 ```bash
-git@github.com:sdslabs/studyportal-nexus.git
+git clone git@github.com:sdslabs/studyportal-nexus.git
 ```
 
 2. Setup and start docker containers
 
 ```bash
-docker-compose up
+docker-compose -f docker-compose-dev.yml up
 ```
 
-After executing `docker-compose up`, you will be running:
+After executing `docker-compose -f docker-compose-dev.yml up`, you will be running:
 
 * A Django API server
-* One PostgreSQL instance(serves as the application database)
-* Elasticsearch
+* PostgreSQL instance(serves as the application database)
+* Elasticsearch instance
+* Redis server
 
 Once everything has initialized, with `docker-compose` still running in the background, load the sample data. You will need to install PostgreSQL client tools to perform this step. On Debian, the package is called `postgresql-client-common`.
 
@@ -91,17 +93,20 @@ workon studyportal
 pip install -r requirements.txt
 ```
 
-3. Edit config file.
+3. Edit the `.env` file.
 
-Change `host` in `studyportal/config/postgresql.yml` to `localhost` and in `studyportal/settings.py` change the elasticsearch host from `es` to `localhost`.
+```bash
+DATABASE_HOST=localhost
+ELASTICSEARCH_HOST=localhost
+REDIS_HOST=localhost
+```
 
-# DO NOT COMMIT THESE FILE CHANGES.
-
-4. Initialize the database
+4. Initialize the database and create elasticsearch index
 
 ```bash
 python manage.py makemigrations
 python manage.py migrate
+python manage.py search_index --rebuild -f
 ```
 
 5. Create Django admin user
@@ -113,5 +118,5 @@ python manage.py createsuperuser
 6. Run development server
 
 ```bash
-python manage.py runserver
+python manage.py runserver 0.0.0.0:8005
 ```

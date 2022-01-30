@@ -24,9 +24,10 @@ jobs:
         pip install pytest && pip install requests
     - name: Start docker
       run: |
+        cp .env.sample .env
         docker container prune -f
-        docker-compose up -d
-        bash -c 'while [[ "$(curl --insecure -s -o /dev/null -w ''%{http_code}'' http://localhost:8005/api/v1/departments)" != "200" ]]; do sleep 10 && docker logs studyportal-nexus; done'
+        docker-compose -f docker-compose-dev.yml up -d
+        bash -c 'while [[ "$(curl --insecure -s -o /dev/null -w ''%{http_code}'' http://localhost:8005/api/v1/departments)" != "200" ]]; do sleep 10; done'
         ./ingest.sh
         bash -c 'while [[ "$(curl --insecure -s -o /dev/null -w ''%{http_code}'' http://localhost:8005/api/v1/search/?q=test)" != "200" ]]; do sleep 5; done'
     - name: Run Tests
