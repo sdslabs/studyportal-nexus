@@ -37,7 +37,10 @@ NEXUS_URL = "http://localhost:8005/api/v1"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = (os.environ.get("DEVELOPMENT_MODE") == "True")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['.sdslabs.co']
+
+USE_X_FORWARDED_PORT = True
+
 if DEBUG:
       ALLOWED_HOSTS.append("*")
 
@@ -60,6 +63,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -67,7 +71,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
 ]
 
 ROOT_URLCONF = "studyportal.urls"
