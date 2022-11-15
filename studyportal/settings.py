@@ -37,7 +37,7 @@ NEXUS_URL = "http://localhost:8005/api/v1"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = (os.environ.get("DEVELOPMENT_MODE") == "True")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.sdslabs.co']
 if DEBUG:
       ALLOWED_HOSTS.append("*")
 
@@ -76,12 +76,12 @@ CORS_ORIGIN_WHITELIST = (
     "https://study.sdslabs.co",
 )
 
-if DEBUG:
-      whitelist = list(CORS_ORIGIN_WHITELIST)
-      whitelist.append("http://studyportal.sdslabs.local")
-      whitelist.append("http://localhost:3005")
-      whitelist.append("http://127.0.0.1:3005")
-      CORS_ORIGIN_WHITELIST = tuple(whitelist)
+
+whitelist = list(CORS_ORIGIN_WHITELIST)
+whitelist.append("http://studyportal.sdslabs.local")
+whitelist.append("http://localhost:3005")
+whitelist.append("http://127.0.0.1:3005")
+CORS_ORIGIN_WHITELIST = tuple(whitelist)
 
 CORS_ALLOW_CREDENTIALS = True
 
