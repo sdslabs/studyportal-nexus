@@ -17,4 +17,4 @@ python manage.py migrate
 
 echo "Rebuild elasticsearch index"
 python manage.py search_index --rebuild -f
-gunicorn studyportal.wsgi:application --bind 0.0.0.0:8005 --workers 3 --log-file=-
+gunicorn studyportal.wsgi:application --bind 0.0.0.0:8005 --workers 3
