@@ -75,14 +75,17 @@ def add_file(file, course):
 def uploadToDrive(service, folder_id, file_details):
     try:
         file_metadata = {"name": file_details["name"], "parents": [folder_id]}
+        print("file_metadata", file_metadata)
         media = MediaFileUpload(
             file_details["location"], mimetype=file_details["mime_type"]
         )
+        print("media", media)
         file = (
             service.files()
             .create(body=file_metadata, media_body=media, fields="id")
             .execute()
         )
+        print("file", file)
         return file.get("id")
     except errors.HttpError as error:
         print("An error occurred:", error)
@@ -161,10 +164,12 @@ def get_file_details_and_upload(
             ext = "docx"
         rand = str(random.randint(0, 100000))
         temp = open("temp" + rand + "." + ext, "wb")
+        print("yahan?")
         if is_file_object:
             temp.write(file_data)
         else:
             temp.write(base64.b64decode(base64String))
+        print("aabhi")
         file_details = {
             "name": name,
             "mime_type": mime_type,
@@ -182,12 +187,16 @@ def get_file_details_and_upload(
         folder_id = structure["study"][course.department.abbreviation][course.code][
             folder_identifier
         ]
+        print("aagye?")
         driveid = uploadToDrive(driveinit(), folder_id, file_details)
+        print("yeh hai driveid", driveid)
         updatePermissions(driveinit(), driveid)
+        print("kuch kiya")
         os.remove("temp" + rand + "." + ext)
         # end of manipulation
         return {"size": size, "driveid": driveid, "ext": ext}
     except Exception:
+        print("kuch nhi hua")
         os.remove("temp" + rand + "." + ext)
         return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 

@@ -7,8 +7,14 @@ from apiclient import errors
 
 def authorize_user(request):
     cookies = request.COOKIES
+    print(cookies)
+    print("\n\n\n\n\n\n\n\n\n\n\n\n\n")
     try:
-        user = client.get_logged_in_user(config, {"sdslabs": cookies["sdslabs"]})
+        user = client.get_logged_in_user(config, {"sdslabs": request.headers["Authorization"].split(" ")[1]})
+        #user = request.headers["Authorization"].split(" ")[1]
+        print("\n\n\n\n\n\n\n\n")
+        print(user)
+        print("\n\n\n\n\n\n\n\n\n")
         for key in user:
             if key == "error":
                 return Response(

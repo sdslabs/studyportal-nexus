@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 import yaml
+from pathlib import Path
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 CUR_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -60,6 +61,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -67,13 +69,17 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
 ]
 
 ROOT_URLCONF = "studyportal.urls"
 
 CORS_ORIGIN_WHITELIST = (
     "https://study.sdslabs.co",
+    "http://10.25.1.18:3005",
+    "http://localhost:3005",
+    "https://10.25.1.18:3005",
+    "https://localhost:3005",
+    "http://0.0.0.0:3005"
 )
 
 if DEBUG:
@@ -81,7 +87,12 @@ if DEBUG:
       whitelist.append("http://studyportal.sdslabs.local")
       whitelist.append("http://localhost:3005")
       whitelist.append("http://127.0.0.1:3005")
+      whitelist.append("https://localhost:3005")
+      whitelist.append("https://127.0.0.1:3005")
+      whitelist.append("http://0.0.0.0:3005")
+      CORS_ORIGIN_ALLOW_ALL = True
       CORS_ORIGIN_WHITELIST = tuple(whitelist)
+      print("bhendalund0")
 
 CORS_ALLOW_CREDENTIALS = True
 
@@ -183,3 +194,9 @@ STATIC_URL = "/static/"
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
+
+
+# Load Auth0 application settings into memory
+AUTH0_DOMAIN = os.environ.get("AUTH0_DOMAIN")
+AUTH0_CLIENT_ID = os.environ.get("AUTH0_CLIENT_ID")
+AUTH0_CLIENT_SECRET = os.environ.get("AUTH0_CLIENT_SECRET")
