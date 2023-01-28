@@ -21,5 +21,6 @@ RUN chmod +x run.sh
 # Install the dependencies system-wide
 # TODO: Use build args to avoid installing dev dependencies in production
 RUN pip install -r requirements.txt
+RUN pip install -U python-dotenv
 
 ENTRYPOINT ["./run.sh"]

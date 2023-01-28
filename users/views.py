@@ -49,27 +49,46 @@ def create_user(user_details):
 
 class UserViewSet(APIView):
     def get(self, request):
+        print("\n\n\n\n\n\n\n\n\n\n\n")
+        print(request.headers["Authorization"])
+        print("\n\n\n\n\n\n\n\n\n\n\n")
         token = request.headers["Authorization"].split(" ")[1]
-        if token == "None":
+        tokenType = request.headers["Authorization"].split(" ")[0]
+        if tokenType == "StudyPortal":
             """
             This following section handles the external auth flow
             """
             user = authorize_user(request)
             if user is not None:
-                queryset = User.objects.filter(auth_id=user["id"])
+                #queryset = User.objects.filter(auth_id=user["id"])
+                print(user["sub"])
+                print(int(user["sub"].split("|")[1]))
+                print(type(int(user["sub"].split("|")[1])))
+                queryset = User.objects.filter(auth_id=int(user["sub"].split("|")[1])%2147483647)
+                print("queryset hogya", int(user["sub"].split("|")[1])%2147483647)
                 serializer = UserSerializer(queryset, many=True)
+                print("serializer", serializer.data)
+
                 if serializer.data == []:
                     data = {
-                        "auth_id": user["id"],
-                        "username": user["username"],
+                        #"auth_id": user["id"],
+                        "auth_id": int(user["sub"].split("|")[1])%2147483647,
+                        #"username": user["username"],
+                        "username": user["name"],
                         "email": user["email"],
-                        "profile_image": user["image_url"],
+                        #"profile_image": user["image_url"],
+                        "profile_image": user["picture"],
                         "role": "user",
                     }
+                    print(data)
                     create_user(data)
-            queryset = User.objects.filter(auth_id=user["id"])
+            #queryset = User.objects.filter(auth_id=user["id"])
+            queryset = User.objects.filter(auth_id=int(user["sub"].split("|")[1])%2147483647)
+            print("second queryset")
             serializer = UserSerializer(queryset, many=True)
             user = serializer.data[0]
+            print("user after second queryset")
+            print(user)
             encoded_jwt = jwt.encode(
                 {"username": user["username"], "email": user["email"]},
                 SECRET_KEY,
@@ -86,6 +105,10 @@ class UserViewSet(APIView):
             )
         else:
             user = getUserFromJWT(token)
+            #user = authorize_user(request)
+            print("\n\n\n\n\n\n\n\n\n")
+            print("yeh mera user from line 94")
+            print(user)
             if user is not None:
                 courselist = user["courses"]
                 courses = []
@@ -287,8 +310,10 @@ class UploadViewSet(APIView):
 
     @check_user
     def post(self, request, user):
+        print("\n\n\n\n\n")
         file = request.data["file"]
         name = request.data["name"]
+        print(name)
         course = Course.objects.get(id=request.data["course"])
         file_details = get_file_details_and_upload(
             file, name, request.data["filetype"], course, True, False

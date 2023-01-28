@@ -82,6 +82,7 @@ services:
       CLIENT_SECRET: ${CLIENT_SECRET}
       ACCESS_URL: ${ACCESS_URL}
       USER_URL: ${USER_URL}
+      USER_INFO_URL: ${USER_INFO_URL}
       ACCOUNTS_URL: ${ACCOUNTS_URL}
       REDIRECT_URL: ${REDIRECT_URL}
     stdin_open: true

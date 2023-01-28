@@ -22,19 +22,25 @@ def driveinit():
         "openid",
         "https://www.googleapis.com/auth/userinfo.email",
     ]
+    print("here yet?")
     if os.path.exists(PICKLE):
         with open(PICKLE, "rb") as token:
             creds = pickle.load(token)
+    print("wbt")
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
+            print("refreshinmg", creds)
             creds.refresh(Request())
+            print("???")
         else:
+            print("something else")
             flow = InstalledAppFlow.from_client_secrets_file(CREDENTIALS, SCOPES)
             creds = flow.run_local_server(port=0)
         # Save the credentials for the next run
         with open(PICKLE, "wb") as token:
             pickle.dump(creds, token)
+    print("hi")
     service = build("drive", "v3", credentials=creds)
 
     user_service = build("oauth2", "v2", credentials=creds)

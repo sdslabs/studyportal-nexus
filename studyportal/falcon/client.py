@@ -73,10 +73,13 @@ def get_logged_in_user(config, cookies):
     cookie = cookies[COOKIE_NAME]
     if cookie == "":
         return ""
-    token = get_token(config)
+    #token = get_token(config)
+    #we are passing the token as a cookie
     user_data = make_request(
-        config.URLResourceOwner + "logged_in_user/" + cookie, token
+        #config.URLResourceOwner + "logged_in_user/" + cookie, token
+        config.URLResourceOwner, cookie
     )
+    print(user_data)
     return user_data
 
 

@@ -11,6 +11,7 @@ user.save()
 "
 EOF
 # Create database
+docker exec $POSTGRES_CONTAINER_NAME /bin/bash -c 'createuser -s --role=studyportal studyportal'
 docker exec $POSTGRES_CONTAINER_NAME /bin/bash -c 'PGPASSWORD=studyportal createdb -h localhost -U studyportal studyportal'
 # Ingest mock data
 docker exec $NEXUS_CONTAINER_NAME /bin/bash -c 'python3 data.py'

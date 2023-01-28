@@ -7,7 +7,8 @@ USER_ROLE = [("user", "user"), ("moderator", "moderator"), ("admin", "admin")]
 
 class User(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
-    auth_id = models.IntegerField(default=0)
+    #auth_id = models.IntegerField(default=0)
+    auth_id = models.CharField(max_length=100, default="")
     username = models.CharField(max_length=100, default="")
     email = models.CharField(max_length=100, default="")
     profile_image = models.URLField(max_length=500)
